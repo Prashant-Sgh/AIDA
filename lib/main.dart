@@ -1,3 +1,4 @@
+import 'package:aida/features/splash/presentation/screen/Splash.dart';
 import 'package:aida/features/splash/presentation/widgets/AIDA_animation.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,7 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
       home: Scaffold(
         body: Center(
-          child: AIDAAnimation(),
+          child: Splash(),
         ),
       ),
     );
