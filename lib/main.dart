@@ -1,5 +1,5 @@
 import 'package:aida/features/splash/presentation/screen/Splash.dart';
-import 'package:aida/features/splash/presentation/widgets/AIDA_animation.dart';
+import 'package:aida/features/welcome/presentation/screen/Welcome.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,11 +12,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Splash(),
-        ),
-      ),
+      home: Scaffold(body: Welcome()),
     );
   }
 }
