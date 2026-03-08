@@ -1,4 +1,3 @@
-import 'package:aida/features/splash/presentation/screen/Splash.dart';
 import 'package:aida/features/welcome/presentation/screen/Welcome.dart';
 import 'package:flutter/material.dart';
 

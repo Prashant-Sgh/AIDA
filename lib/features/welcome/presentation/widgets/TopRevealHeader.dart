@@ -59,7 +59,7 @@ class _TopRevealHeaderState extends State<TopRevealHeader>
             left: 0,
             right: 0,
             bottom: 0,
-            child: Container(
+            child: SizedBox(
               // color: Colors.blue[100],
               height: height,
               width: double.infinity,
