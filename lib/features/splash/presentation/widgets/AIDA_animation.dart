@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AIDAAnimation extends StatefulWidget {
   const AIDAAnimation({super.key});
@@ -22,10 +23,9 @@ class _AIDAAnimationState extends State<AIDAAnimation> {
   Widget build(BuildContext context) {
     return Text(
       'AIDA',
-      style: TextStyle(
+      style: GoogleFonts.inter(
         color: Colors.black,
         fontSize: 32,
-        fontFamily: 'Inter',
         fontWeight: FontWeight.w200,
         height: 0.63,
         letterSpacing: 0.96,

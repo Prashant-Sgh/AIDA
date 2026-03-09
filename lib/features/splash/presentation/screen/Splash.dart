@@ -15,7 +15,7 @@ class _SplashState extends State<Splash> {
     return const Scaffold(
         body: Stack(children: [
       Center(child: AIDAAnimation()),
-      Positioned(bottom: 127, left: 0, right: 0, child: MetaText())
+      Positioned(bottom: 157, left: 0, right: 0, child: MetaText())
     ]));
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MetaText extends StatelessWidget {
   const MetaText({super.key});
@@ -10,21 +11,19 @@ class MetaText extends StatelessWidget {
         children: [
           TextSpan(
             text: 'From\n',
-            style: TextStyle(
+            style: GoogleFonts.quicksand(
               color: Colors.black.withValues(alpha: 0.60),
               fontSize: 14,
-              fontFamily: 'Quicksand',
               fontWeight: FontWeight.w300,
               height: 1.43,
               letterSpacing: 0.56,
             ),
           ),
           TextSpan(
-            text: 'Atul Singh',
-            style: TextStyle(
+            text: 'Singhapps.com',
+            style: GoogleFonts.quicksand(
               color: Colors.black.withValues(alpha: 0.80),
               fontSize: 14,
-              fontFamily: 'Quicksand',
               fontWeight: FontWeight.w300,
               height: 1.43,
               letterSpacing: 0.56,

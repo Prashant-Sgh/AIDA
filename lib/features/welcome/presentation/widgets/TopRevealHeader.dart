@@ -1,3 +1,5 @@
+import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
+import 'package:aida/features/welcome/presentation/widgets/RevealDivider.dart';
 import 'package:flutter/material.dart';
 
 class TopRevealHeader extends StatefulWidget {
@@ -26,7 +28,7 @@ class _TopRevealHeaderState extends State<TopRevealHeader>
     );
 
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, -0.1),
+      begin: const Offset(0, -0.2),
       end: Offset(0, 0.6),
     ).animate(
       CurvedAnimation(
@@ -73,11 +75,17 @@ class _TopRevealHeaderState extends State<TopRevealHeader>
                       children: [
                         SizedBox(
                           height: 70,
-                          // color: Colors.green[200],
-                          child: Center(
-                            child: Icon(Icons.settings, size: 28),
+                          child: Image(
+                            image: AssetImage("assets/icon/settings.png"),
                           ),
                         ),
+                        SizedBox(height: 7),
+                        BaseLine(
+                          width: 353,
+                          dividerHeight: 0.4,
+                          colour: const Color.fromARGB(255, 207, 232, 255),
+                        ),
+                        SizedBox(height: 7),
                         GestureDetector(
                           onTap: _toggle,
                           onVerticalDragUpdate: (details) {
@@ -87,18 +95,25 @@ class _TopRevealHeaderState extends State<TopRevealHeader>
                           },
                           child: (_isOpen)
                               ? Container(
-                                  height: 30,
+                                  height: 24,
                                   width: double.infinity,
                                   color: Colors.transparent,
                                   child: Center(
-                                      child: Icon(Icons.keyboard_arrow_up)),
+                                    child: Icon(
+                                      Icons.keyboard_arrow_up,
+                                      size: 28,
+                                    ),
+                                  ),
                                 )
                               : Container(
-                                  height: 30,
+                                  height: 24,
                                   width: double.infinity,
                                   color: Colors.transparent,
                                   child: Center(
-                                    child: Icon(Icons.keyboard_arrow_down),
+                                    child: Icon(
+                                      Icons.keyboard_arrow_down,
+                                      size: 28,
+                                    ),
                                   ),
                                 ),
                         ),
