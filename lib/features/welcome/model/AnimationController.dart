@@ -19,7 +19,9 @@ class MascotAnimationController extends ChangeNotifier {
   ));
 
   bool showBubble = false; // This will trigger rebuilds
+  int animatedElementIndex = 0;
 
+  @override
   void dispose() {
     controller.dispose();
     super.dispose();
@@ -28,40 +30,56 @@ class MascotAnimationController extends ChangeNotifier {
   // animation helper functions.
 
   final List<Map<String, String>> elements = [
-    {'assets/mascots/Mascot-Hello.png': 'Welcome to our app!'},
-    {'assets/mascots/Mascot-Calmly-sitting.png': 'Discover new features!'},
-    {'assets/mascots/Mascot-Glad.png': 'Get started now!'},
+    {
+      'image': 'assets/mascots/Hello-Gesture.png',
+      'text': "Tap here, I’ll show you something."
+    },
+    {
+      'image': 'assets/mascots/Calm-Sit.png',
+      'text': "Hey, I’m Aida. I’m here to guide you..."
+    },
+    {
+      'image': 'assets/mascots/Smilling-Glad.png',
+      'text':
+          "This app is a AI chatbot. I’m here to help you with any details you need about Atul’s portfolio. Let’s talk, tap on the message bubble. Yes that one."
+    },
   ];
-
-  int animatedElementIndex = 0;
 
   void animationIn() {
     controller.forward();
-    controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        showBubble = true;
-        notifyListeners(); // Notify listeners to rebuild the UI
-      }
-    });
+    showBubble = true;
+    notifyListeners();
   }
 
   void animationOut() {
-    controller.reverse();
-    controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        showBubble = false;
-        notifyListeners(); // Notify listeners to rebuild the UI
+    void listener(AnimationStatus status) {
+      if (status == AnimationStatus.dismissed) {
+        handleAnimatedElementIndex();
+        controller.removeStatusListener(listener);
       }
-    });
+    }
+
+    showBubble = false;
+    notifyListeners();
+    controller.reverse();
+    controller.addStatusListener(listener);
+  }
+
+  void handleAnimatedElementIndex() {
+    if (animatedElementIndex < (elements.length - 1)) {
+      // animatedElementIndex = ++animatedElementIndex; // Move to the next element
+      animatedElementIndex = (animatedElementIndex + 1) % elements.length;
+      notifyListeners(); // Notify listeners to rebuild the UI
+    } else {
+      animatedElementIndex = 0; // Reset to the first element after the last one
+      notifyListeners(); // Notify listeners to rebuild the UI
+    }
   }
 
   void onTap() {
-    if (animatedElementIndex < elements.length - 1) {
+    if (showBubble) {
       animationOut();
-      animatedElementIndex = animatedElementIndex + 1; // Notify listeners to rebuild the UI
     } else {
-      // Reset to the first element after the last one
-      animatedElementIndex = 0; // Notify listeners to rebuild the UI
       animationIn();
     }
   }

@@ -1,10 +1,13 @@
+import 'package:aida/core/theme/CustomColors.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class BaseLine extends StatelessWidget {
   final double width;
   final double dividerHeight;
-  final Color colour;
-  const BaseLine({super.key, required this.width, this.dividerHeight = 0.5, this.colour = const Color(0x99B3B3B3)});
+  final Color? colour;
+  const BaseLine(
+      {super.key, required this.width, this.dividerHeight = 0.5, this.colour});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +18,8 @@ class BaseLine extends StatelessWidget {
           side: BorderSide(
             width: dividerHeight,
             strokeAlign: BorderSide.strokeAlignOutside,
-            color: colour,
+            color: colour ??
+                Theme.of(context).extension<CustomColors>()!.lineColor,
           ),
         ),
       ),

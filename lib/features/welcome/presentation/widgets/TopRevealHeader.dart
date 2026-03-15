@@ -1,3 +1,4 @@
+import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
 import 'package:aida/features/welcome/presentation/widgets/RevealDivider.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +84,7 @@ class _TopRevealHeaderState extends State<TopRevealHeader>
                         BaseLine(
                           width: 353,
                           dividerHeight: 0.4,
-                          colour: const Color.fromARGB(255, 207, 232, 255),
+                          colour: Theme.of(context).extension<CustomColors>()!.dropDownLineColor,
                         ),
                         SizedBox(height: 7),
                         GestureDetector(

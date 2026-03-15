@@ -19,7 +19,7 @@ class HintBubble extends StatelessWidget {
             angle: 1.57, // radians (≈ 90°)
             child: CustomPaint(
               size: const Size(38, 63),
-              painter: _TrianglePainter(),
+              painter: _TrianglePainter(context),
             ),
           ),
         ),
@@ -34,14 +34,14 @@ class HintBubble extends StatelessWidget {
           // margin: const EdgeInsets.only(left: 14),
           padding: const EdgeInsets.fromLTRB(14, 5, 14, 5),
           decoration: BoxDecoration(
-            color: const Color(0xFF2C2C2C),
+            color: Theme.of(context).colorScheme.secondary,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             text,
             softWrap: true,
             style: GoogleFonts.quicksand(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onSurface,
               fontSize: 13,
               fontWeight: FontWeight.w400,
               height: 1.54,
@@ -56,10 +56,14 @@ class HintBubble extends StatelessWidget {
 }
 
 class _TrianglePainter extends CustomPainter {
+  final BuildContext context;
+
+  _TrianglePainter(this.context);
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFF2C2C2C)
+      ..color = Theme.of(context).colorScheme.secondary
       ..style = PaintingStyle.fill;
 
     Path path = Path();
