@@ -1,5 +1,4 @@
 import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
-import 'package:aida/features/welcome/presentation/widgets/MascotHints.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -15,7 +14,7 @@ class IntroductionText extends StatelessWidget {
         Text(
           'AIDA',
           style: GoogleFonts.baloo2(
-            color: Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 32,
             fontWeight: FontWeight.w600,
             height: 0.63,
@@ -28,7 +27,7 @@ class IntroductionText extends StatelessWidget {
           child: Text(
             'AIDA is an AI cross-platform app, build using Flutter. to act as an AI chat-bot for Atul’s portfolio, you can use AIDA to know about Atul’s experience, projects done by him so far. Or you can use it like a conversational AI but characterized.',
             style: GoogleFonts.quicksand(
-              color: Colors.black,
+              color: Theme.of(context).colorScheme.onSurface,
               fontSize: 14,
               fontWeight: FontWeight.w300,
               height: 1.43,

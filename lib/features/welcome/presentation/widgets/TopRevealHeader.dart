@@ -123,7 +123,7 @@ class _TopRevealHeaderState extends State<TopRevealHeader>
                   ),
                   Container(
                     height: 60,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                   ),
                 ],
               ),

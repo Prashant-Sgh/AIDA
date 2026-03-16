@@ -76,14 +76,14 @@ class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: animationController.onTap,
-          backgroundColor: const Color(0xFF2C2C2C),
-          child: const Icon(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          child: Icon(
             Icons.play_arrow,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             size: 30,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: Stack(
           children: [
             Positioned(

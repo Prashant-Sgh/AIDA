@@ -41,7 +41,7 @@ class HintBubble extends StatelessWidget {
             text,
             softWrap: true,
             style: GoogleFonts.quicksand(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: Theme.of(context).colorScheme.surface,
               fontSize: 13,
               fontWeight: FontWeight.w400,
               height: 1.54,
