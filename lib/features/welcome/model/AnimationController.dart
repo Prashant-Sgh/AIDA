@@ -70,6 +70,7 @@ class MascotAnimationController extends ChangeNotifier {
       // animatedElementIndex = ++animatedElementIndex; // Move to the next element
       animatedElementIndex = (animatedElementIndex + 1) % elements.length;
       notifyListeners(); // Notify listeners to rebuild the UI
+      animationIn();
     } else {
       animatedElementIndex = 0; // Reset to the first element after the last one
       notifyListeners(); // Notify listeners to rebuild the UI

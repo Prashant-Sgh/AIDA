@@ -2,17 +2,19 @@ import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
 import 'package:aida/features/welcome/presentation/widgets/RevealDivider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:aida/core/theme/theme_provider.dart';
 
-class TopRevealHeader extends StatefulWidget {
+class TopRevealHeader extends ConsumerStatefulWidget {
   final Widget child;
 
   const TopRevealHeader({super.key, required this.child});
 
   @override
-  State<TopRevealHeader> createState() => _TopRevealHeaderState();
+  ConsumerState<TopRevealHeader> createState() => _TopRevealHeaderState();
 }
 
-class _TopRevealHeaderState extends State<TopRevealHeader>
+class _TopRevealHeaderState extends ConsumerState<TopRevealHeader>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
@@ -52,6 +54,8 @@ class _TopRevealHeaderState extends State<TopRevealHeader>
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+    // final toggleTheme = ref.watch(themeModeProvider.notifier).toggleTheme();
     double height = (_isOpen) ? 160 : 100;
     return SizedBox(
       height: height,
@@ -76,15 +80,26 @@ class _TopRevealHeaderState extends State<TopRevealHeader>
                       children: [
                         SizedBox(
                           height: 70,
-                          child: Image(
-                            image: AssetImage("assets/icon/settings.png"),
+                          child: IconButton(
+                            onPressed: () => ref
+                                .read(themeModeProvider.notifier)
+                                .toggleTheme(),
+                            icon: Icon(
+                              themeMode == ThemeMode.dark
+                                  ? Icons.dark_mode_outlined
+                                  : Icons.light_mode_outlined,
+                              size: 22,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                           ),
                         ),
                         SizedBox(height: 7),
                         BaseLine(
                           width: 353,
                           dividerHeight: 0.4,
-                          colour: Theme.of(context).extension<CustomColors>()!.dropDownLineColor,
+                          colour: Theme.of(context)
+                              .extension<CustomColors>()!
+                              .dropDownLineColor,
                         ),
                         SizedBox(height: 7),
                         GestureDetector(

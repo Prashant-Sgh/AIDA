@@ -4,21 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TapAnimation extends StatefulWidget {
-  // final MascotAnimationController animationController;
-  // final List<Map<String, String>> elements;
-  // final Animation<Offset> slideAnimation;
-  // final AnimationController controller;
-  // final bool showBubble;
-  // final int animatedElementIndex;
 
   const TapAnimation({
     Key? key,
-    // required this.animationController,
-    // required this.elements,
-    // required this.slideAnimation,
-    // required this.controller,
-    // required this.showBubble,
-    // required this.animatedElementIndex,
   }) : super(key: key);
 
   @override
@@ -26,26 +14,18 @@ class TapAnimation extends StatefulWidget {
 }
 
 class _TapAnimationState extends State<TapAnimation>
-// with SingleTickerProviderStateMixin
+
 {
-  // late AnimationController _controller;
-  // late Animation<Offset> _slideAnimation;
-  // late bool showBubble;
-  // late int animatedElementIndex;
+
 
   @override
   void initState() {
     super.initState();
 
-    // _controller = widget.animationController.controller;
-    // _slideAnimation = widget.animationController.slideAnimation;
-    // showBubble = widget.animationController.showBubble;
-    // animatedElementIndex = widget.animatedElementIndex;
   }
 
   @override
   void dispose() {
-    // _controller.dispose();
     super.dispose();
   }
 
