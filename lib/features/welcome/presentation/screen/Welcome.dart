@@ -3,6 +3,7 @@ import 'package:aida/features/welcome/presentation/widgets/IntroductionText.dart
 import 'package:aida/features/welcome/presentation/widgets/TapAnimation.dart';
 import 'package:aida/features/welcome/presentation/widgets/TopRevealHeader.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class Welcome extends StatefulWidget {
@@ -20,6 +21,10 @@ class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
     super.initState();
 
     animationController = MascotAnimationController(this);
+
+    Future.delayed(const Duration(seconds: 4), () {
+      if (mounted) context.go('/chat');
+    });
   }
 
   @override

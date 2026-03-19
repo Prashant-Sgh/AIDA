@@ -58,9 +58,6 @@ class MainApp extends ConsumerWidget {
         ),
       ),
       themeMode: themeMode,
-      // home: Scaffold(
-      //   body: Welcome(),
-      // ),
     );
   }
 }
