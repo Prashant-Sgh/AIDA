@@ -35,7 +35,11 @@ class _ChatInputBar extends State<ChatInputBar> {
         child: Container(
           // height: 58,
           decoration: BoxDecoration(
-            color: bg,
+            color: theme.colorScheme.onSurface.withAlpha(2),
+            border: BoxBorder.all(
+              color: theme.colorScheme.onSurface.withAlpha(40),
+              width: 2,
+            ),
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(

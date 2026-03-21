@@ -2,6 +2,7 @@ import 'package:aida/features/chat/model/ConversationHandeler.dart';
 import 'package:aida/features/chat/presentation/widget/ChatHint.dart';
 import 'package:aida/features/chat/presentation/widget/ChatInputBar.dart';
 import 'package:aida/features/chat/presentation/widget/ChatScrAppBar.dart';
+import 'package:aida/features/chat/presentation/widget/Conversations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,7 +33,7 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
                     ? Center(
                         child: ChatHint(),
                       )
-                    : ChatHint()),
+                    : Conversations()),
             Padding(
               padding: EdgeInsets.only(bottom: bottomInset),
               child: ChatInputBar(),
