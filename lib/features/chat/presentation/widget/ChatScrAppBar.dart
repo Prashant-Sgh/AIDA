@@ -13,31 +13,28 @@ class ChatScrAppBar extends ConsumerWidget implements PreferredSizeWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
     // final toggleTheme = ref.read(themeModeProvider.notifier).toggleTheme();
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: AppBar(
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
-        backgroundColor: Theme.of(context).colorScheme.background,
-        leading: Icon(Icons.list_rounded),
-        title: Center(
-          child: Text(
-            'AIDA',
-            style: GoogleFonts.baloo2(
-              color: Theme.of(context).colorScheme.onSurface,
-              fontSize: 32,
-              fontWeight: FontWeight.w600,
-              height: 0.63,
-              letterSpacing: 0.96,
-            ),
+    return AppBar(
+      foregroundColor: Theme.of(context).colorScheme.onSurface,
+      backgroundColor: Theme.of(context).colorScheme.background,
+      leading: Icon(Icons.list_rounded),
+      title: Center(
+        child: Text(
+          'AIDA',
+          style: GoogleFonts.baloo2(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 32,
+            fontWeight: FontWeight.w600,
+            height: 0.63,
+            letterSpacing: 0.96,
           ),
         ),
-        actions: [
-          IconButton(
-            onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
-            icon: Icon( themeMode == ThemeMode.light ? Icons.light_mode : Icons.light_mode_outlined),
-          )
-        ],
       ),
+      actions: [
+        IconButton(
+          onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+          icon: Icon( themeMode == ThemeMode.light ? Icons.light_mode : Icons.light_mode_outlined),
+        )
+      ],
     );
   }
 }
