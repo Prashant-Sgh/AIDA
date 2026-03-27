@@ -1,4 +1,4 @@
-import 'package:aida/features/chat/model/ConversationHandeler.dart';
+import 'package:aida/features/chat/data/model/ConversationHandeler.dart';
 import 'package:aida/features/chat/presentation/widget/ChatHint.dart';
 import 'package:aida/features/chat/presentation/widget/ChatInputBar.dart';
 import 'package:aida/features/chat/presentation/widget/ChatScrAppBar.dart';

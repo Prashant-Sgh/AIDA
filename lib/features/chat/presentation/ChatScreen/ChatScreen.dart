@@ -1,10 +1,11 @@
 import 'dart:math';
-
+import 'package:aida/features/chat/data/repository/messageRepository.dart';
 import 'package:aida/features/chat/presentation/widget/ChatScrAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_core/flutter_chat_core.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:permission_handler/permission_handler.dart';
 
 class Basic extends StatefulWidget {
   const Basic({super.key});
@@ -22,6 +23,8 @@ class BasicState extends State<Basic> {
 
   // final _user = const types.User(id: 'user-1');
   // final _otherUser = const types.User(id: 'user-2');
+
+  final MessageRepository messageRepository = MessageRepository();
 
   final List<Message> _messages = [
     TextMessage(
@@ -121,22 +124,21 @@ class BasicState extends State<Basic> {
           theme: ChatTheme.fromThemeData(Theme.of(context)),
           chatController: _chatController,
           currentUserId: 'user1',
-
           builders: Builders(),
-
-          // onMessageSend: (text) {
-          //   _chatController.insertAllMessages(_messages);
-          //   _chatController.insertMessage(
-          //     TextMessage(
-          //       // Better to use UUID or similar for the ID - IDs must be unique
-          //       id: '${Random().nextInt(1000) + 1}',
-          //       authorId: 'user1',
-          //       createdAt: DateTime.now().toUtc(),
-          //       text: text,
-          //     ),
-          //   );
-          // },
-          
+          onMessageSend: (text) async {
+            final theMessage = await messageRepository.sendMessage(text);
+            print("Message is: $theMessage");
+            _chatController.insertAllMessages(_messages);
+            _chatController.insertMessage(
+              TextMessage(
+                // Better to use UUID or similar for the ID - IDs must be unique
+                id: '${Random().nextInt(1000) + 1}',
+                authorId: 'user1',
+                createdAt: DateTime.now().toUtc(),
+                text: text,
+              ),
+            );
+          },
           resolveUser: (UserID id) async {
             return User(id: id, name: 'John Doe');
           },

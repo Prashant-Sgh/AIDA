@@ -1,4 +1,4 @@
-import 'package:aida/features/chat/model/Conversation.dart';
+import 'package:aida/features/chat/data/model/Conversation.dart';
 
 class ConversationHandeler {
   List<Conversation> conversations = [

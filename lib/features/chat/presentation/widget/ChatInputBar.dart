@@ -20,7 +20,6 @@ class _ChatInputBar extends State<ChatInputBar> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final bg = theme.colorScheme.surface;
     final iconColor = theme.colorScheme.onSurface.withOpacity(0.7);
     final scrollController = ScrollController();
 

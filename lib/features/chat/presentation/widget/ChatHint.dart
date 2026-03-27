@@ -1,4 +1,4 @@
-import 'package:aida/features/chat/model/Hints.dart';
+import 'package:aida/features/chat/data/model/Hints.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
