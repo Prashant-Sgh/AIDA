@@ -2,45 +2,82 @@ import 'dart:async';
 import 'dart:math';
 import 'package:aida/features/chat/data/model/message.dart';
 import 'package:aida/features/chat/data/repository/messageRepository.dart';
-import 'package:flutter_chat_core/flutter_chat_core.dart'as FlutterChatCore;
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 class MessageManager {
   final MessageRepository _messageRepository;
 
   MessageManager(this._messageRepository);
 
-  List<FlutterChatCore.Message> _conversation = [];
+  List<types.Message> _conversation = [];
 
-  Stream<List<FlutterChatCore.Message>> get conversationStream => _conversationStreamController.stream;
+  final _conversationStreamController =
+      StreamController<List<types.Message>>.broadcast();
+  Stream<List<types.Message>> get conversationStream =>
+      _conversationStreamController.stream;
 
-  final _conversationStreamController = StreamController<List<FlutterChatCore.Message>>();
+  Future<void> sendMessage(String text) async {
+    final userMessage = types.TextMessage(
+      author: const types.User(id: 'user1'),
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      id: '${Random().nextInt(1000000)}',
+      text: text,
+    );
 
-  Future<void> sendMessage(String message) async {
-    await _messageRepository.sendMessage(message);
-    _updateConversation(message, authorId: 'AIDA');
+    _conversation = [userMessage, ..._conversation];
     _conversationStreamController.add(_conversation);
+
+    await _messageRepository.saveMessage(MessageObj(
+      id: userMessage.id,
+      authorId: userMessage.author.id,
+      createdAt: DateTime.fromMillisecondsSinceEpoch(userMessage.createdAt!),
+      text: text,
+    ));
+
+    final response = await _messageRepository.sendMessage(text);
+    if (response != null) {
+      final aiMessage = types.TextMessage(
+        author: const types.User(id: 'AIDA'),
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        id: '${Random().nextInt(1000000)}',
+        text: response,
+      );
+      _conversation = [aiMessage, ..._conversation];
+      _conversationStreamController.add(_conversation);
+
+      await _messageRepository.saveMessage(MessageObj(
+        id: aiMessage.id,
+        authorId: aiMessage.author.id,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(aiMessage.createdAt!),
+        text: response,
+      ));
+    }
   }
 
-  Future<List<Message>> getMessages() async {
+  Future<void> loadConversations() async {
     final messages = await _messageRepository.loadMessages();
-    _conversation = messages.map((message) => FlutterChatCore.TextMessage.fromJson(message.toJson())).toList();
+    _conversation = messages.map((m) {
+      return types.TextMessage(
+        author: types.User(id: m.authorId),
+        createdAt: m.createdAt?.millisecondsSinceEpoch,
+        id: m.id,
+        text: m.text ?? '',
+      );
+    }).toList();
+
+    // Sort by createdAt descending (newest first) for flutter_chat_ui
+    _conversation
+        .sort((a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
+
     _conversationStreamController.add(_conversation);
-    return messages;
   }
 
-  Future<void> deleteMessage(int messageId) async {
-    await _messageRepository.deleteMessage(messageId);
+  Future<void> deleteMessage(String messageId) async {
+    // Note: The repository currently deletes ALL messages.
+    // You might want to update messageRepository.deleteMessage to take an ID.
+    await _messageRepository
+        .deleteMessage(0); // Dummy ID for now as per repo implementation
     _conversation.removeWhere((message) => message.id == messageId);
     _conversationStreamController.add(_conversation);
-  }
-
-  void _updateConversation(String message, {required String authorId, DateTime? createdAt}) {
-    final newMessage = FlutterChatCore.TextMessage(
-      id: '${Random().nextInt(1000) + 1}',
-      authorId: authorId,
-      createdAt: createdAt ?? DateTime.now().toUtc(),
-      text: message,
-    );
-    _conversation.insert(0, newMessage);
   }
 }

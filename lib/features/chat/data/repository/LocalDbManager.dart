@@ -22,24 +22,23 @@ class DatabaseManager {
     return await openDatabase(path, version: 1,
         onCreate: (Database db, int version) {
       return db.execute(
-          'CREATE TABLE messages(id INTEGER PRIMARY KEY, content TEXT, timestamp TEXT, sender TEXT)');
+          'CREATE TABLE messages(id TEXT PRIMARY KEY, authorId TEXT, createdAt INTEGER, text TEXT)');
     });
   }
 
-  Future<void> saveMessage(Message message) async {
+  Future<void> saveMessage(MessageObj message) async {
     Database db = await database;
 
     await db.insert('messages', message.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<List<Message>> loadMessages() async {
+  Future<List<MessageObj>> loadMessages() async {
     Database db = await database;
 
     List<Map<String, dynamic>> maps = await db.query('messages');
-    List<Message> messages = maps.isNotEmpty
-        ? maps.map((e) => Message.fromJson(e)).toList()
-        : [];
+    List<MessageObj> messages =
+        maps.isNotEmpty ? maps.map((e) => MessageObj.fromJson(e)).toList() : [];
 
     return messages;
   }

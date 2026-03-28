@@ -1,30 +1,33 @@
-class Message {
+class MessageObj {
   final String id;
-  final String autherId;
+  final String authorId;
   final DateTime? createdAt;
-  final String senderName;
+  final String? text;
 
-  const Message(
-      {required this.id,
-      required this.autherId,
-      this.createdAt,
-      required this.senderName});
+  const MessageObj({
+    required this.id,
+    required this.authorId,
+    this.createdAt,
+    this.text,
+  });
 
-  factory Message.fromJson(Map<String, dynamic> json) {
-    return Message(
-      id: json['id'],
-      autherId: json['autherId'],
-      createdAt: json['createdAt'],
-      senderName: json['senderName'],
+  factory MessageObj.fromJson(Map<String, dynamic> json) {
+    return MessageObj(
+      id: json['id'] as String,
+      authorId: json['authorId'] as String,
+      createdAt: json['createdAt'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'] as int)
+          : null,
+      text: json['text'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'autherId': autherId,
-      'DateTime': createdAt,
-      'senderName': senderName,
+      'authorId': authorId,
+      'createdAt': createdAt?.millisecondsSinceEpoch,
+      'text': text,
     };
   }
 }
