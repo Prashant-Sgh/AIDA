@@ -75,9 +75,16 @@ class MessageManager {
   Future<void> deleteMessage(String messageId) async {
     // Note: The repository currently deletes ALL messages.
     // You might want to update messageRepository.deleteMessage to take an ID.
-    await _messageRepository
-        .deleteMessage(0); // Dummy ID for now as per repo implementation
+    await _messageRepository.deleteMessage(
+        messageId); // Dummy ID for now as per repo implementation
     _conversation.removeWhere((message) => message.id == messageId);
+    _conversationStreamController.add(_conversation);
+  }
+
+  Future<void> clearChat() async {
+    await _messageRepository
+        .clearChat(); // Dummy ID for now as per repo implementation
+    _conversation.clear();
     _conversationStreamController.add(_conversation);
   }
 }

@@ -7,7 +7,8 @@ enum ResponseState { notInitiated, loading, success, error }
 
 class MessageRepository {
   final String _baseUrl =
-      'https://aida-backend-ee5qdr7fo-prashant-knows-projects.vercel.app';
+      'https://aida-backend-4077kwn3m-prashant-knows-projects.vercel.app';
+  // 'https://aida-backend-three.vercel.app';
   // final String _baseUrl = 'http://192.168.137.1:3000';
 
   ResponseState _responseState = ResponseState.notInitiated;
@@ -34,11 +35,12 @@ class MessageRepository {
         return response.body;
       } else {
         updateResponseState(ResponseState.error);
-        return "error: ${response.statusCode}";
+        return "Sorry... \nError: ${response.statusCode} + API call failed. \nPlease try again later.";
       }
     } catch (error) {
+      print("Errors: $error");
       updateResponseState(ResponseState.error);
-      return "error: $error";
+      return "Bad Request or Server error happened. \nPlease try again later.";
     }
   }
 
@@ -47,11 +49,15 @@ class MessageRepository {
     return messages;
   }
 
-  Future<void> deleteMessage(int messageId) async {
-    databaseManager.deleteMessage();
-  }
-
   Future<void> saveMessage(MessageObj newMessage) async {
     await databaseManager.saveMessage(newMessage);
+  }
+
+  Future<void> deleteMessage(String messageId) async {
+    databaseManager.deleteMessage(messageId);
+  }
+
+  Future<void> clearChat() async {
+    await databaseManager.clearChat();
   }
 }

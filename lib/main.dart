@@ -30,6 +30,7 @@ class MainApp extends ConsumerWidget {
           CustomColors(
             lineColor: AppColors.line,
             dropDownLineColor: AppColors.dropDownLine,
+            lightCardColor: AppColors.lightCard,
           ),
         ],
         scaffoldBackgroundColor: AppColors.background,
@@ -48,6 +49,7 @@ class MainApp extends ConsumerWidget {
           CustomColors(
             lineColor: AppColors.lineDark,
             dropDownLineColor: AppColors.dropDownLineDark,
+            lightCardColor: AppColors.lightCardDark,
           ),
         ],
         scaffoldBackgroundColor: AppColors.backgroundDark,

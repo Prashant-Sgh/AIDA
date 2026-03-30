@@ -16,7 +16,7 @@ class ChatScrAppBar extends ConsumerWidget implements PreferredSizeWidget {
     return AppBar(
       foregroundColor: Theme.of(context).colorScheme.onSurface,
       backgroundColor: Theme.of(context).colorScheme.background,
-      leading: Icon(Icons.list_rounded),
+      // leading: IconButton(onPressed: onPressed, icon: Icon(Icons.menu_rounded)),
       title: Center(
         child: Text(
           'AIDA',
@@ -32,7 +32,9 @@ class ChatScrAppBar extends ConsumerWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
-          icon: Icon( themeMode == ThemeMode.light ? Icons.light_mode : Icons.light_mode_outlined),
+          icon: Icon(themeMode == ThemeMode.light
+              ? Icons.light_mode
+              : Icons.light_mode_outlined),
         )
       ],
     );

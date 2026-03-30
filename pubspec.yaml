@@ -1,6 +1,6 @@
 name: aida
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -17,7 +17,7 @@ dependencies:
   go_router: ^16.1.0
   flutter_native_splash: ^2.4.4
   shared_preferences: ^2.5.3
-#  shared_preferences: ^2.3.2
+  #  shared_preferences: ^2.3.2
   flutter_chat_ui: ^2.11.1
   flutter_chat_core: ^2.9.0
   flutter_chat_types: ^3.6.2
@@ -34,7 +34,7 @@ dependencies:
 #   adaptive_icon_foreground: "assets/icon/appIcon/app_icon.png"
 
 flutter_native_splash:
-  color: "#000000"    # background color you want
+  color: "#000000" # background color you want
   image: assets/icon/appIcon/app_icon.png
   android: true
   ios: true
@@ -50,3 +50,21 @@ flutter:
     - assets/mascots/
     - assets/mascots/welcome/
     - assets/icon/
+
+  fonts:
+    - family: Baloo2SemiBold
+      fonts:
+        - asset: assets/fonts/Baloo2-SemiBold.ttf
+    - family: Baloo2Bold
+      fonts:
+        - asset: assets/fonts/Baloo2-Bold.ttf
+
+    - family: QuicksandLight
+      fonts:
+        - asset: assets/fonts/Quicksand-Light.ttf
+    - family: QuicksandRegular
+      fonts:
+        - asset: assets/fonts/Quicksand-Regular.ttf
+    - family: QuicksandMedium
+      fonts:
+        - asset: assets/fonts/Quicksand-Medium.ttf

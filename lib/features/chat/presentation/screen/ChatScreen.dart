@@ -4,7 +4,6 @@ import 'package:aida/features/chat/presentation/widget/ChatInputBar.dart';
 import 'package:aida/features/chat/presentation/widget/ChatScrAppBar.dart';
 import 'package:aida/features/chat/presentation/widget/Conversations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {

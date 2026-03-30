@@ -1,6 +1,5 @@
 import 'package:aida/core/theme/CustomColors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class BaseLine extends StatelessWidget {
   final double width;

@@ -43,7 +43,12 @@ class DatabaseManager {
     return messages;
   }
 
-  Future<void> deleteMessage() async {
+  Future<void> deleteMessage(String messageId) async {
+    Database db = await database;
+    await db.delete('messages', where: 'id = ?', whereArgs: [messageId]);
+  }
+
+  Future<void> clearChat() async {
     Database db = await database;
     await db.delete('messages');
   }
