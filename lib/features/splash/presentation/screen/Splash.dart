@@ -16,7 +16,8 @@ class _SplashState extends State<Splash> {
     super.initState();
     // Navigate to Welcome screen after 2 sec
     Future.delayed(const Duration(seconds: 4), () {
-      if (mounted) context.go('/welcome');
+      if (mounted) context.go('/chat');
+      // if (mounted) context.go('/welcome');
     });
   }
 

@@ -5,7 +5,7 @@ import 'package:aida/features/welcome/presentation/screen/Welcome.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/chatUI',
+  initialLocation: '/splash',
   routes: [
         GoRoute(
       path: '/splash',  // With parameters

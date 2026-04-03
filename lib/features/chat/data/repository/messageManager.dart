@@ -1,55 +1,56 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:aida/features/chat/data/model/Conversation.dart';
 import 'package:aida/features/chat/data/model/message.dart';
 import 'package:aida/features/chat/data/repository/messageRepository.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+// import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 class MessageManager {
   final MessageRepository _messageRepository;
 
   MessageManager(this._messageRepository);
 
-  List<types.Message> _conversation = [];
+  List<Conversation> _conversation = [];
 
   final _conversationStreamController =
-      StreamController<List<types.Message>>.broadcast();
-  Stream<List<types.Message>> get conversationStream =>
+      StreamController<List<Conversation>>.broadcast();
+  Stream<List<Conversation>> get conversationStream =>
       _conversationStreamController.stream;
 
   Future<void> sendMessage(String text) async {
-    final userMessage = types.TextMessage(
-      author: const types.User(id: 'user1'),
-      createdAt: DateTime.now().millisecondsSinceEpoch,
+    final userMessage = Conversation(
+      isUser: true,
+      time: DateTime.now().millisecondsSinceEpoch.toString(),
       id: '${Random().nextInt(1000000)}',
-      text: text,
+      message: text,
     );
 
     _conversation = [userMessage, ..._conversation];
     _conversationStreamController.add(_conversation);
 
-    await _messageRepository.saveMessage(MessageObj(
+    await _messageRepository.saveMessage(Conversation(
       id: userMessage.id,
-      authorId: userMessage.author.id,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(userMessage.createdAt!),
-      text: text,
+      time: userMessage.time,
+      isUser: userMessage.isUser,
+      message: userMessage.message,
     ));
 
     final response = await _messageRepository.sendMessage(text);
     if (response != null) {
-      final aiMessage = types.TextMessage(
-        author: const types.User(id: 'AIDA'),
-        createdAt: DateTime.now().millisecondsSinceEpoch,
+      final aiMessage = Conversation(
+        isUser: false,
+        time: DateTime.now().millisecondsSinceEpoch.toString(),
         id: '${Random().nextInt(1000000)}',
-        text: response,
+        message: response,
       );
       _conversation = [aiMessage, ..._conversation];
       _conversationStreamController.add(_conversation);
 
-      await _messageRepository.saveMessage(MessageObj(
+      await _messageRepository.saveMessage(Conversation(
         id: aiMessage.id,
-        authorId: aiMessage.author.id,
-        createdAt: DateTime.fromMillisecondsSinceEpoch(aiMessage.createdAt!),
-        text: response,
+        isUser: aiMessage.isUser,
+        time: aiMessage.time,
+        message: response,
       ));
     }
   }

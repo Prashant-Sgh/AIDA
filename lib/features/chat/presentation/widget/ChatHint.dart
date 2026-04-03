@@ -14,20 +14,24 @@ class ChatHint extends StatelessWidget {
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              hints.title,
-              style: GoogleFonts.baloo2(
-                color: Theme.of(context).colorScheme.onSurface.withAlpha(200),
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                height: 0.63,
-                letterSpacing: 0.96,
+            SizedBox(
+              width: double.infinity,
+              child: Text(
+                hints.title,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.baloo2(
+                  color: Theme.of(context).colorScheme.onSurface.withAlpha(200),
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  height: 0.63,
+                  letterSpacing: 0.96,
+                ),
               ),
             ),
             SizedBox(
-              height: 8.0,
+              height: 12.0,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 16.0),
@@ -42,7 +46,7 @@ class ChatHint extends StatelessWidget {
                         "$index. $hint",
                         style: GoogleFonts.quicksand(
                           color: Theme.of(context).colorScheme.onSurface,
-                          fontSize: 13,
+                          fontSize: 11,
                           fontWeight: FontWeight.w300,
                           height: 1.43,
                           letterSpacing: 0.56,

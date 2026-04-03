@@ -19,34 +19,28 @@ class _ChatInputBar extends State<ChatInputBar> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final iconColor = theme.colorScheme.onSurface.withOpacity(0.7);
-    final scrollController = ScrollController();
-
+    final _theme = Theme.of(context);
+    final _iconColor = _theme.colorScheme.onSurface.withOpacity(0.7);
+    final _singleChildScrollController = ScrollController();
+    final _textFieldScrollController = ScrollController();
+    final _backgroundColor = _theme.colorScheme.onSurface.withAlpha(15);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          minHeight: 120,
+          // minHeight: 200,
           maxHeight: 200,
           maxWidth: double.infinity,
         ),
         child: Container(
           // height: 58,
           decoration: BoxDecoration(
-            color: theme.colorScheme.onSurface.withAlpha(2),
+            color: _backgroundColor,
             border: Border.all(
-              color: theme.colorScheme.onSurface.withAlpha(40),
-              width: 2,
+              color: _theme.colorScheme.onSurface.withAlpha(50),
+              width: 0.5,
             ),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: theme.shadowColor.withOpacity(0.12),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              )
-            ],
+            borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -54,47 +48,77 @@ class _ChatInputBar extends State<ChatInputBar> {
             children: [
               Padding(
                 padding:
-                    const EdgeInsets.only(left: 26.0, right: 26.0, top: 8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _controller,
-                        maxLines: 3,
-                        scrollController: scrollController,
-                        style: GoogleFonts.quicksand(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                            color: theme.colorScheme.onSurface),
-                        decoration: InputDecoration(
-                          hintText: 'What would you like to know?',
-                          hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
-                          ),
-                          border: InputBorder.none,
-                          isDense: true,
+                    const EdgeInsets.only(left: 20.0, right: 20.0, top: 12.0),
+                child: SingleChildScrollView(
+                  controller: _singleChildScrollController,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: 20,
+                      maxHeight: 100,
+                    ),
+                    child: TextField(
+                      controller: _controller,
+                      maxLines: null,
+                      autofocus: false,
+                      keyboardType: TextInputType.text,
+                      cursorColor: Colors.purpleAccent,
+                      scrollController: _textFieldScrollController,
+                      style: GoogleFonts.quicksand(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          color: _theme.colorScheme.onSurface),
+                      decoration: InputDecoration(
+                        hintText: 'What would you like to know?',
+                        hintStyle: _theme.textTheme.bodyMedium?.copyWith(
+                          color: _theme.colorScheme.onSurface.withOpacity(0.6),
                         ),
+                        border: InputBorder.none,
+                        isDense: true,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                  ],
+                  ),
                 ),
+
+                // child: Row(
+                //   children: [
+                //     Expanded(
+                //       child: TextField(
+                //         controller: _controller,
+                //         maxLines: 1,
+                //         scrollController: scrollController,
+                //         style: GoogleFonts.quicksand(
+                //             fontWeight: FontWeight.w400,
+                //             fontSize: 16,
+                //             color: theme.colorScheme.onSurface),
+                //         decoration: InputDecoration(
+                //           hintText: 'What would you like to know?',
+                //           hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                //             color: theme.colorScheme.onSurface.withOpacity(0.6),
+                //           ),
+                //           border: InputBorder.none,
+                //           isDense: true,
+                //         ),
+                //       ),
+                //     ),
+                //     // const SizedBox(width: 8),
+                //   ],
+                // ),
               ),
               Row(
                 children: [
                   const SizedBox(width: 12),
                   IconButton(
-                    icon: Icon(Icons.image_outlined, color: iconColor),
+                    icon: Icon(Icons.image_outlined, color: _iconColor),
                     onPressed: () {},
                     splashRadius: 24,
                   ),
                   IconButton(
-                    icon: Icon(Icons.code, color: iconColor),
+                    icon: Icon(Icons.code, color: _iconColor),
                     onPressed: () {},
                     splashRadius: 24,
                   ),
                   IconButton(
-                    icon: Icon(Icons.mic_none, color: iconColor),
+                    icon: Icon(Icons.mic_none, color: _iconColor),
                     onPressed: () {},
                     splashRadius: 24,
                   ),
@@ -102,15 +126,15 @@ class _ChatInputBar extends State<ChatInputBar> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: Container(
-                      height: 42,
-                      width: 42,
+                      height: 32,
+                      width: 32,
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
+                        color: _theme.colorScheme.primary,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.arrow_upward_rounded, size: 20),
-                        color: theme.colorScheme.onPrimary,
+                        icon: const Icon(Icons.arrow_upward_rounded, size: 14),
+                        color: _theme.colorScheme.onPrimary,
                         onPressed: () {
                           // send message action
                         },

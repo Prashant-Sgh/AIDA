@@ -10,8 +10,8 @@ class MetaText extends StatelessWidget {
       TextSpan(
         children: [
           TextSpan(
-            // text: 'From:\n',
-            text: 'By: \n',
+            text: 'From:\n',
+            // text: 'By: \n',
             style: GoogleFonts.quicksand(
               color: Colors.black.withValues(alpha: 0.60),
               fontSize: 14,
@@ -21,8 +21,8 @@ class MetaText extends StatelessWidget {
             ),
           ),
           TextSpan(
-            // text: 'Singhapps.com',
-            text: 'Atul Singh',
+            text: 'Singhapps.com',
+            // text: 'Atul Singh',
             style: GoogleFonts.quicksand(
               color: Colors.black.withValues(alpha: 0.80),
               fontSize: 14,

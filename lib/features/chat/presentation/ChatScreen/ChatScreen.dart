@@ -112,12 +112,6 @@ class BasicState extends State<Basic> {
             builder: (context, snapshot) {
               final uiMessages = snapshot.data ?? [];
 
-              if (uiMessages.isEmpty) {
-                return Center(
-                  child: ChatHint(),
-                );
-              }
-
               final coreMessages = uiMessages.map((m) {
                 if (m is types.TextMessage) {
                   return Message.text(
@@ -140,19 +134,24 @@ class BasicState extends State<Basic> {
 
               _chatController.setMessages(coreMessages.reversed.toList());
 
-              return Chat(
-                chatController: _chatController,
-                currentUserId: 'user1',
-                onMessageSend: (text) async {
-                  await messageManager.sendMessage(text);
-                },
-                resolveUser: (UserID id) async {
-                  return User(
-                    id: id,
-                    name: id == 'user1' ? 'Me' : 'AIDA',
-                  );
-                },
-                theme: ChatTheme.fromThemeData(Theme.of(context)),
+              return Stack(
+                children: [
+                  if (true) Positioned.fill(child: ChatHint()),
+                  Chat(
+                    chatController: _chatController,
+                    currentUserId: 'user1',
+                    onMessageSend: (text) async {
+                      await messageManager.sendMessage(text);
+                    },
+                    resolveUser: (UserID id) async {
+                      return User(
+                        id: id,
+                        name: id == 'user1' ? 'Me' : 'AIDA',
+                      );
+                    },
+                    theme: ChatTheme.fromThemeData(Theme.of(context)),
+                  ),
+                ],
               );
             },
           ),
