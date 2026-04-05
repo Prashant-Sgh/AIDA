@@ -21,8 +21,8 @@ class MetaText extends StatelessWidget {
             ),
           ),
           TextSpan(
-            text: 'Singhapps.com',
-            // text: 'Atul Singh',
+            // text: 'Singhapps.com',
+            text: 'Atul Singh',
             style: GoogleFonts.quicksand(
               color: Colors.black.withValues(alpha: 0.80),
               fontSize: 14,

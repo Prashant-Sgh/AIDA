@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:aida/features/chat/data/model/Conversation.dart';
 import 'package:aida/features/chat/data/model/message.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -22,23 +23,42 @@ class DatabaseManager {
     return await openDatabase(path, version: 1,
         onCreate: (Database db, int version) {
       return db.execute(
-          'CREATE TABLE messages(id TEXT PRIMARY KEY, authorId TEXT, createdAt INTEGER, text TEXT)');
+          'CREATE TABLE messages(id TEXT PRIMARY KEY, isUser BOOLEAN, time TEXT, message TEXT)');
+      // 'CREATE TABLE messages(id TEXT PRIMARY KEY, authorId TEXT, createdAt INTEGER, text TEXT)');
     });
   }
 
-  Future<void> saveMessage(MessageObj message) async {
+  Future<void> saveMessage(Conversation message) async {
     Database db = await database;
 
-    await db.insert('messages', message.toJson(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    try {
+      await db.insert('messages', message.toJson(),
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    } catch (e) {
+      print('sendMessage - saveMessage, ERROR: $e');
+    }
   }
 
-  Future<List<MessageObj>> loadMessages() async {
+  Future<List<Conversation>> loadMessages() async {
     Database db = await database;
 
     List<Map<String, dynamic>> maps = await db.query('messages');
-    List<MessageObj> messages =
-        maps.isNotEmpty ? maps.map((e) => MessageObj.fromJson(e)).toList() : [];
+    // List<Conversation> messages = maps.isNotEmpty
+    // ? maps.map((e) => Conversation.fromJson(e)).toList()
+    // : [];
+    List<Conversation> messages = [];
+    if (maps.isNotEmpty) {
+      try {
+        messages = maps.map((e) => Conversation.fromJson(e)).toList();
+      } catch (e) {
+        print('sendMessage - loadMessages, ERROR parsing messages from DB: $e');
+        messages = [];
+      }
+    } else {
+      messages = [];
+    }
+
+    print('sendMessage - loadMessages - messages loaded from DB: ${messages}');
 
     return messages;
   }

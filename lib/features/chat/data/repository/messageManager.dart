@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:aida/features/chat/data/model/Conversation.dart';
-import 'package:aida/features/chat/data/model/message.dart';
 import 'package:aida/features/chat/data/repository/messageRepository.dart';
 // import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -17,58 +16,37 @@ class MessageManager {
   Stream<List<Conversation>> get conversationStream =>
       _conversationStreamController.stream;
 
-  Future<void> sendMessage(String text) async {
-    final userMessage = Conversation(
-      isUser: true,
-      time: DateTime.now().millisecondsSinceEpoch.toString(),
-      id: '${Random().nextInt(1000000)}',
-      message: text,
-    );
+  get responseState => _messageRepository.getResponseState();
 
+  Future<void> sendMessage(String text) async {
+    final userMessage = _createConversation(text, true);
     _conversation = [userMessage, ..._conversation];
     _conversationStreamController.add(_conversation);
 
-    await _messageRepository.saveMessage(Conversation(
-      id: userMessage.id,
-      time: userMessage.time,
-      isUser: userMessage.isUser,
-      message: userMessage.message,
-    ));
-
+    await _messageRepository.saveMessage(userMessage);
     final response = await _messageRepository.sendMessage(text);
     if (response != null) {
-      final aiMessage = Conversation(
-        isUser: false,
-        time: DateTime.now().millisecondsSinceEpoch.toString(),
-        id: '${Random().nextInt(1000000)}',
-        message: response,
-      );
-      _conversation = [aiMessage, ..._conversation];
+      final aiResponse = _createConversation(response, false);
+      _conversation = [aiResponse, ..._conversation];
       _conversationStreamController.add(_conversation);
-
-      await _messageRepository.saveMessage(Conversation(
-        id: aiMessage.id,
-        isUser: aiMessage.isUser,
-        time: aiMessage.time,
-        message: response,
-      ));
+      await _messageRepository.saveMessage(aiResponse);
     }
   }
 
   Future<void> loadConversations() async {
     final messages = await _messageRepository.loadMessages();
     _conversation = messages.map((m) {
-      return types.TextMessage(
-        author: types.User(id: m.authorId),
-        createdAt: m.createdAt?.millisecondsSinceEpoch,
+      return Conversation(
+        isUser: m.isUser,
+        time: m.time,
         id: m.id,
-        text: m.text ?? '',
+        message: m.message,
       );
     }).toList();
 
     // Sort by createdAt descending (newest first) for flutter_chat_ui
-    _conversation
-        .sort((a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
+    _conversation.sort((a,b) => (a.time ?? DateTime.now()).compareTo(b.time ?? DateTime.now()));
+    // _conversation.sort((a, b) => (b.time ?? 0).compareTo(a.time ?? 0));
 
     _conversationStreamController.add(_conversation);
   }
@@ -89,3 +67,10 @@ class MessageManager {
     _conversationStreamController.add(_conversation);
   }
 }
+
+Conversation _createConversation(String text, bool isUser) => Conversation(
+      isUser: isUser,
+      time: DateTime.now(),
+      id: '${Random().nextInt(1000000)}',
+      message: text,
+    );

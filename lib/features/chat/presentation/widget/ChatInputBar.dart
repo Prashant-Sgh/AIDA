@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ChatInputBar extends StatefulWidget {
-  const ChatInputBar({super.key});
+  final Future<void> Function(String) sendMessage;
+  const ChatInputBar({super.key, required this.sendMessage});
 
   @override
   State<ChatInputBar> createState() => _ChatInputBar();
@@ -24,6 +25,7 @@ class _ChatInputBar extends State<ChatInputBar> {
     final _singleChildScrollController = ScrollController();
     final _textFieldScrollController = ScrollController();
     final _backgroundColor = _theme.colorScheme.onSurface.withAlpha(15);
+    final _isEnabled = _controller.text.isNotEmpty;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: ConstrainedBox(
@@ -57,11 +59,14 @@ class _ChatInputBar extends State<ChatInputBar> {
                       maxHeight: 100,
                     ),
                     child: TextField(
+                      onChanged: (value) => setState(() {
+                        _controller.text = value;
+                      }),
                       controller: _controller,
                       maxLines: null,
                       autofocus: false,
                       keyboardType: TextInputType.text,
-                      cursorColor: Colors.purpleAccent,
+                      cursorColor: _theme.colorScheme.onSurface,
                       scrollController: _textFieldScrollController,
                       style: GoogleFonts.quicksand(
                           fontWeight: FontWeight.w400,
@@ -129,15 +134,15 @@ class _ChatInputBar extends State<ChatInputBar> {
                       height: 32,
                       width: 32,
                       decoration: BoxDecoration(
-                        color: _theme.colorScheme.primary,
+                        color: _isEnabled ? _theme.colorScheme.primary : _theme.colorScheme.onSurface.withAlpha(100),
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.arrow_upward_rounded, size: 14),
-                        color: _theme.colorScheme.onPrimary,
-                        onPressed: () {
-                          // send message action
-                        },
+                        icon: Icon(Icons.arrow_upward_rounded, size: 14, color: _theme.colorScheme.surface),
+                        onPressed: _isEnabled ? () {
+                          widget.sendMessage(_controller.text);
+                          _controller.clear();
+                      } : null,
                         splashRadius: 22,
                       ),
                     ),
