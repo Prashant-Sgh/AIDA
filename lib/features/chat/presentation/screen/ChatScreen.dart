@@ -10,7 +10,6 @@ import 'package:aida/features/chat/presentation/widget/Conversations.dart';
 import 'package:aida/features/chat/presentation/widget/processingAnimation.dart';
 import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
