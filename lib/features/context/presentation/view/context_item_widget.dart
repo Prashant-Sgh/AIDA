@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:aida/core/theme/app_colors.dart';
 import 'package:flutter/widget_previews.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 class ContextItemWidget extends StatefulWidget {
@@ -23,6 +24,8 @@ class _ContextItemWidgetState extends State<ContextItemWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _expandAnimation;
+  late TextEditingController _descriptionController;
+  bool _isEditable = false;
   bool _isExpanded = false;
 
   @override
@@ -35,11 +38,14 @@ class _ContextItemWidgetState extends State<ContextItemWidget>
     _expandAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
+
+    _descriptionController = TextEditingController(text: widget.contextDescription);
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -81,27 +87,19 @@ class _ContextItemWidgetState extends State<ContextItemWidget>
                   children: [
                     Text(
                       widget.contextName,
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelLarge
-                          ?.copyWith(
-                        color: isDarkMode
-                            ? AppColors.textDark
-                            : AppColors.text,
+                      style: GoogleFonts.quicksand(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: 17.0,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     if (!_isExpanded)(const SizedBox(height: 6)),
                     if (!_isExpanded)(Text(
                       widget.contextDescription,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(
-                        color: isDarkMode
-                            ? AppColors.secondaryDark
-                            : AppColors.secondary,
-                        overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.quicksand(
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w600,
                       ),
                     )),
                     const SizedBox(width: 8),
@@ -133,26 +131,23 @@ class _ContextItemWidgetState extends State<ContextItemWidget>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Context description
-                        TextField(
-                          controller: TextEditingController(),
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0)
                           ),
-                          onChanged: null,
-                        ),
-                        Text(
-                          widget.contextDescription,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                                color: isDarkMode
-                                    ? AppColors.textDark
-                                    : AppColors.text,
-                                height: 1.5,
-                              ),
+                          child: TextField(
+                            controller: _descriptionController,
+                            enabled: _isEditable,
+                            style: GoogleFonts.quicksand(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            decoration: InputDecoration(
+                              labelText: "Context Description",
+                            ),
+                            onChanged: null,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         // Action buttons

@@ -8,11 +8,11 @@ final contextVMProvider = NotifierProvider<ContextViewModel, ContextState>(
 );
 
 class ContextViewModel extends Notifier<ContextState> {
-  late final FirestoreService _service;
+  late final FirestoreServices _service;
 
   @override
   ContextState build() {
-    _service = FirestoreService();
+    _service = FirestoreServices();
     return ContextState(); // initial state
   }
 

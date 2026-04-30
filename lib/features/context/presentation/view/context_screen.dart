@@ -90,7 +90,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
                   },
                 ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFFC724B1),
+        backgroundColor: const Color(0xFFB565F7),
         onPressed: () {
           // Handle add new context
           null;
@@ -113,7 +113,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
         ),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFC724B1),
+            backgroundColor: const Color(0xFFB565F7),
             padding: const EdgeInsets.symmetric(vertical: 14),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),

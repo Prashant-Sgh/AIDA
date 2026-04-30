@@ -1,6 +1,9 @@
 import 'package:aida/features/context/domain_layer/context_model.dart';
 
-class FirestoreService {
+class FirestoreServices {
+
+
+
   Future<List<ContextModel>> getContexts() async {
     return [
       ContextModel(id: '1', name: 'Context 1', content: 'Content for context 1'),
