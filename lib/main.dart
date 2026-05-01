@@ -29,10 +29,17 @@ class MainApp extends ConsumerWidget {
         ),
         extensions: [
           CustomColors(
-            lineColor: AppColors.line,
-            dropDownLineColor: AppColors.dropDownLine,
-            lightCardColor: AppColors.lightCard,
-          ),
+              lineColor: AppColors.line,
+              dropDownLineColor: AppColors.dropDownLine,
+              lightCardColor: AppColors.lightCard,
+              contextScrBackground: AppColors.contextScrBackgroundLight,
+              contextScrCard: AppColors.contextScrCardLight,
+              contextScrCardStroke: AppColors.contextScrCardStrokeLight,
+              contextScrExpandedCard: AppColors.contextScrExpandedCardLight,
+              contextScrExpandedCardTxtField:
+                  AppColors.contextScrExpandedCardTxtFieldLight,
+              contextScrButtonClearTxt:
+                  AppColors.contextScrButtonClearTxtLight),
         ],
         scaffoldBackgroundColor: AppColors.background,
         textTheme: GoogleFonts.quicksandTextTheme(
@@ -48,10 +55,16 @@ class MainApp extends ConsumerWidget {
         ),
         extensions: [
           CustomColors(
-            lineColor: AppColors.lineDark,
-            dropDownLineColor: AppColors.dropDownLineDark,
-            lightCardColor: AppColors.lightCardDark,
-          ),
+              lineColor: AppColors.lineDark,
+              dropDownLineColor: AppColors.dropDownLineDark,
+              lightCardColor: AppColors.lightCardDark,
+              contextScrBackground: AppColors.contextScrBackground,
+              contextScrCard: AppColors.contextScrCard,
+              contextScrCardStroke: AppColors.contextScrCardStroke,
+              contextScrExpandedCard: AppColors.contextScrExpandedCard,
+              contextScrExpandedCardTxtField:
+                  AppColors.contextScrExpandedCardTxtField,
+              contextScrButtonClearTxt: AppColors.contextScrButtonClearTxt),
         ],
         scaffoldBackgroundColor: AppColors.backgroundDark,
         textTheme: GoogleFonts.quicksandTextTheme(

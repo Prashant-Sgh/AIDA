@@ -1,8 +1,8 @@
+import 'package:aida/core/theme/CustomColors.dart';
 import 'package:flutter/material.dart';
 import 'package:aida/core/theme/app_colors.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 class ContextItemWidget extends StatefulWidget {
   final String contextId;
@@ -39,7 +39,8 @@ class _ContextItemWidgetState extends State<ContextItemWidget>
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
-    _descriptionController = TextEditingController(text: widget.contextDescription);
+    final _description = widget.contextDescription;
+    _descriptionController = TextEditingController(text: _description);
   }
 
   @override
@@ -62,7 +63,16 @@ class _ContextItemWidgetState extends State<ContextItemWidget>
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final customColors = theme.extension<CustomColors>()!;
+    final textColor = theme.colorScheme.onSurface;
+    final cardColor = customColors.contextScrCard;
+    final cardStrokeColor = customColors.contextScrCardStroke;
+    final cardExpandedColor = customColors.contextScrExpandedCard;
+    final cardExpandedTxtFieldColor =
+        customColors.contextScrExpandedCardTxtField;
+    final clearBtnTxtColor = customColors.contextScrButtonClearTxt;
 
     return Container(
       child: Column(
@@ -71,43 +81,55 @@ class _ContextItemWidgetState extends State<ContextItemWidget>
           Container(
             margin: const EdgeInsets.only(bottom: 6),
             decoration: BoxDecoration(
-              color: isDarkMode ? AppColors.lightCardDark : AppColors.lightCard,
+              color: cardColor,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: isDarkMode ? AppColors.lineDark : AppColors.line,
+                color: cardStrokeColor,
                 width: 0.5,
               ),
             ),
             child: InkWell(
               onTap: _toggleExpand,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                padding: const EdgeInsets.only(
+                    left: 25, top: 12, right: 12, bottom: 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      widget.contextName,
-                      style: GoogleFonts.quicksand(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontSize: 17.0,
-                        fontWeight: FontWeight.w600,
+                    Expanded(
+                      flex: 6,
+                      child: Text(
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        widget.contextName,
+                        style: GoogleFonts.quicksand(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                    if (!_isExpanded)(const SizedBox(height: 6)),
-                    if (!_isExpanded)(Text(
-                      widget.contextDescription,
-                      style: GoogleFonts.quicksand(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.w600,
+                    if (!_isExpanded) (const SizedBox(height: 6)),
+                    if (!_isExpanded)
+                      Expanded(
+                        flex: 4,
+                        child: Text(
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                          _descriptionController.text,
+                          style: GoogleFonts.quicksand(
+                            color: textColor,
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    )),
                     const SizedBox(width: 8),
                     Icon(
-                      _isExpanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
-                      color: isDarkMode
-                          ? AppColors.secondaryDark
-                          : AppColors.secondary,
+                      _isExpanded
+                          ? Icons.expand_less_rounded
+                          : Icons.expand_more_rounded,
+                      color: textColor,
                     ),
                   ],
                 ),
@@ -120,86 +142,108 @@ class _ContextItemWidgetState extends State<ContextItemWidget>
               child: SizeTransition(
                 sizeFactor: _expandAnimation,
                 child: Container(
-                  margin: const EdgeInsets.only(bottom: 6),
+                  margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: isDarkMode? Colors.grey[800] : Colors.grey[200],
+                    color: cardExpandedColor,
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(height: 14),
                         // Context description
                         Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.0)
-                          ),
-                          child: TextField(
-                            controller: _descriptionController,
-                            enabled: _isEditable,
-                            style: GoogleFonts.quicksand(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w500,
+                              borderRadius: BorderRadius.circular(8.0)),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              color: cardExpandedTxtFieldColor,
                             ),
-                            decoration: InputDecoration(
-                              labelText: "Context Description",
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 17, vertical: 14),
+                              child: TextField(
+                                controller: _descriptionController,
+                                enabled: _isEditable,
+                                minLines: 1,
+                                maxLines: 6,
+                                keyboardType: TextInputType.multiline,
+                                style: GoogleFonts.baloo2(
+                                  color: textColor.withAlpha(200),
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.w100,
+                                ),
+                                decoration: const InputDecoration(
+                                  border: InputBorder
+                                      .none, // Removes the default underline
+                                  enabledBorder: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  contentPadding: EdgeInsets
+                                      .zero, // Removes extra padding inside the field
+                                ),
+                                onChanged: (value) {
+                                  _descriptionController =
+                                      TextEditingController(text: value);
+                                },
+                              ),
                             ),
-                            onChanged: null,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 35),
                         // Action buttons
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: Theme.of(context).colorScheme.background,
-                                side: BorderSide(
-                                  color: Theme.of(context).colorScheme.onSurface,
-                                ),
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 24),
-                              ),
+                            IconButton(
                               onPressed: () {
-                                // Handle clear action
-                                null;
+                                setState(() {
+                                  _isEditable = !_isEditable;
+                                });
                               },
-                              child: Text(
-                                'Clear',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).colorScheme.onSurface,
+                              icon: Container(
+                                height: 39,
+                                width: 96,
+                                decoration: BoxDecoration(
+                                    color: textColor,
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: Center(
+                                  child: Text(
+                                    'Edit',
+                                    style: GoogleFonts.quicksand(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                      color: clearBtnTxtColor,
                                     ),
+                                  ),
+                                ),
                               ),
                             ),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).colorScheme.onSurface,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 24),
-                              ),
-                              onPressed: () {
-                                // Handle paste action
-                                null;
-                              },
-                              child: Text(
-                                'Paste',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelSmall
-                                    ?.copyWith(
-                                      color: isDarkMode
-                                          ? AppColors.backgroundDark
-                                          : Colors.white,
+                            IconButton(
+                              onPressed: null,
+                              icon: Container(
+                                height: 39,
+                                width: 96,
+                                decoration: BoxDecoration(
+                                    color: theme.colorScheme.surface,
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: Center(
+                                  child: Text(
+                                    'Done',
+                                    style: GoogleFonts.quicksand(
                                       fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                      color: textColor,
                                     ),
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
+                        SizedBox(height: 19)
                       ],
                     ),
                   ),
@@ -212,7 +256,6 @@ class _ContextItemWidgetState extends State<ContextItemWidget>
     );
   }
 }
-
 
 @Preview(name: 'Context Screen Item')
 Widget previewContextItem() {

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_viewmodel.dart';
 import 'package:aida/features/context/presentation/view/context_item_widget.dart';
 import 'package:aida/core/theme/CustomColors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ContextScreen extends ConsumerStatefulWidget {
   const ContextScreen({Key? key}) : super(key: key);
@@ -26,17 +27,21 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
   Widget build(BuildContext context) {
     final contextState = ref.watch(contextVMProvider);
     final theme = Theme.of(context);
+    final textColor = theme.colorScheme.onSurface;
     final isDarkMode = theme.brightness == Brightness.dark;
     final colorScheme = theme.colorScheme;
     final customColors = theme.extension<CustomColors>()!;
+    final backgroundColor = customColors.contextScrBackground;
 
     return Scaffold(
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         title: Text(
           'Context manager',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            color: colorScheme.onSurface,
-            fontWeight: FontWeight.w500,
+          style: GoogleFonts.baloo2(
+            color: textColor,
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
           ),
         ),
         centerTitle: false,
@@ -77,59 +82,60 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
                     ),
                   ),
                 )
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: contextState.allContexts.length,
-                  itemBuilder: (context, index) {
-                    final contextItem = contextState.allContexts[index];
-                    return ContextItemWidget(
-                      contextId: contextItem.id,
-                      contextName: contextItem.name,
-                      contextDescription: contextItem.content,
-                    );
-                  },
+              : Stack(
+                  children: [
+                    ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: contextState.allContexts.length,
+                      itemBuilder: (context, index) {
+                        final contextItem = contextState.allContexts[index];
+                        return ContextItemWidget(
+                          contextId: contextItem.id,
+                          contextName: contextItem.name,
+                          contextDescription: contextItem.content,
+                        );
+                      },
+                    ),
+                    Positioned(
+                      bottom: 6,
+                      left: 16,
+                      right: 80,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: textColor,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () {
+                            // Handle update action
+                            null;
+                          },
+                          child: Text(
+                            'Update',
+                            style: GoogleFonts.quicksand(
+                              color: backgroundColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFFB565F7),
+        backgroundColor: colorScheme.surface,
         onPressed: () {
           // Handle add new context
           null;
         },
         child: Icon(
           Icons.add,
-          color: colorScheme.onSurface,
-        ),
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        decoration: BoxDecoration(
-          color: customColors.lightCardColor,
-          border: Border(
-            top: BorderSide(
-              color: customColors.lineColor,
-              width: 1,
-            ),
-          ),
-        ),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFB565F7),
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          onPressed: () {
-            // Handle update action
-            null;
-          },
-          child: Text(
-            'Update',
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          color: textColor,
         ),
       ),
     );
