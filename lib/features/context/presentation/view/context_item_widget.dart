@@ -1,10 +1,14 @@
 import 'package:aida/core/theme/CustomColors.dart';
+import 'package:aida/features/context/domain_layer/context_model.dart';
+import 'package:aida/features/context/presentation/viewmodels/context_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:aida/core/theme/app_colors.dart';
 import 'package:flutter/widget_previews.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
-class ContextItemWidget extends StatefulWidget {
+class ContextItemWidget extends ConsumerStatefulWidget {
   final String contextId;
   final String contextName;
   final String contextDescription;
@@ -17,10 +21,10 @@ class ContextItemWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ContextItemWidget> createState() => _ContextItemWidgetState();
+  ConsumerState<ContextItemWidget> createState() => _ContextItemWidgetState();
 }
 
-class _ContextItemWidgetState extends State<ContextItemWidget>
+class _ContextItemWidgetState extends ConsumerState<ContextItemWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _expandAnimation;
@@ -63,6 +67,7 @@ class _ContextItemWidgetState extends State<ContextItemWidget>
 
   @override
   Widget build(BuildContext context) {
+    final contextVmState = ref.watch(contextVMProvider);
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final customColors = theme.extension<CustomColors>()!;
@@ -120,7 +125,7 @@ class _ContextItemWidgetState extends State<ContextItemWidget>
                           style: GoogleFonts.quicksand(
                             color: textColor,
                             fontSize: 12.0,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w300,
                           ),
                         ),
                       ),
@@ -187,6 +192,15 @@ class _ContextItemWidgetState extends State<ContextItemWidget>
                                 onChanged: (value) {
                                   _descriptionController =
                                       TextEditingController(text: value);
+                                  var contextVM =
+                                      ref.read(contextVMProvider.notifier);
+                                  contextVM.stackInLatestChanges(
+                                      index: widget.contextId,
+                                      latestContext: ContextModel(
+                                        id: widget.contextId,
+                                        name: widget.contextName,
+                                        content: value,
+                                      ));
                                 },
                               ),
                             ),

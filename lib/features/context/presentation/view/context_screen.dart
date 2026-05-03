@@ -25,13 +25,14 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final contextState = ref.watch(contextVMProvider);
     final theme = Theme.of(context);
     final textColor = theme.colorScheme.onSurface;
     final isDarkMode = theme.brightness == Brightness.dark;
     final colorScheme = theme.colorScheme;
     final customColors = theme.extension<CustomColors>()!;
     final backgroundColor = customColors.contextScrBackground;
+
+    final contextVM = ref.watch(contextVMProvider);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -67,16 +68,16 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
           ),
         ],
       ),
-      body: contextState.isLoading
+      body: contextVM.isLoading
           ? Center(
               child: CircularProgressIndicator(
                 color: customColors.dropDownLineColor,
               ),
             )
-          : contextState.error != null
+          : contextVM.error != null
               ? Center(
                   child: Text(
-                    'Error: ${contextState.error}',
+                    'Error: ${contextVM.error}',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.red,
                     ),
@@ -86,9 +87,9 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
                   children: [
                     ListView.builder(
                       padding: const EdgeInsets.all(16),
-                      itemCount: contextState.allContexts.length,
+                      itemCount: contextVM.allContexts.length,
                       itemBuilder: (context, index) {
-                        final contextItem = contextState.allContexts[index];
+                        final contextItem = contextVM.allContexts[index];
                         return ContextItemWidget(
                           contextId: contextItem.id,
                           contextName: contextItem.name,
@@ -112,8 +113,11 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
                             ),
                           ),
                           onPressed: () {
-                            // Handle update action
-                            null;
+                            var contextVM =
+                                ref.read(contextVMProvider.notifier);
+                            var changeState = contextVM.contextChangeState;
+                            if (!changeState.hasDataChanged) null;
+                            contextVM.updateContextModels();
                           },
                           child: Text(
                             'Update',
