@@ -270,13 +270,3 @@ class _ContextItemWidgetState extends ConsumerState<ContextItemWidget>
     );
   }
 }
-
-@Preview(name: 'Context Screen Item')
-Widget previewContextItem() {
-  return const ContextItemWidget(
-    contextId: '1',
-    contextName: 'Sample Context',
-    contextDescription:
-        'This is a sample context description to demonstrate the expanded view of the context item widget.',
-  );
-}

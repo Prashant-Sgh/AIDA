@@ -23,6 +23,7 @@ class ChatScreen extends ConsumerStatefulWidget {
 
 class _ChatScreen extends ConsumerState<ChatScreen> {
   final MessageManager _messageManager = MessageManager(MessageRepository());
+  bool _isExiting = false;
 
   @override
   void initState() {
@@ -35,7 +36,6 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
     // final bottomInset = 10.0;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final textColor = Theme.of(context).colorScheme.onSurface;
-    bool _isExiting = false;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -45,63 +45,45 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
       body: SafeArea(
         child: WillPopScope(
           onWillPop: () async {
-            if (_isExiting) {
-              return false; // Deny the pop to happen, since it is already in the process of exiting.
-            } else {
-              // Display an alert dialog to confirm exit
-              await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text(
-                      'Confirm Exit',
+            if (_isExiting) return false;
+
+            // showDialog returns a value. Capture it in 'shouldPop'
+            final shouldPop = await showDialog<bool>(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Confirm Exit',
                       style: GoogleFonts.baloo2(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textColor),
+                          color: textColor)),
+                  content: Text('Are you sure you want to exit the chat?',
+                      style: GoogleFonts.quicksand(
+                          fontSize: 14, color: textColor)),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('Cancel'),
+                      onPressed: () =>
+                          Navigator.of(context).pop(false), // Return FALSE
                     ),
-                    content: Text(
-                      'Are you sure you want to exit the chat?',
-                      style:
-                          GoogleFonts.quicksand(fontSize: 14, color: textColor),
+                    TextButton(
+                      child: Text('Exit', style: TextStyle(color: Colors.red)),
+                      onPressed: () =>
+                          Navigator.of(context).pop(true), // Return TRUE
                     ),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text(
-                          'Cancel',
-                          style: GoogleFonts.quicksand(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop(false); // Close the dialog
-                        },
-                      ),
-                      TextButton(
-                        child: Text(
-                          'Exit',
-                          style: GoogleFonts.quicksand(
-                            color: Colors.red,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isExiting =
-                                true; // Set the flag to true to indicate that the user is trying to exit
-                          });
-                          exit(0); // Exit the app immediately
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
+                  ],
+                );
+              },
+            );
+
+            // If the user picked 'Exit', kill the app process
+            if (shouldPop == true) {
+              setState(() => _isExiting = true);
+              exit(0);
             }
-            // Handle back button press if needed
-            return false; // Allow the pop to happen
+
+            // ALWAYS return false here to prevent the automatic pop
+            return false;
           },
           child: Column(
             children: [
