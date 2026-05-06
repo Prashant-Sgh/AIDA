@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "892272057115",
+    "project_id": "aida-chatbot-1bcb4",
+    "storage_bucket": "aida-chatbot-1bcb4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:892272057115:android:cba78aba9112941d9dd1be",
+        "android_client_info": {
+          "package_name": "com.example.aida"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwc7yCVhf9i1SP6NPOalb2ne6IEIpTrlM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
