@@ -91,7 +91,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
                       itemBuilder: (context, index) {
                         final contextItem = contextVM.allContexts[index];
                         return ContextItemWidget(
-                          contextId: contextItem.id,
+                          contextId: contextItem.id ?? 'tempContextId',
                           contextName: contextItem.name,
                           contextDescription: contextItem.content,
                         );

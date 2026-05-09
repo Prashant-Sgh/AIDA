@@ -1,33 +1,146 @@
+import 'dart:convert';
+
 import 'package:aida/features/context/domain_layer/context_model.dart';
+import 'package:http/http.dart' as http;
+
+enum ResponseState { notInitiated, loading, success, error }
 
 class FirestoreServices {
-  
-  Future<List<ContextModel>> getContexts() async {
-
-
-
-    return [
-      ContextModel(
-          id: '1',
-          name: 'Context 1',
-          content:
-              'Hey, what kind of app Reloaded 1 of 1149 libraries in 4,160ms (compile: 547 ms, reload: 1314 ms, reassemble: 1754 ms). Reloaded 1 of 1149 libraries in 4,160ms (compile: 547 ms, reload: 1314 ms, reassemble: 1754 ms).'),
-      ContextModel(
-          id: '2', name: 'Context 2', content: 'Hey, what kind of app'),
-      ContextModel(
-          id: '3', name: 'Context 3', content: 'Hey, what kind of app'),
-      ContextModel(
-          id: '4', name: 'Context 4', content: 'Hey, what kind of app'),
-    ];
+  ResponseState _responseState = ResponseState.notInitiated;
+  void getResponseState() => _responseState;
+  void updateResponseState(ResponseState newState) {
+    _responseState = newState;
   }
 
-  // Update context in Firestore
-  Future<void> updateContext({
-    required ContextModel context,
-  }) async {
-    // TODO - Implement Firestore update logic here
-    await Future.delayed(Duration(seconds: 1)); // Simulate network delay
-    print(
-        'Context with ID ${context.id} updated in Firestore with new data: ${context.toString()}');
+  final String _baseUrl = 'localhost:3000';
+  final headers = {'Content-Type': 'application/json'};
+
+  Future<ResponseState> createContext(
+      {required ContextModel newContext}) async {
+    ResponseState _responseState = ResponseState.notInitiated;
+
+    final uri = Uri.parse('http://$_baseUrl/crud/create');
+    final id = DateTime.now().millisecondsSinceEpoch.toString();
+    newContext = newContext.copyWith(id: id);
+    final body = jsonEncode(newContext.toJson());
+
+    try {
+      updateResponseState(ResponseState.loading);
+      final response = await http.post(uri, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        updateResponseState(ResponseState.success);
+      } else {
+        updateResponseState(ResponseState.error);
+      }
+    } catch (e) {
+      print('FIRESTORE - ' + e.toString());
+      updateResponseState(ResponseState.error);
+    }
+
+    return _responseState;
+  }
+
+  // Read by ID
+  Future<ContextModel?> getContextById({required String id}) async {
+    final uri = Uri.http(
+      _baseUrl,
+      '/crud/readById',
+      {'id': id},
+    );
+
+    try {
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        final ContextModel context = ContextModel.fromJson(data);
+        return context;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      return null;
+    }
+  }
+
+  // Read
+  Future<List<ContextModel>?> getContexts() async {
+    final uri = Uri.http(
+      _baseUrl,
+      '/crud/read',
+    );
+
+    try {
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        List<ContextModel> contexts = [];
+
+        for (var d in data) {
+          final ContextModel context = ContextModel.fromJson(d);
+          contexts.add(context);
+        }
+        return contexts;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      return null;
+    }
+  }
+
+// Update
+  Future<ResponseState> updateContext({required ContextModel context}) async {
+    ResponseState _responseState = ResponseState.notInitiated;
+
+    final uri = Uri.parse('http://$_baseUrl/crud/update');
+    final body = jsonEncode(context.toJson());
+
+    try {
+      updateResponseState(ResponseState.loading);
+      final response = await http.put(uri, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        updateResponseState(ResponseState.success);
+      } else {
+        updateResponseState(ResponseState.error);
+      }
+    } catch (e) {
+      print('FIRESTORE - ERROR: $e');
+      updateResponseState(ResponseState.error);
+    }
+
+    return _responseState;
+  }
+
+  // Delete context by id
+  Future<ResponseState> deleteById({required String id}) async {
+    ResponseState _responseState = ResponseState.notInitiated;
+
+    final url = Uri.http(
+      _baseUrl,
+      '/crud/deleteById',
+      {'id': id},
+    );
+
+    try {
+      updateResponseState(ResponseState.loading);
+      final response = await http.delete(url);
+
+      if (response.statusCode == 200) {
+        updateResponseState(ResponseState.success);
+      } else {
+        updateResponseState(ResponseState.error);
+      }
+    } catch (e) {
+      print('FIRESTORE - ERROR: $e');
+      updateResponseState(ResponseState.error);
+    }
+
+    return _responseState;
   }
 }

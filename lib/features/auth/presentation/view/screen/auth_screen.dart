@@ -106,7 +106,8 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                 ),
                 child: AuthenticateButtonWidget(
                   onPressed: () {
-                    viewModel.authenticate();
+                    // viewModel.authenticate();
+                    context.go('/otp');
                   },
                   enable: state.isEmailValid && state.password.isNotEmpty,
                 ),
