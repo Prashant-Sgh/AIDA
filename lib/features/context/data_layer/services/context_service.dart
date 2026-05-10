@@ -1,20 +1,26 @@
 import 'dart:convert';
 
+import 'package:aida/core/enums/response_state.dart';
 import 'package:aida/features/context/domain_layer/context_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
-enum ResponseState { notInitiated, loading, success, error }
+final contextServiceProvider = Provider(
+  (ref) => ContextServices(),
+);
 
-class FirestoreServices {
+class ContextServices {
   ResponseState _responseState = ResponseState.notInitiated;
   void getResponseState() => _responseState;
   void updateResponseState(ResponseState newState) {
     _responseState = newState;
   }
 
-  final String _baseUrl = 'localhost:3000';
-  final headers = {'Content-Type': 'application/json'};
+  // final String _baseUrl = 'localhost:3000';
+  final String _baseUrl = 'aida-backend-three.vercel.app';
+  final headers = {'Content-Type': 'application/json', 'x-vercel-protection-bypass': 'EVdAY3uz4Y2FsMNKsNMVLudVBt9yXzPh'};
 
+  // Create
   Future<ResponseState> createContext(
       {required ContextModel newContext}) async {
     ResponseState _responseState = ResponseState.notInitiated;
@@ -69,7 +75,7 @@ class FirestoreServices {
   Future<List<ContextModel>?> getContexts() async {
     final uri = Uri.http(
       _baseUrl,
-      '/crud/read',
+      '/crud/readAll',
     );
 
     try {
@@ -93,7 +99,7 @@ class FirestoreServices {
     }
   }
 
-// Update
+  // Update
   Future<ResponseState> updateContext({required ContextModel context}) async {
     ResponseState _responseState = ResponseState.notInitiated;
 

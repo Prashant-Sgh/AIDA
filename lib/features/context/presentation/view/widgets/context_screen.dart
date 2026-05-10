@@ -2,7 +2,7 @@ import 'package:aida/core/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_viewmodel.dart';
-import 'package:aida/features/context/presentation/view/context_item_widget.dart';
+import 'package:aida/features/context/presentation/view/widgets/context_item_widget.dart';
 import 'package:aida/core/theme/CustomColors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -50,11 +50,12 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(
-            Icons.menu,
+            Icons.replay_rounded,
             color: colorScheme.onSurface,
           ),
           onPressed: () {
             // Handle menu action
+            ref.read(contextVMProvider.notifier).loadContexts();
             null;
           },
         ),
@@ -78,6 +79,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
               ? Center(
                   child: Text(
                     'Error: ${contextVM.error}',
+                    textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.red,
                     ),

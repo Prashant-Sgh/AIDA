@@ -1,8 +1,9 @@
 import 'dart:core';
 
+import 'package:aida/features/context/data_layer/repositories/context_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:aida/features/context/data_layer/services/firestore_service.dart';
+import 'package:aida/features/context/data_layer/services/context_service.dart';
 import 'package:aida/features/context/domain_layer/context_model.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_change_state.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_state.dart';
@@ -13,20 +14,20 @@ final contextVMProvider = NotifierProvider<ContextViewModel, ContextState>(
 );
 
 class ContextViewModel extends Notifier<ContextState> {
-  late final FirestoreServices _service;
+  late final ContextRepository _repository;
 
-  // State tracking
+  @override
+  ContextState build() {
+    _repository = ref.read(contextRepositoryProvider);
+    return ContextState(); // initial state
+  }
+
+  
   ContextChangeState contextChangeState =
       ContextChangeState(hasDataChanged: false, isLoading: false, error: null);
 
   List<Map<String, ContextModel>> originalContextModels = [];
   List<Map<String, ContextModel>> latestContextModels = [];
-
-  @override
-  ContextState build() {
-    _service = FirestoreServices();
-    return ContextState(); // initial state
-  }
 
   // -----------------------------
   // Update Methods
@@ -46,18 +47,21 @@ class ContextViewModel extends Notifier<ContextState> {
         _hasDataChanged(originalContextModels, latestContextModels);
 
     if (!hasDataChangedResult.hasChanged) {
-      return ContextChangeState(hasDataChanged: false, isLoading: false, error: null);
+      return ContextChangeState(
+          hasDataChanged: false, isLoading: false, error: null);
     }
 
-    contextChangeState = contextChangeState.copyWith(isLoading: true, error: null);
+    contextChangeState =
+        contextChangeState.copyWith(isLoading: true, error: null);
 
     try {
       for (var modifiedContext in hasDataChangedResult.newContextModels) {
         final contextData = modifiedContext.values.first;
-        await _service.updateContext(context: contextData);
+        await _repository.updateContext(newContextModel: contextData);
       }
 
-      contextChangeState = contextChangeState.copyWith(isLoading: false, error: null);
+      contextChangeState =
+          contextChangeState.copyWith(isLoading: false, error: null);
       return contextChangeState;
     } catch (e) {
       contextChangeState = contextChangeState.copyWith(
@@ -76,10 +80,11 @@ class ContextViewModel extends Notifier<ContextState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      final data = await _service.getContexts();
+      final data = await _repository.getContexts();
       state = state.copyWith(allContexts: data, isLoading: false);
 
-      originalContextModels = data.map((context) => {context.id: context}).toList();
+      originalContextModels =
+          data.map((context) => {context.id: context}).toList();
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
@@ -123,4 +128,3 @@ HasDataChangedResult _hasDataChanged(
     newContextModels: newContextModels,
   );
 }
-

@@ -1,13 +1,13 @@
 import 'package:aida/features/auth/presentation/view/screen/auth_screen.dart';
 import 'package:aida/features/chat/presentation/screen/ChatScreen.dart';
-import 'package:aida/features/context/presentation/view/context_screen.dart';
+import 'package:aida/features/context/presentation/view/widgets/context_screen.dart';
 import 'package:aida/features/otp/presentation/view/screen/otp_screen.dart';
 import 'package:aida/features/splash/presentation/screen/Splash.dart';
 import 'package:aida/features/welcome/presentation/screen/Welcome.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/authentication',
+  initialLocation: '/context',
   routes: [
     GoRoute(
       path: '/splash', // With parameters
