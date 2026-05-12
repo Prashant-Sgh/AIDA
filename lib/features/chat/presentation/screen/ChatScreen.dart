@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:aida/core/enums/response_state.dart';
 import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/features/chat/data/repository/messageManager.dart';
 import 'package:aida/features/chat/data/repository/messageRepository.dart';
@@ -9,6 +10,8 @@ import 'package:aida/features/chat/presentation/widget/ChatScrAppBar.dart';
 import 'package:aida/features/chat/presentation/widget/Conversations.dart';
 import 'package:aida/features/chat/presentation/widget/processingAnimation.dart';
 import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
+import 'package:aida/shared/functionalities/showConfirmationDialog.dart';
+import 'package:aida/shared/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,12 +25,13 @@ class ChatScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatScreen extends ConsumerState<ChatScreen> {
-  final MessageManager _messageManager = MessageManager(MessageRepository());
+  late final MessageManager _messageManager;
   bool _isExiting = false;
 
   @override
   void initState() {
     super.initState();
+    _messageManager = ref.watch(messageManagerProvider);
     _messageManager.loadConversations();
   }
 
@@ -127,139 +131,7 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
           ),
         ),
       ),
-      drawer: Drawer(
-        backgroundColor:
-            Theme.of(context).extension<CustomColors>()!.lightCardColor,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            // Drawer header (optional)
-            Padding(
-              padding: const EdgeInsets.only(
-                  top: 16.0, bottom: 8.0, left: 16.0, right: 16.0),
-              child: Text(
-                'AIDA',
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 22,
-                  fontFamily: 'Baloo2Bold',
-                ),
-              ),
-            ),
-            // Drawer items
-            ListTile(
-              // leading: Icon(Icons.open_in_new_rounded, color: textColor),
-              title: Text(
-                'Works',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontFamily: 'QuicksandMedium',
-                ),
-              ),
-              onTap: () {
-                // Handle tap on the Home item
-              },
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-              child: BaseLine(
-                width: 1,
-                dividerHeight: 0.5,
-                colour: textColor.withOpacity(0.2),
-              ),
-            ),
-            // Drawer items
-            ListTile(
-              // leading: Icon(Icons.open_in_new_rounded, color: textColor),
-              title: Text(
-                'Guide me',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontFamily: 'QuicksandMedium',
-                ),
-              ),
-              onTap: () {
-                if (mounted) context.go('/welcome');
-              },
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-              child: BaseLine(
-                width: 1,
-                dividerHeight: 0.5,
-                colour: textColor.withOpacity(0.2),
-              ),
-            ),
-            ListTile(
-              // leading: Icon(Icons.delete, color: Colors.red),
-              title: Text(
-                'Clear Chat',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 15,
-                  fontFamily: 'QuicksandMedium',
-                ),
-              ),
-              onTap: () {
-                _showConfirmationDialog(
-                  context,
-                  () async {
-                    await _messageManager.clearChat();
-                  },
-                );
-              },
-            ),
-            // Add more items as needed
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showConfirmationDialog(
-      BuildContext context, void Function() onPressed) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          // title: Text(
-          //   'Confirm',
-          //   textAlign: TextAlign.center,
-          //   style: TextStyle(fontFamily: 'Baloo2SemiBold'),
-          // ),
-          content: Text(
-            'Are you sure you want to clear the chats?',
-            style: TextStyle(
-                fontFamily: 'QuicksandRegular',
-                color: Theme.of(context).colorScheme.onSurface),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(
-                'Cancel',
-                style: TextStyle(fontFamily: 'QuicksandMedium'),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text(
-                'Clear',
-                style:
-                    TextStyle(color: Colors.red, fontFamily: 'QuicksandMedium'),
-              ),
-              onPressed: () {
-                // Perform the action to clear the chats
-                onPressed();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+      drawer: AppDrawer(isMounted: mounted, onClearChat: _messageManager.clearChat,),
     );
   }
 }

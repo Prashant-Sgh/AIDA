@@ -1,4 +1,6 @@
 import 'package:aida/core/theme/theme_provider.dart';
+import 'package:aida/features/chat/data/repository/messageManager.dart';
+import 'package:aida/shared/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_viewmodel.dart';
@@ -31,6 +33,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
     final colorScheme = theme.colorScheme;
     final customColors = theme.extension<CustomColors>()!;
     final backgroundColor = customColors.contextScrBackground;
+    final _messageManager = ref.watch(messageManagerProvider);
 
     final contextVM = ref.watch(contextVMProvider);
 
@@ -143,6 +146,10 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
           Icons.add,
           color: textColor,
         ),
+      ),
+      drawer: AppDrawer(
+        isMounted: mounted,
+        onClearChat: _messageManager.clearChat,
       ),
     );
   }

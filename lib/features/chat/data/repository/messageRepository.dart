@@ -1,10 +1,14 @@
 import 'dart:convert';
 // import 'package:aida/features/chat/data/model/message.dart';
+import 'package:aida/core/enums/response_state.dart';
 import 'package:aida/features/chat/data/model/Conversation.dart';
 import 'package:aida/features/chat/data/repository/LocalDbManager.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
-enum ResponseState { notInitiated, loading, success, error }
+final messageRepositoryProvider = Provider<MessageRepository>(
+  (ref) => MessageRepository(),
+);
 
 class MessageRepository {
   final String _baseUrl =
