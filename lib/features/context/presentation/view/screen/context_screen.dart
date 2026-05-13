@@ -51,22 +51,11 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
         centerTitle: false,
         backgroundColor: colorScheme.background,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.replay_rounded,
-            color: colorScheme.onSurface,
-          ),
-          onPressed: () {
-            // Handle menu action
-            ref.read(contextVMProvider.notifier).loadContexts();
-            null;
-          },
-        ),
         actions: [
           IconButton(
-            onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
+            onPressed: () => ref.read(contextVMProvider.notifier).loadContexts(),
             icon: Icon(
-              isDarkMode ? Icons.light_mode : Icons.light_mode_outlined,
+              Icons.replay_rounded,
               color: colorScheme.onSurface,
             ),
           ),
@@ -148,7 +137,6 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
         ),
       ),
       drawer: AppDrawer(
-        isMounted: mounted,
         onClearChat: _messageManager.clearChat,
       ),
     );

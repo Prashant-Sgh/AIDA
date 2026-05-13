@@ -11,7 +11,7 @@ class HintBubble extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-         /// Tail
+        /// Tail
         Positioned(
           bottom: -12.5,
           left: -2,
@@ -26,30 +26,29 @@ class HintBubble extends StatelessWidget {
 
         /// Bubble
         ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: 184,
-          )
-          ,
-          child: Container(
-          // margin: const EdgeInsets.only(left: 14),
-          padding: const EdgeInsets.fromLTRB(14, 5, 14, 5),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            text,
-            softWrap: true,
-            style: GoogleFonts.quicksand(
-              color: Theme.of(context).colorScheme.surface,
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-              height: 1.54,
-              letterSpacing: 0.39,
+            constraints: const BoxConstraints(
+              maxWidth: 154,
             ),
-          ),
-        )),
-
+            child: Container(
+              // margin: const EdgeInsets.only(left: 14),
+              padding: const EdgeInsets.fromLTRB(14, 5, 14, 5),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                text,
+                textAlign: TextAlign.left,
+                softWrap: true,
+                style: GoogleFonts.quicksand(
+                  color: Theme.of(context).colorScheme.surface,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w400,
+                  height: 1.54,
+                  letterSpacing: 0.39,
+                ),
+              ),
+            )),
       ],
     );
   }

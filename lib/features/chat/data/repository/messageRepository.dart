@@ -12,7 +12,7 @@ final messageRepositoryProvider = Provider<MessageRepository>(
 
 class MessageRepository {
   final String _baseUrl =
-      'https://aida-backend-4077kwn3m-prashant-knows-projects.vercel.app';
+      'https://aida-backend-three.vercel.app';
 
   ResponseState _responseState = ResponseState.notInitiated;
 
@@ -25,7 +25,7 @@ class MessageRepository {
   void getResponseState() => _responseState;
 
   Future<String?> sendMessage(String message) async {
-    final url = Uri.parse('$_baseUrl/send-message');
+    final url = Uri.parse('$_baseUrl/ai/send-message');
     final body = jsonEncode({'latestUserMessage': message});
     final headers = {
       'Content-Type': 'application/json',

@@ -1,98 +1,241 @@
 import 'package:aida/core/theme/CustomColors.dart';
+import 'package:aida/core/theme/theme_provider.dart';
 import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/widget_previews.dart';
 
-class AppDrawer extends StatelessWidget {
+class AppDrawer extends ConsumerWidget {
   final Future<void> Function() onClearChat;
-  final bool isMounted;
 
-  const AppDrawer({required this.onClearChat, required this.isMounted, super.key});
+  const AppDrawer({
+    super.key,
+    required this.onClearChat,
+  });
+
   @override
-  Widget build(BuildContext context) {
-    final textColor = Theme.of(context).colorScheme.onSurface;
+  Widget build(BuildContext context, WidgetRef ref) {
+    /// Theme
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final customColors = theme.extension<CustomColors>();
+
+    /// Colors
+    final backgroundColor = customColors?.lightCardColor ?? colorScheme.surface;
+
+    final lineColor = colorScheme.onSurface.withOpacity(0.08);
+
+    final textColor = colorScheme.onSurface;
+
+    final secondaryTextColor = colorScheme.onSurface.withOpacity(0.65);
+
+    final dangerColor = Colors.redAccent;
+
+    /// Theme state
+
+    final isDarkMode = theme.brightness == Brightness.dark;
 
     return Drawer(
-      backgroundColor:
-          Theme.of(context).extension<CustomColors>()!.lightCardColor,
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          // Drawer header (optional)
-          Padding(
-            padding: const EdgeInsets.only(
-                top: 16.0, bottom: 8.0, left: 16.0, right: 16.0),
-            child: Text(
-              'AIDA',
-              style: TextStyle(
-                color: textColor,
-                fontSize: 22,
-                fontFamily: 'Baloo2Bold',
-              ),
-            ),
+      backgroundColor: backgroundColor,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 18,
+            vertical: 8,
           ),
-          // Drawer items
-          ListTile(
-            // leading: Icon(Icons.open_in_new_rounded, color: textColor),
-            title: Text(
-              'Works',
-              style: TextStyle(
-                fontSize: 15,
-                fontFamily: 'QuicksandMedium',
-              ),
-            ),
-            onTap: () {
-              // Handle tap on the Home item
-            },
-          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Header
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 12,
+                  bottom: 24,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'AIDA',
+                        style: GoogleFonts.baloo2(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                          color: textColor,
+                        ),
+                      ),
+                    ),
 
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-            child: BaseLine(
-              width: 1,
-              dividerHeight: 0.5,
-              colour: textColor.withOpacity(0.2),
-            ),
-          ),
-          // Drawer items
-          ListTile(
-            // leading: Icon(Icons.open_in_new_rounded, color: textColor),
-            title: Text(
-              'Guide me',
-              style: TextStyle(
-                fontSize: 15,
-                fontFamily: 'QuicksandMedium',
+                    /// Theme Toggle
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: lineColor,
+                        ),
+                      ),
+                      child: IconButton(
+                        splashRadius: 22,
+                        onPressed: () {
+                          ref.read(themeModeProvider.notifier).toggleTheme();
+                        },
+                        icon: AnimatedSwitcher(
+                          duration: const Duration(
+                            milliseconds: 250,
+                          ),
+                          child: Icon(
+                            isDarkMode
+                                ? Icons.light_mode
+                                : Icons.light_mode_outlined,
+                            key: ValueKey(isDarkMode),
+                            color: textColor,
+                            size: 22,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            onTap: () {
-              if (isMounted) context.go('/welcome');
-            },
-          ),
 
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-            child: BaseLine(
-              width: 1,
-              dividerHeight: 0.5,
-              colour: textColor.withOpacity(0.2),
-            ),
-          ),
-          ListTile(
-            // leading: Icon(Icons.delete, color: Colors.red),
-            title: Text(
-              'Clear Chat',
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 15,
-                fontFamily: 'QuicksandMedium',
+              _DrawerTile(
+                title: 'Admin controll',
+                icon: Icons.shield_outlined,
+                textColor: textColor,
+                onTap: () {
+                  context.push('/authentication');
+                },
               ),
-            ),
-            onTap: () async{
-              onClearChat();
-            },
+
+              _DrawerDivider(
+                lineColor: lineColor,
+              ),
+
+              _DrawerTile(
+                title: 'Works',
+                icon: Icons.work_outline_rounded,
+                textColor: textColor,
+                onTap: () {},
+              ),
+
+              _DrawerDivider(
+                lineColor: lineColor,
+              ),
+
+              _DrawerTile(
+                title: 'Guide me',
+                icon: Icons.auto_awesome_rounded,
+                textColor: textColor,
+                onTap: () {
+                  context.go('/welcome');
+                },
+              ),
+
+              _DrawerDivider(
+                lineColor: lineColor,
+              ),
+
+              _DrawerTile(
+                title: 'Clear Chat',
+                icon: Icons.delete_outline_rounded,
+                textColor: dangerColor,
+                onTap: () async {
+                  await onClearChat();
+                },
+              ),
+
+              const Spacer(),
+
+              /// Footer
+              Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 10,
+                ),
+                child: Text(
+                  'Built with intention.',
+                  style: GoogleFonts.quicksand(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: secondaryTextColor,
+                  ),
+                ),
+              ),
+            ],
           ),
-          // Add more items as needed
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DrawerTile extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color textColor;
+  final VoidCallback onTap;
+
+  const _DrawerTile({
+    required this.title,
+    required this.icon,
+    required this.textColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 8,
+            vertical: 14,
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 20,
+                color: textColor.withOpacity(0.9),
+              ),
+              const SizedBox(width: 14),
+              Text(
+                title,
+                style: GoogleFonts.quicksand(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: textColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DrawerDivider extends StatelessWidget {
+  final Color lineColor;
+
+  const _DrawerDivider({
+    required this.lineColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 2,
+      ),
+      child: BaseLine(
+        width: 1,
+        dividerHeight: 0.4,
+        colour: lineColor,
       ),
     );
   }

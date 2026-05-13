@@ -1,3 +1,4 @@
+import 'package:aida/core/theme/theme_provider.dart';
 import 'package:aida/features/welcome/presentation/screen/Welcome.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
@@ -39,14 +40,9 @@ class _TapHintWidgetState extends ConsumerState<TapGuideWidget>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
 
-    /// Example:
-    /// final themeMode = ref.watch(themeProvider);
-
-    final bool isDarkMode = true;
-    // theme.brightness == Brightness.dark;
-
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
     final backgroundColor = isDarkMode
         ? Colors.white.withOpacity(0.12)
         : Colors.black.withOpacity(0.08);
@@ -64,7 +60,7 @@ class _TapHintWidgetState extends ConsumerState<TapGuideWidget>
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
-          final scale = 1 + (_controller.value * 0.08);
+          final scale = 1 + (_controller.value * 0.20);
 
           return Transform.scale(
             scale: scale,
@@ -105,31 +101,4 @@ class _TapHintWidgetState extends ConsumerState<TapGuideWidget>
       ),
     );
   }
-}
-
-// @Preview()
-// Widget previewTapGuideWidget() => previewThis();
-
-// Widget previewThis() {
-//   bool hasUserTappedGuide = false;
-//   return Stack(
-//     children: [
-//       if (!hasUserTappedGuide)
-//         Positioned(
-//           right: 20,
-//           bottom: 24,
-//           child: TapGuideWidget(
-//             onTap: () => hasUserTappedGuide = true,
-//           ),
-//         ),
-//     ],
-//   );
-// }
-
-@Preview()
-Widget previewTapGuideWidget() => previewThis();
-
-Widget previewThis() {
-  bool hasUserTappedGuide = false;
-  return Welcome();
 }

@@ -11,8 +11,7 @@ class ChatScrAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
-    // final toggleTheme = ref.read(themeModeProvider.notifier).toggleTheme();
+    final theme = Theme.of(context);
     return AppBar(
       foregroundColor: Theme.of(context).colorScheme.onSurface,
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -32,9 +31,9 @@ class ChatScrAppBar extends ConsumerWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           onPressed: () => ref.read(themeModeProvider.notifier).toggleTheme(),
-          icon: Icon(themeMode == ThemeMode.light
-              ? Icons.light_mode
-              : Icons.light_mode_outlined),
+          icon: Icon(theme.brightness == Brightness.dark
+              ? Icons.light_mode_outlined
+              : Icons.light_mode),
         )
       ],
     );

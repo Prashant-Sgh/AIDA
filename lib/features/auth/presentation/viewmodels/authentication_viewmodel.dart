@@ -40,7 +40,7 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     return emailRegex.hasMatch(email);
   }
 
-  Future<void> authenticate() async {
+  Future<void> login() async {
     // Perform authentication logic here
     // You can use the email and password variables for authentication
     // Update the authentication status in the state

@@ -3,6 +3,7 @@ import 'package:aida/features/welcome/model/AnimationController.dart';
 import 'package:aida/features/welcome/presentation/widgets/IntroductionText.dart';
 import 'package:aida/features/welcome/presentation/widgets/TapAnimation.dart';
 import 'package:aida/features/welcome/presentation/widgets/TopRevealHeader.dart';
+import 'package:aida/features/welcome/presentation/widgets/tap_guide_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,13 +18,15 @@ class Welcome extends ConsumerStatefulWidget {
 
 class _WelcomeState extends ConsumerState<Welcome>
     with SingleTickerProviderStateMixin {
-  late MascotAnimationController animationController;
+  late final MascotAnimationController animationController;
+  bool isFirstTap = true;
 
   @override
   void initState() {
     super.initState();
+    animationController =
+        MascotAnimationController(this, onAnimationEnd: transitionToChatScr);
     animationController.init();
-    animationController = MascotAnimationController(this, onAnimationEnd: transitionToWelcomScr);
   }
 
   @override
@@ -33,38 +36,19 @@ class _WelcomeState extends ConsumerState<Welcome>
     super.dispose();
   }
 
-  void transitionToWelcomScr() {
-    context.push('/welcome');
+  void transitionToChatScr() {
+    context.push('/chat');
   }
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = ref.watch(themeModeProvider);
-    final changeTheme = ref.read(themeModeProvider.notifier).toggleTheme();
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return provider.ChangeNotifierProvider.value(
       value: animationController,
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: animationController.onTap,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          child: Icon(
-            Icons.play_arrow,
-            color: Theme.of(context).colorScheme.surface,
-            size: 30,
-          ),
-        ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: Stack(
           children: [
-            // Positioned(
-            //   top: 0,
-            //   left: 0,
-            //   right: 0,
-            //   bottom: 0,
-            //   child: TopRevealHeader(
-            //     child: Text("Settingss page"),
-            //   ),
-            // ),
             Positioned(
               top: 30,
               left: 0,
@@ -73,9 +57,7 @@ class _WelcomeState extends ConsumerState<Welcome>
                 onPressed: () =>
                     ref.read(themeModeProvider.notifier).toggleTheme(),
                 icon: Icon(
-                  themeMode == ThemeMode.dark
-                      ? Icons.light_mode
-                      : Icons.light_mode_outlined,
+                  isDarkMode ? Icons.light_mode : Icons.light_mode_outlined,
                   size: 22,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -95,6 +77,35 @@ class _WelcomeState extends ConsumerState<Welcome>
               bottom: 0,
               child: Expanded(child: TapAnimation()),
             ),
+
+            // Tap_ gesture guide
+
+            if (!isFirstTap) Positioned(
+              right: 0,
+              left: 0,
+              top: 300,
+              bottom: 0,
+              child: GestureDetector(
+                onTap: () => animationController.onTap(),
+                child: Container(
+                  color: Colors.transparent,
+                ),
+              ),
+            ),
+
+            if (isFirstTap)
+              Positioned(
+                right: 40,
+                bottom: 80,
+                child: TapGuideWidget(
+                  onTap: () {
+                    animationController.onTap();
+                    setState(() {
+                      isFirstTap = false;
+                    });
+                  },
+                ),
+              ),
           ],
         ),
       ),

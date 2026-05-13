@@ -31,22 +31,24 @@ class _TapAnimationState extends State<TapAnimation> {
         children: [
           Positioned(
             left: 36,
-            bottom: 78,
+            bottom: 18,
             child: SlideTransition(
               position: animationController.slideAnimation,
-              child: Image.asset(
-                animationController
-                            .elements[animationController.animatedElementIndex]
-                        ['image'] ??
-                    'assets/mascots/Thinking-mode-headshot.png',
-                fit: BoxFit.contain,
+              child: SizedBox(
+                height: 150,
+                child: Image.asset(
+                  animationController.elements[
+                          animationController.animatedElementIndex]['image'] ??
+                      'assets/mascots/Thinking-mode-headshot.png',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ),
           Positioned(
             // top: 0,
-            left: 198,
-            bottom: 240,
+            left: 168,
+            bottom: 160,
             child: AnimatedOpacity(
               opacity: animationController.showBubble ? 1.0 : 0.0,
               // opacity: 1.0,

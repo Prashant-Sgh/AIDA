@@ -18,6 +18,8 @@ class AuthenticationScreen extends ConsumerStatefulWidget {
 class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
   final emailFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
+  
+  void onAuthenticate() => ref.read(authenticationViewModelProvider.notifier).login();
 
   @override
   void initState() {
@@ -107,7 +109,7 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                 child: AuthenticateButtonWidget(
                   onPressed: () {
                     // viewModel.authenticate();
-                    context.go('/otp');
+                    onAuthenticate();
                   },
                   enable: state.isEmailValid && state.password.isNotEmpty,
                 ),

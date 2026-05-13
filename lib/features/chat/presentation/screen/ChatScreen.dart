@@ -31,8 +31,8 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    _messageManager = ref.read(messageManagerProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _messageManager = ref.watch(messageManagerProvider);
       _messageManager.loadConversations();
     });
   }
@@ -58,24 +58,47 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('Confirm Exit',
-                      style: GoogleFonts.baloo2(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: textColor)),
-                  content: Text('Are you sure you want to exit the chat?',
-                      style: GoogleFonts.quicksand(
-                          fontSize: 14, color: textColor)),
-                  actions: <Widget>[
+                  backgroundColor: Theme.of(context).colorScheme.background,
+                  title: Text(
+                    'Leaving so soon?',
+                    style: GoogleFonts.baloo2(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: textColor,
+                    ),
+                  ),
+                  content: Text(
+                    'Your chat will be right here when you come back.',
+                    style: GoogleFonts.quicksand(
+                      fontSize: 14,
+                      color: textColor.withOpacity(0.8),
+                      height: 1.5,
+                    ),
+                  ),
+                  actions: [
                     TextButton(
-                      child: Text('Cancel'),
-                      onPressed: () =>
-                          Navigator.of(context).pop(false), // Return FALSE
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      child: Text(
+                        'Stay',
+                        style: GoogleFonts.quicksand(
+                          fontWeight: FontWeight.w700,
+                          color: textColor,
+                        ),
+                      ),
                     ),
                     TextButton(
-                      child: Text('Exit', style: TextStyle(color: Colors.red)),
-                      onPressed: () =>
-                          Navigator.of(context).pop(true), // Return TRUE
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                      child: Text(
+                        'Exit',
+                        style: GoogleFonts.quicksand(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.redAccent,
+                        ),
+                      ),
                     ),
                   ],
                 );
@@ -134,7 +157,6 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
         ),
       ),
       drawer: AppDrawer(
-        isMounted: mounted,
         onClearChat: _messageManager.clearChat,
       ),
     );
