@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TapAnimation extends StatefulWidget {
-
   const TapAnimation({
     Key? key,
   }) : super(key: key);
@@ -13,15 +12,10 @@ class TapAnimation extends StatefulWidget {
   _TapAnimationState createState() => _TapAnimationState();
 }
 
-class _TapAnimationState extends State<TapAnimation>
-
-{
-
-
+class _TapAnimationState extends State<TapAnimation> {
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
@@ -32,8 +26,8 @@ class _TapAnimationState extends State<TapAnimation>
   @override
   Widget build(BuildContext context) {
     return Consumer<MascotAnimationController>(
-      builder: (context, animationController, child) {
-        return Stack(
+        builder: (context, animationController, child) {
+      return Stack(
         children: [
           Positioned(
             left: 36,
@@ -41,8 +35,10 @@ class _TapAnimationState extends State<TapAnimation>
             child: SlideTransition(
               position: animationController.slideAnimation,
               child: Image.asset(
-                animationController.elements[animationController.animatedElementIndex]['image'] ??
-                  'assets/mascots/Thinking-mode-headshot.png',
+                animationController
+                            .elements[animationController.animatedElementIndex]
+                        ['image'] ??
+                    'assets/mascots/Thinking-mode-headshot.png',
                 fit: BoxFit.contain,
               ),
             ),
@@ -56,18 +52,21 @@ class _TapAnimationState extends State<TapAnimation>
               // opacity: 1.0,
               duration: const Duration(milliseconds: 300),
               child: AnimatedSlide(
-                offset: animationController.showBubble ? Offset.zero : const Offset(-1, 1),
+                offset: animationController.showBubble
+                    ? Offset.zero
+                    : const Offset(-1, 1),
                 // offset: Offset.zero,
                 duration: Duration(milliseconds: 400),
                 curve: Curves.easeOut,
                 child: HintBubble(
-                    text: animationController.elements[animationController.animatedElementIndex]['text'] ??
-                      "Something went wrong. Please debug."),
+                    text: animationController.elements[
+                            animationController.animatedElementIndex]['text'] ??
+                        "Something went wrong. Please debug."),
               ),
             ),
           ),
         ],
-      );}
-    );
+      );
+    });
   }
 }

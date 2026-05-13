@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 class MascotAnimationController extends ChangeNotifier {
   final TickerProvider vsync;
 
-  MascotAnimationController(this.vsync);
+  final Function onAnimationEnd; 
 
-  late AnimationController controller = AnimationController(
-    duration: const Duration(milliseconds: 500),
-    vsync: vsync,
-  );
+  MascotAnimationController(this.vsync, {required this.onAnimationEnd});
+
+  late final AnimationController controller;
 
   late Animation<Offset> slideAnimation = Tween<Offset>(
     begin: const Offset(-1.5, 0),
@@ -20,6 +19,14 @@ class MascotAnimationController extends ChangeNotifier {
 
   bool showBubble = false; // This will trigger rebuilds
   int animatedElementIndex = 0;
+
+  @override
+  void init() {
+    controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: vsync,
+    );
+  }
 
   @override
   void dispose() {
@@ -67,11 +74,15 @@ class MascotAnimationController extends ChangeNotifier {
 
   void handleAnimatedElementIndex() {
     if (animatedElementIndex < (elements.length - 1)) {
-      // animatedElementIndex = ++animatedElementIndex; // Move to the next element
       animatedElementIndex = (animatedElementIndex + 1) % elements.length;
       notifyListeners(); // Notify listeners to rebuild the UI
       animationIn();
     } else {
+      // Once all elements have been shown
+      // dispose the animation controller using dispose();
+      // dispose();
+      // transition to next screen. It could be chat screen
+      onAnimationEnd();
       animatedElementIndex = 0; // Reset to the first element after the last one
       notifyListeners(); // Notify listeners to rebuild the UI
     }

@@ -15,7 +15,7 @@ class IntroductionText extends StatelessWidget {
           'AIDA',
           style: GoogleFonts.baloo2(
             color: Theme.of(context).colorScheme.onSurface,
-            fontSize: 32,
+            fontSize: 28,
             fontWeight: FontWeight.w600,
             height: 0.63,
             letterSpacing: 0.96,
@@ -23,12 +23,13 @@ class IntroductionText extends StatelessWidget {
         ),
         SizedBox(height: 28),
         SizedBox(
-          width: 335,
+          width: 300,
           child: Text(
             'AIDA is an AI cross-platform app, build using Flutter. to act as an AI chat-bot for Atul’s portfolio, you can use AIDA to know about Atul’s experience, projects done by him so far. Or you can use it like a conversational AI but characterized.',
+            textAlign: TextAlign.center,
             style: GoogleFonts.quicksand(
               color: Theme.of(context).colorScheme.onSurface,
-              fontSize: 14,
+              fontSize: 11,
               fontWeight: FontWeight.w300,
               height: 1.43,
               letterSpacing: 0.56,
@@ -36,7 +37,9 @@ class IntroductionText extends StatelessWidget {
           ),
         ),
         SizedBox(height: 27.51),
-        BaseLine(width: 161.03,),
+        BaseLine(
+          width: 161.03,
+        ),
       ],
     );
   }

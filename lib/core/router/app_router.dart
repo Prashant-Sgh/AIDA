@@ -4,38 +4,98 @@ import 'package:aida/features/context/presentation/view/screen/context_screen.da
 import 'package:aida/features/otp/presentation/view/screen/otp_screen.dart';
 import 'package:aida/features/splash/presentation/screen/Splash.dart';
 import 'package:aida/features/welcome/presentation/screen/Welcome.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/context',
+  initialLocation: '/',
   routes: [
+    /// Splash
     GoRoute(
-      path: '/splash', // With parameters
+      path: '/splash',
       builder: (context, state) => const Splash(),
     ),
+
+    /// Welcome
     GoRoute(
       path: '/',
-      builder: (context, state) => const Welcome(), // Your home widget
+      builder: (context, state) => const Welcome(),
     ),
+
+    /// Authentication
     GoRoute(
-      path: '/welcome',
-      builder: (context, state) => const Welcome(), // Your welcome screen
+      path: '/authentication',
+      pageBuilder: (context, state) {
+        return _buildAnimatedPage(
+          state: state,
+          child: const AuthenticationScreen(),
+        );
+      },
     ),
+
+    /// OTP
     GoRoute(
-      path: '/chat', // With parameters
-      builder: (context, state) => const ChatScreen(),
+      path: '/otp',
+      pageBuilder: (context, state) {
+        return _buildAnimatedPage(
+          state: state,
+          child: const OtpVerificationScreen(),
+        );
+      },
     ),
-        GoRoute(
-      path: '/authentication', // With parameters
-      builder: (context, state) => AuthenticationScreen(),
-    ),
-      GoRoute(
-      path: '/otp', // With parameters
-      builder: (context, state) => OtpVerificationScreen(),
-    ),
+
+    /// Context Screen
     GoRoute(
       path: '/context',
-      builder: (context, state) => const ContextScreen(),
+      pageBuilder: (context, state) {
+        return _buildAnimatedPage(
+          state: state,
+          child: const ContextScreen(),
+        );
+      },
+    ),
+
+    /// Chat Screen
+    GoRoute(
+      path: '/chat',
+      pageBuilder: (context, state) {
+        return _buildAnimatedPage(
+          state: state,
+          child: const ChatScreen(),
+        );
+      },
     ),
   ],
 );
+
+/// Shared transition animation
+CustomTransitionPage _buildAnimatedPage({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage(
+    key: state.pageKey,
+    transitionDuration: const Duration(milliseconds: 450),
+    child: child,
+    transitionsBuilder:
+        (context, animation, secondaryAnimation, child) {
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+      );
+
+      final slideAnimation = Tween<Offset>(
+        begin: const Offset(0.06, 0),
+        end: Offset.zero,
+      ).animate(curvedAnimation);
+
+      return FadeTransition(
+        opacity: curvedAnimation,
+        child: SlideTransition(
+          position: slideAnimation,
+          child: child,
+        ),
+      );
+    },
+  );
+}

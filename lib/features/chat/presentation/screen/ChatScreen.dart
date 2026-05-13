@@ -31,8 +31,10 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    _messageManager = ref.watch(messageManagerProvider);
-    _messageManager.loadConversations();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _messageManager = ref.watch(messageManagerProvider);
+      _messageManager.loadConversations();
+    });
   }
 
   @override
@@ -131,7 +133,10 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
           ),
         ),
       ),
-      drawer: AppDrawer(isMounted: mounted, onClearChat: _messageManager.clearChat,),
+      drawer: AppDrawer(
+        isMounted: mounted,
+        onClearChat: _messageManager.clearChat,
+      ),
     );
   }
 }
