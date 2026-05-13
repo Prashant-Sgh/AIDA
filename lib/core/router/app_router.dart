@@ -77,8 +77,7 @@ CustomTransitionPage _buildAnimatedPage({
     key: state.pageKey,
     transitionDuration: const Duration(milliseconds: 450),
     child: child,
-    transitionsBuilder:
-        (context, animation, secondaryAnimation, child) {
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
       final curvedAnimation = CurvedAnimation(
         parent: animation,
         curve: Curves.easeOutCubic,

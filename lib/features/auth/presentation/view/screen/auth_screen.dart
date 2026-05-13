@@ -19,7 +19,8 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
   final emailFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
   
-  void onAuthenticate() => ref.read(authenticationViewModelProvider.notifier).login();
+  // void onAuthenticate() => ref.read(authenticationViewModelProvider.notifier).login();
+  void onAuthenticate() => context.push('/otp');
 
   @override
   void initState() {
