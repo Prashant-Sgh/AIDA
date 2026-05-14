@@ -1,4 +1,4 @@
-import 'package:aida/features/context/domain_layer/context_model.dart';
+import 'package:aida/features/context/data_layer/model/context_model.dart';
 
 class ContextState {
   final List<ContextModel> allContexts;

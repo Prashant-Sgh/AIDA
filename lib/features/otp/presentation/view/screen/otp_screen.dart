@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:aida/core/theme/theme_provider.dart';
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
@@ -44,6 +45,17 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     );
 
     _startTimer();
+
+    ref.listenManual<AuthenticationState>(authenticationViewModelProvider,
+        (previous, next) {
+      if (next.isOtpVerified) {
+        ref
+            .read(authenticationViewModelProvider.notifier)
+            .resetOtpVerificationStatus();
+        debugPrint("OTP VERIFIED SUCCESSFULLY navigating to context screen");
+        context.go('/context');
+      }
+    });
   }
 
   @override
@@ -107,6 +119,8 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
 
     debugPrint("OTP: $otp");
 
+    ref.read(authenticationViewModelProvider.notifier).verifyOtp(otp);
+
     /// TODO:
     /// verify otp
   }
@@ -125,6 +139,9 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     final email = ref.watch(authenticationViewModelProvider).email;
+    final state = ref.watch(authenticationViewModelProvider);
+    final loading = state.isLoading;
+    final isOtpVerified = state.isOtpVerified;
     final theme = Theme.of(context);
 
     final colorScheme = theme.colorScheme;
@@ -136,125 +153,132 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
       /// ===================================================
       /// BODY
       /// ===================================================
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: _horizontalPadding,
-          ),
-          child: Column(
-            children: [
-              /// ============================================
-              /// CONTENT
-              /// ============================================
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: _horizontalPadding,
+              ),
+              child: Column(
+                children: [
+                  /// ============================================
+                  /// CONTENT
+                  /// ============================================
 
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 24),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 24),
 
-                      /// BACK BUTTON
+                          /// BACK BUTTON
 
-                      IconButton(
-                        onPressed: () {
-                          context.pop();
-                        },
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        icon: Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          color: colorScheme.onSurface,
-                        ),
+                          IconButton(
+                            onPressed: () {
+                              context.pop();
+                            },
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            icon: Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+
+                          const SizedBox(height: 40),
+
+                          /// TITLE
+
+                          Text(
+                            "Verify OTP",
+                            style: GoogleFonts.baloo2(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          /// SUBTITLE
+
+                          Text(
+                            "We sent a 4-digit verification code to",
+                            style: GoogleFonts.quicksand(
+                              fontSize: 16,
+                              color: colorScheme.onSurface.withOpacity(0.7),
+                            ),
+                          ),
+
+                          const SizedBox(height: 6),
+
+                          Text(
+                            email,
+                            style: GoogleFonts.quicksand(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: colorScheme.primary,
+                            ),
+                          ),
+
+                          const SizedBox(height: 48),
+
+                          /// OTP ROW
+
+                          OtpRowWidget(
+                            controllers: _controllers,
+                            focusNodes: _focusNodes,
+                          ),
+
+                          const SizedBox(height: 28),
+
+                          /// ACTIONS
+
+                          OtpActionsWidget(
+                            remainingSeconds: _remainingSeconds,
+                            onResend: _resendOtp,
+                            onChangeEmail: () {
+                              context.go('/authentication');
+                            },
+                          ),
+                        ],
                       ),
-
-                      const SizedBox(height: 40),
-
-                      /// TITLE
-
-                      Text(
-                        "Verify OTP",
-                        style: GoogleFonts.baloo2(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w600,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      /// SUBTITLE
-
-                      Text(
-                        "We sent a 4-digit verification code to",
-                        style: GoogleFonts.quicksand(
-                          fontSize: 16,
-                          color: colorScheme.onSurface.withOpacity(0.7),
-                        ),
-                      ),
-
-                      const SizedBox(height: 6),
-
-                      Text(
-                        email,
-                        style: GoogleFonts.quicksand(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: colorScheme.primary,
-                        ),
-                      ),
-
-                      const SizedBox(height: 48),
-
-                      /// OTP ROW
-
-                      OtpRowWidget(
-                        controllers: _controllers,
-                        focusNodes: _focusNodes,
-                      ),
-
-                      const SizedBox(height: 28),
-
-                      /// ACTIONS
-
-                      OtpActionsWidget(
-                        remainingSeconds: _remainingSeconds,
-                        onResend: _resendOtp,
-                        onChangeEmail: () {
-                          context.go('/authentication');
-                        },
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
 
-              /// ============================================
-              /// VERIFY BUTTON
-              /// ============================================
+                  /// ============================================
+                  /// VERIFY BUTTON
+                  /// ============================================
 
-              AnimatedPadding(
-                duration: _animationDuration,
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-                ),
-                child: VerifyOtpButton(
-                  enabled: isOtpFilled,
-                  onPressed: _verifyOtp,
-                ),
+                  AnimatedPadding(
+                    duration: _animationDuration,
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+                    ),
+                    child: VerifyOtpButton(
+                      enabled: isOtpFilled,
+                      onPressed: _verifyOtp,
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+          if (loading)
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  color: colorScheme.onSurface.withOpacity(0.1),
+                  alignment: Alignment.center,
+                  child: const CircularProgressIndicator(),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
-}
-
-// @Preview(size: Size(400.0, 500.0))
-Widget otpVerificationPreview() {
-  return MaterialApp(
-    home: const OtpVerificationScreen(),
-    themeMode: ThemeMode.dark,
-  );
 }

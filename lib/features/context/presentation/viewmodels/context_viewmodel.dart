@@ -1,10 +1,11 @@
 import 'dart:core';
 
+import 'package:aida/core/enums/response_state.dart';
+import 'package:aida/features/context/data_layer/model/context_model.dart';
 import 'package:aida/features/context/data_layer/repositories/context_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:aida/features/context/data_layer/services/context_service.dart';
-import 'package:aida/features/context/domain_layer/context_model.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_change_state.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_state.dart';
 import 'package:aida/features/context/presentation/viewmodels/has_data_changed_result.dart';
@@ -22,12 +23,17 @@ class ContextViewModel extends Notifier<ContextState> {
     return ContextState(); // initial state
   }
 
-  
   ContextChangeState contextChangeState =
       ContextChangeState(hasDataChanged: false, isLoading: false, error: null);
 
   List<Map<String, ContextModel>> originalContextModels = [];
   List<Map<String, ContextModel>> latestContextModels = [];
+
+  ContextModel? newContextModel = null;
+  void setNewContextModel(ContextModel newContext) =>
+      newContextModel = newContext;
+
+  void clearNewContextModel() => newContextModel = null;
 
   // -----------------------------
   // Update Methods
@@ -57,7 +63,8 @@ class ContextViewModel extends Notifier<ContextState> {
     try {
       for (var modifiedContext in hasDataChangedResult.newContextModels) {
         final contextData = modifiedContext.values.first;
-        await _repository.updateContext(newContextModel: contextData);
+        // await _repository.updateContext(newContextModel: contextData);
+        await createContext(newContext: contextData);
       }
 
       contextChangeState =
@@ -71,6 +78,13 @@ class ContextViewModel extends Notifier<ContextState> {
       );
       return contextChangeState;
     }
+  }
+
+  Future<ResponseState> createContext({required ContextModel newContext}) async {
+    ResponseState responseState =
+        await _repository.create(newContextModel: newContext);
+
+    return responseState;
   }
 
   // -----------------------------

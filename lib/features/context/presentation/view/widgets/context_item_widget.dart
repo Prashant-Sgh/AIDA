@@ -1,5 +1,5 @@
 import 'package:aida/core/theme/CustomColors.dart';
-import 'package:aida/features/context/domain_layer/context_model.dart';
+import 'package:aida/features/context/data_layer/model/context_model.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:aida/core/theme/app_colors.dart';

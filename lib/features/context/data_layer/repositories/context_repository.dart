@@ -1,6 +1,6 @@
 import 'package:aida/core/enums/response_state.dart';
 import 'package:aida/features/context/data_layer/services/context_service.dart';
-import 'package:aida/features/context/domain_layer/context_model.dart';
+import 'package:aida/features/context/data_layer/model/context_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final contextRepositoryProvider = Provider<ContextRepository>(
@@ -12,7 +12,7 @@ class ContextRepository {
 
   ContextRepository(this._contextService);
 
-  Future<ResponseState> create(ContextModel newContextModel) async {
+  Future<ResponseState> create({required ContextModel newContextModel}) async {
     ResponseState responseState =
         await _contextService.createContext(newContext: newContextModel);
     return responseState;
@@ -20,17 +20,12 @@ class ContextRepository {
 
   Future<List<ContextModel>> getContexts() async {
     final contexts = await _contextService.getContexts();
-    if (contexts == null)
-      return [
-        ContextModel(
-            id: 'Error_ ID',
-            name: 'No context loaded',
-            content: 'No context loaded')
-      ];
+    if (contexts == null) throw Exception('Could not get contexts');
     return contexts;
   }
 
-  Future<ResponseState> updateContext({required ContextModel newContextModel}) async {
+  Future<ResponseState> updateContext(
+      {required ContextModel newContextModel}) async {
     final state = await _contextService.updateContext(context: newContextModel);
     return state;
   }

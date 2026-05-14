@@ -1,5 +1,7 @@
 import 'package:aida/core/theme/theme_provider.dart';
 import 'package:aida/features/chat/data/repository/messageManager.dart';
+import 'package:aida/features/context/presentation/view/widgets/add_context_dialog.dart';
+import 'package:aida/features/context/presentation/viewmodels/context_state.dart';
 import 'package:aida/shared/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,8 +22,15 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
   void initState() {
     super.initState();
     // Load contexts when screen initializes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(contextVMProvider.notifier).loadContexts();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref.read(contextVMProvider.notifier).loadContexts();
+
+      // This make sure the screen is rebuilding indefinitely
+      // ref.listenManual<ContextState>(contextVMProvider, (previous, next) {
+      //   if (next.allContexts != previous?.allContexts) {
+      //     ref.read(contextVMProvider.notifier).loadContexts();
+      //   }
+      // });
     });
   }
 
@@ -53,7 +62,8 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
         elevation: 0,
         actions: [
           IconButton(
-            onPressed: () => ref.read(contextVMProvider.notifier).loadContexts(),
+            onPressed: () =>
+                ref.read(contextVMProvider.notifier).loadContexts(),
             icon: Icon(
               Icons.replay_rounded,
               color: colorScheme.onSurface,
@@ -128,6 +138,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: colorScheme.surface,
         onPressed: () {
+          showDialog(context: context, builder: (_) => AddContextDialog());
           // Handle add new context
           null;
         },

@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:aida/core/enums/response_state.dart';
-import 'package:aida/features/context/domain_layer/context_model.dart';
+import 'package:aida/features/context/data_layer/model/context_model.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,33 +19,36 @@ class ContextServices {
 
   // final String _baseUrl = 'localhost:3000';
   final String _baseUrl = 'aida-backend-three.vercel.app';
-  final headers = {'Content-Type': 'application/json', 'x-vercel-protection-bypass': 'EVdAY3uz4Y2FsMNKsNMVLudVBt9yXzPh'};
+  final headers = {
+    'Content-Type': 'application/json',
+    'x-vercel-protection-bypass': 'EVdAY3uz4Y2FsMNKsNMVLudVBt9yXzPh'
+  };
 
   // Create
   Future<ResponseState> createContext(
       {required ContextModel newContext}) async {
-    ResponseState _responseState = ResponseState.notInitiated;
+    ResponseState responseState = ResponseState.notInitiated;
 
-    final uri = Uri.parse('http://$_baseUrl/crud/create');
+    final uri = Uri.parse('https://$_baseUrl/crud/create');
     final id = DateTime.now().millisecondsSinceEpoch.toString();
     newContext = newContext.copyWith(id: id);
     final body = jsonEncode(newContext.toJson());
 
     try {
-      updateResponseState(ResponseState.loading);
+      responseState = ResponseState.loading;
       final response = await http.post(uri, headers: headers, body: body);
 
       if (response.statusCode == 200) {
-        updateResponseState(ResponseState.success);
+        responseState = ResponseState.success;
       } else {
-        updateResponseState(ResponseState.error);
+        responseState = ResponseState.error;
       }
     } catch (e) {
       print('FIRESTORE - ' + e.toString());
-      updateResponseState(ResponseState.error);
+      responseState = ResponseState.error;
     }
 
-    return _responseState;
+    return responseState;
   }
 
   // Read by ID
@@ -73,13 +77,16 @@ class ContextServices {
 
   // Read
   Future<List<ContextModel>?> getContexts() async {
-    final uri = Uri.http(
+    final uri = Uri.https(
       _baseUrl,
       '/crud/readAll',
     );
 
     try {
-      final response = await http.get(uri);
+      debugPrint('Getting contexts...');
+      final response = await http.get(uri, headers: headers);
+
+      debugPrint('Response status code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -92,9 +99,12 @@ class ContextServices {
         }
         return contexts;
       } else {
+        debugPrint(
+            'Error getting contexts, status code: ${response.statusCode}, body: ${response.body}');
         return null;
       }
     } catch (error) {
+      debugPrint('Error getting contexts, error: $error');
       return null;
     }
   }
