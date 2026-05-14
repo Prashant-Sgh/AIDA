@@ -7,7 +7,7 @@ const double _otpBorderRadius = 18;
 const Duration _animationDuration = Duration(milliseconds: 180);
 
 class OtpDigitField extends StatefulWidget {
-  final List<TextEditingController>? controllers;
+  final TextEditingController? previousController;
   final TextEditingController controller;
   final FocusNode focusNode;
   final FocusNode? nextFocusNode;
@@ -15,7 +15,7 @@ class OtpDigitField extends StatefulWidget {
 
   const OtpDigitField({
     super.key,
-    required this.controllers,
+    required this.previousController,
     required this.controller,
     required this.focusNode,
     this.nextFocusNode,
@@ -61,51 +61,52 @@ class _OtpDigitFieldState extends State<OtpDigitField> {
           width: _isFocused ? 1.8 : 1,
         ),
       ),
-      child: KeyboardListener(
+      // child: KeyboardListener(
+      //   focusNode: widget.focusNode,
+      //   onKeyEvent: (event) {
+      //     if (event is KeyDownEvent &&
+      //         event.logicalKey == LogicalKeyboardKey.backspace) {
+      //       // if current field has text -> clear it
+      //       if (widget.controller.text.isNotEmpty) {
+      //         widget.controller.clear();
+      //       }
+      //       if (widget.previousFocusNode != null) {
+      //         widget.previousFocusNode!.requestFocus();
+      //         widget.previousController?.clear();
+      //       }
+      //     }
+      //   },
+      child: TextField(
+        controller: widget.controller,
         focusNode: widget.focusNode,
-        onKeyEvent: (event) {
-          if (event is KeyDownEvent &&
-              event.logicalKey == LogicalKeyboardKey.backspace) {
-            // if current field has text -> clear it
-            if (widget.controller.text.isNotEmpty) {
-              widget.controller.clear();
+        keyboardType: TextInputType.number,
+        textAlign: TextAlign.center,
+        maxLength: 1,
+        style: GoogleFonts.quicksand(
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+          color: colorScheme.onSurface,
+        ),
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+        ],
+        decoration: const InputDecoration(
+          counterText: '',
+          border: InputBorder.none,
+        ),
+        onChanged: (value) {
+          if (value.isNotEmpty) {
+            widget.nextFocusNode?.requestFocus();
+
+            if (widget.nextFocusNode == null) {
+              FocusScope.of(context).unfocus();
             }
-            if (widget.previousFocusNode != null) {
-              widget.previousFocusNode!.requestFocus();
-              final previosController = widget.controllers![-2];
-              previosController.clear();
-            }
+          } else {
+            widget.previousFocusNode?.requestFocus();
           }
         },
-        child: TextField(
-          controller: widget.controller,
-          focusNode: widget.focusNode,
-          keyboardType: TextInputType.number,
-          textAlign: TextAlign.center,
-          maxLength: 1,
-          style: GoogleFonts.quicksand(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
-            color: colorScheme.onSurface,
-          ),
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-          ],
-          decoration: const InputDecoration(
-            counterText: '',
-            border: InputBorder.none,
-          ),
-          onChanged: (value) {
-            if (value.isNotEmpty) {
-              widget.nextFocusNode?.requestFocus();
-
-              if (widget.nextFocusNode == null) {
-                FocusScope.of(context).unfocus();
-              }
-            }
-          },
-        ),
       ),
+      // ),
     );
   }
 }

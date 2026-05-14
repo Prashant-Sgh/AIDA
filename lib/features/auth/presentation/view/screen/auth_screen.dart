@@ -25,8 +25,6 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
   @override
   void initState() {
     super.initState();
-
-    // ✅ handle navigation safely (not inside build)
     WidgetsBinding.instance
         .addPostFrameCallback((someValue) => Future.microtask(() {
               final state = ref.read(authenticationViewModelProvider);

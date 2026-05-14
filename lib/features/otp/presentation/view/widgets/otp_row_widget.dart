@@ -14,18 +14,16 @@ class OtpRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment:
-          MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: List.generate(
         4,
         (index) => OtpDigitField(
-          controllers: index > 0 ? controllers : null,
+          // controllers: index > 0 ? controllers : null,
           controller: controllers[index],
           focusNode: focusNodes[index],
-          nextFocusNode:
-              index < 3 ? focusNodes[index + 1] : null,
-          previousFocusNode:
-              index > 0 ? focusNodes[index - 1] : null,
+          nextFocusNode: index < 3 ? focusNodes[index + 1] : null,
+          previousFocusNode: index > 0 ? focusNodes[index - 1] : null,
+          previousController: index > 0 ? controllers[index - 1] : null,
         ),
       ),
     );

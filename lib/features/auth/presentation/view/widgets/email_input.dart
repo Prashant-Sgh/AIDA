@@ -47,12 +47,6 @@ class _EmailInputWidgetState extends ConsumerState<EmailInputWidget> {
   }
 
   @override
-  void dispose() {
-    widget.focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final borderColor = isFocused ? _focusedBorderColor : _unfocusedBorderColor;
 

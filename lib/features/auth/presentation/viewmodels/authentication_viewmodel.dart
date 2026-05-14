@@ -20,7 +20,7 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
   void setEmail(String value) {
     final isValid = isValidEmail(value);
 
-    _emailController.text = value;
+    // _emailController.text = value;
 
     state = state.copyWith(
       email: value,
@@ -29,7 +29,7 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
   }
 
   void setPassword(String value) {
-    _passwordController.text = value;
+    // _passwordController.text = value;
     state = state.copyWith(password: value);
   }
 

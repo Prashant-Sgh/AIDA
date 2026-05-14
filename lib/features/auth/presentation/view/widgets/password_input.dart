@@ -44,12 +44,6 @@ class _PasswordInputWidgetState extends ConsumerState<PasswordInputWidget> {
     });
   }
 
-  @override
-  void dispose() {
-    widget.focusNode.dispose();
-    super.dispose();
-  }
-
   void toggleObsecurePassword() {
     setState(() {
       obsecurePassword = !obsecurePassword;

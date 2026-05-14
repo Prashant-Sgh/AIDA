@@ -37,7 +37,7 @@ class _WelcomeState extends ConsumerState<Welcome>
   }
 
   void transitionToChatScr() {
-    context.push('/chat');
+    context.go('/chat');
   }
 
   @override
@@ -57,7 +57,7 @@ class _WelcomeState extends ConsumerState<Welcome>
                 onPressed: () =>
                     ref.read(themeModeProvider.notifier).toggleTheme(),
                 icon: Icon(
-                  isDarkMode ? Icons.light_mode : Icons.light_mode_outlined,
+                  isDarkMode ? Icons.light_mode_outlined : Icons.light_mode,
                   size: 22,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -80,18 +80,19 @@ class _WelcomeState extends ConsumerState<Welcome>
 
             // Tap_ gesture guide
 
-            if (!isFirstTap) Positioned(
-              right: 0,
-              left: 0,
-              top: 300,
-              bottom: 0,
-              child: GestureDetector(
-                onTap: () => animationController.onTap(),
-                child: Container(
-                  color: Colors.transparent,
+            if (!isFirstTap)
+              Positioned(
+                right: 0,
+                left: 0,
+                top: 300,
+                bottom: 0,
+                child: GestureDetector(
+                  onTap: () => animationController.onTap(),
+                  child: Container(
+                    color: Colors.transparent,
+                  ),
                 ),
               ),
-            ),
 
             if (isFirstTap)
               Positioned(

@@ -68,32 +68,18 @@ class AppDrawer extends ConsumerWidget {
                     ),
 
                     /// Theme Toggle
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 250),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: lineColor,
-                        ),
-                      ),
-                      child: IconButton(
-                        splashRadius: 22,
-                        onPressed: () {
-                          ref.read(themeModeProvider.notifier).toggleTheme();
-                        },
-                        icon: AnimatedSwitcher(
-                          duration: const Duration(
-                            milliseconds: 250,
-                          ),
-                          child: Icon(
-                            isDarkMode
-                                ? Icons.light_mode
-                                : Icons.light_mode_outlined,
-                            key: ValueKey(isDarkMode),
-                            color: textColor,
-                            size: 22,
-                          ),
-                        ),
+                    IconButton(
+                      splashRadius: 22,
+                      onPressed: () {
+                        ref.read(themeModeProvider.notifier).toggleTheme();
+                      },
+                      icon: Icon(
+                        isDarkMode
+                            ? Icons.light_mode_outlined
+                            : Icons.light_mode,
+                        key: ValueKey(isDarkMode),
+                        color: textColor,
+                        size: 22,
                       ),
                     ),
                   ],
@@ -129,7 +115,7 @@ class AppDrawer extends ConsumerWidget {
                 icon: Icons.auto_awesome_rounded,
                 textColor: textColor,
                 onTap: () {
-                  context.go('/welcome');
+                  context.go('/');
                 },
               ),
 
