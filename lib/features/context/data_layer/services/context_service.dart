@@ -89,15 +89,19 @@ class ContextServices {
       debugPrint('Response status code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-
         List<ContextModel> contexts = [];
+        try {
+          final data = jsonDecode(response.body);
 
-        for (var d in data) {
-          final ContextModel context = ContextModel.fromJson(d);
-          contexts.add(context);
+          for (var d in data) {
+            final ContextModel context = ContextModel.fromJson(d);
+            contexts.add(context);
+          }
+          return contexts;
+        } catch (e) {
+          debugPrint('Error decoding json from response body, error: $e');
+          return null;
         }
-        return contexts;
       } else {
         debugPrint(
             'Error getting contexts, status code: ${response.statusCode}, body: ${response.body}');
@@ -111,33 +115,34 @@ class ContextServices {
 
   // Update
   Future<ResponseState> updateContext({required ContextModel context}) async {
-    ResponseState _responseState = ResponseState.notInitiated;
+    ResponseState responseState = ResponseState.notInitiated;
 
-    final uri = Uri.parse('http://$_baseUrl/crud/update');
+    final uri = Uri.parse('https://$_baseUrl/crud/update');
     final body = jsonEncode(context.toJson());
 
     try {
-      updateResponseState(ResponseState.loading);
+      responseState = ResponseState.loading;
       final response = await http.put(uri, headers: headers, body: body);
 
       if (response.statusCode == 200) {
-        updateResponseState(ResponseState.success);
+        responseState = ResponseState.success;
       } else {
-        updateResponseState(ResponseState.error);
+        responseState = ResponseState.error;
       }
     } catch (e) {
-      print('FIRESTORE - ERROR: $e');
-      updateResponseState(ResponseState.error);
+      debugPrint('FIRESTORE - ERROR for context: $body');
+      debugPrint('FIRESTORE - ERROR: $e');
+      responseState = ResponseState.error;
     }
 
-    return _responseState;
+    return responseState;
   }
 
   // Delete context by id
   Future<ResponseState> deleteById({required String id}) async {
     ResponseState _responseState = ResponseState.notInitiated;
 
-    final url = Uri.http(
+    final url = Uri.https(
       _baseUrl,
       '/crud/deleteById',
       {'id': id},

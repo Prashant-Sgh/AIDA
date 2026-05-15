@@ -7,41 +7,49 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AddContextDialog extends ConsumerWidget {
+class AddContextDialog extends ConsumerStatefulWidget {
   const AddContextDialog({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AddContextDialog> createState() => _AddContextDialogState();
+}
+
+class _AddContextDialogState extends ConsumerState<AddContextDialog> {
+  late final TextEditingController titleController;
+  late final TextEditingController descriptionController;
+
+  late final ContextModel contextModel;
+
+  @override
+  void initState() {
+    super.initState();
+    contextModel = ref.read(contextVMProvider.notifier).newContextModel;
+    titleController = TextEditingController(text: contextModel.name);
+    descriptionController = TextEditingController(text: contextModel.content);
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     final colorScheme = theme.colorScheme;
-
     final customColors = theme.extension<CustomColors>()!;
 
-    final state = ref.watch(contextVMProvider);
-
-    final viewModel = ref.read(contextVMProvider.notifier);
-
-    final contextModel = viewModel.newContextModel;
-
-    final titleController = TextEditingController(
-      text: contextModel?.name ?? '',
-    );
-
-    final descriptionController = TextEditingController(
-      text: contextModel?.content ?? '',
-    );
-
     final textColor = colorScheme.onSurface;
-
     final backgroundColor = customColors.contextScrCard;
-
     final borderColor = customColors.contextScrCardStroke;
-
     final fieldColor = customColors.contextScrExpandedCardTxtField;
 
-    final bool canSave = titleController.text.trim().isNotEmpty &&
-        descriptionController.text.trim().isNotEmpty;
+    final canSave = descriptionController.text.trim().isNotEmpty &&
+        titleController.text.trim().isNotEmpty;
+    // final bool canSave =
+    //     contextModel.name.isNotEmpty && contextModel.content.isNotEmpty;
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -74,13 +82,10 @@ class AddContextDialog extends ConsumerWidget {
               backgroundColor: fieldColor,
               textColor: textColor,
               onChanged: (value) {
-                viewModel.setNewContextModel(
-                  ContextModel(
-                    id: contextModel?.id ?? '',
-                    name: value,
-                    content: descriptionController.text,
-                  ),
-                );
+                setState(() {});
+                ref
+                    .read(contextVMProvider.notifier)
+                    .updateNewContextModel(name: titleController.text);
               },
             ),
 
@@ -92,13 +97,10 @@ class AddContextDialog extends ConsumerWidget {
               backgroundColor: fieldColor,
               textColor: textColor,
               onChanged: (value) {
-                viewModel.setNewContextModel(
-                  ContextModel(
-                    id: contextModel?.id ?? '',
-                    name: titleController.text,
-                    content: value,
-                  ),
-                );
+                setState(() {});
+                ref
+                    .read(contextVMProvider.notifier)
+                    .updateNewContextModel(content: descriptionController.text);
               },
             ),
 
@@ -112,30 +114,22 @@ class AddContextDialog extends ConsumerWidget {
                 Navigator.pop(context);
               },
               onSave: () async {
-                final newContext = ContextModel(
-                  id: contextModel?.id ?? '',
-                  name: titleController.text.trim(),
-                  content: descriptionController.text.trim(),
-                );
+                final newContext =
+                    ref.read(contextVMProvider.notifier).newContextModel;
 
-                viewModel.setNewContextModel(newContext);
-
-                ResponseState responseState =
-                    await viewModel.createContext(newContext: newContext);
+                ResponseState responseState = await ref
+                    .read(contextVMProvider.notifier)
+                    .createContext(newContext: newContext);
 
                 if (responseState == ResponseState.success) {
                   debugPrint('SUCCESS SAVING CONTEXT');
-                  viewModel.clearNewContextModel();
-                  // viewModel.loadContexts();
+                  ref.read(contextVMProvider.notifier).clearNewContextModel();
+                  if (context.mounted) Navigator.pop(context);
+                  ref.read(contextVMProvider.notifier).loadContexts();
                 } else {
                   debugPrint(
                       'ERROR SAVING CONTEXT... ResponseState: $responseState');
                 }
-
-                /// your create logic
-                // await viewModel.createContext();
-
-                Navigator.pop(context);
               },
             ),
           ],

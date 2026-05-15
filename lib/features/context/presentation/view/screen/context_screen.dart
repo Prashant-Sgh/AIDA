@@ -24,13 +24,6 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
     // Load contexts when screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await ref.read(contextVMProvider.notifier).loadContexts();
-
-      // This make sure the screen is rebuilding indefinitely
-      // ref.listenManual<ContextState>(contextVMProvider, (previous, next) {
-      //   if (next.allContexts != previous?.allContexts) {
-      //     ref.read(contextVMProvider.notifier).loadContexts();
-      //   }
-      // });
     });
   }
 
@@ -38,13 +31,15 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textColor = theme.colorScheme.onSurface;
-    final isDarkMode = theme.brightness == Brightness.dark;
     final colorScheme = theme.colorScheme;
     final customColors = theme.extension<CustomColors>()!;
     final backgroundColor = customColors.contextScrBackground;
-    final _messageManager = ref.watch(messageManagerProvider);
+    final messageManager = ref.watch(messageManagerProvider);
 
     final contextVM = ref.watch(contextVMProvider);
+
+    final isContextNotSaved =
+        ref.read(contextVMProvider.notifier).hasDataChanged;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -73,20 +68,152 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
       ),
       body: contextVM.isLoading
           ? Center(
-              child: CircularProgressIndicator(
-                color: customColors.dropDownLineColor,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 34,
+                    width: 34,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.4,
+                      color: customColors.dropDownLineColor,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    'Loading your contexts...',
+                    style: GoogleFonts.quicksand(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: textColor.withOpacity(0.72),
+                    ),
+                  ),
+                ],
               ),
             )
           : contextVM.error != null
-              ? Center(
-                  child: Text(
-                    'Error: ${contextVM.error}',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.red,
-                    ),
-                  ),
-                )
+              ? contextVM.errorCode == 204
+
+                  /// EMPTY STATE
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 82,
+                              width: 82,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: customColors.contextScrCard,
+                                border: Border.all(
+                                  color: customColors.contextScrCardStroke,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.auto_awesome_mosaic_rounded,
+                                size: 34,
+                                color: textColor.withOpacity(0.72),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              'No contexts yet',
+                              style: GoogleFonts.baloo2(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Create your first context using the + button below.',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.quicksand(
+                                fontSize: 14,
+                                height: 1.5,
+                                fontWeight: FontWeight.w500,
+                                color: textColor.withOpacity(0.62),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+
+                  /// ERROR STATE
+                  : Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 82,
+                              width: 82,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.red.withOpacity(0.08),
+                                border: Border.all(
+                                  color: Colors.red.withOpacity(0.18),
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.error_outline_rounded,
+                                size: 36,
+                                color: Colors.redAccent.withOpacity(0.9),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              'Something went wrong',
+                              style: GoogleFonts.baloo2(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              contextVM.error ?? 'Unknown error occurred',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.quicksand(
+                                fontSize: 14,
+                                height: 1.5,
+                                fontWeight: FontWeight.w500,
+                                color: textColor.withOpacity(0.62),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            GestureDetector(
+                              onTap: () {
+                                ref
+                                    .read(contextVMProvider.notifier)
+                                    .loadContexts();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 22,
+                                  vertical: 14,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: textColor,
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                child: Text(
+                                  'Try Again',
+                                  style: GoogleFonts.quicksand(
+                                    fontWeight: FontWeight.w700,
+                                    color: theme.scaffoldBackgroundColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
               : Stack(
                   children: [
                     ListView.builder(
@@ -97,7 +224,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
                         return ContextItemWidget(
                           contextId: contextItem.id ?? 'tempContextId',
                           contextName: contextItem.name,
-                          contextDescription: contextItem.content,
+                          contextContent: contextItem.content,
                         );
                       },
                     ),
@@ -116,13 +243,13 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          onPressed: () {
-                            var contextVM =
-                                ref.read(contextVMProvider.notifier);
-                            var changeState = contextVM.contextChangeState;
-                            if (!changeState.hasDataChanged) null;
-                            contextVM.updateContextModels();
-                          },
+                          onPressed: isContextNotSaved
+                              ? () {
+                                  ref
+                                      .read(contextVMProvider.notifier)
+                                      .updateContextModels();
+                                }
+                              : null,
                           child: Text(
                             'Update',
                             style: GoogleFonts.quicksand(
@@ -148,7 +275,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
         ),
       ),
       drawer: AppDrawer(
-        onClearChat: _messageManager.clearChat,
+        onClearChat: messageManager.clearChat,
       ),
     );
   }

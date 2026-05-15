@@ -18,9 +18,9 @@ class ContextRepository {
     return responseState;
   }
 
-  Future<List<ContextModel>> getContexts() async {
+  Future<List<ContextModel>?> getContexts() async {
     final contexts = await _contextService.getContexts();
-    if (contexts == null) throw Exception('Could not get contexts');
+    // if (contexts == null) throw Exception('Could not get contexts');
     return contexts;
   }
 

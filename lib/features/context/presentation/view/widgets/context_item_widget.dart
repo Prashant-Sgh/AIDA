@@ -2,270 +2,464 @@ import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/features/context/data_layer/model/context_model.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:aida/core/theme/app_colors.dart';
-import 'package:flutter/widget_previews.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 class ContextItemWidget extends ConsumerStatefulWidget {
   final String contextId;
   final String contextName;
-  final String contextDescription;
+  final String contextContent;
 
   const ContextItemWidget({
-    Key? key,
+    super.key,
     required this.contextId,
     required this.contextName,
-    required this.contextDescription,
-  }) : super(key: key);
+    required this.contextContent,
+  });
 
   @override
   ConsumerState<ContextItemWidget> createState() => _ContextItemWidgetState();
 }
 
 class _ContextItemWidgetState extends ConsumerState<ContextItemWidget>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _expandAnimation;
-  late TextEditingController _descriptionController;
-  bool _isEditable = false;
+    with TickerProviderStateMixin {
+  late String _originalContent;
+  late final TextEditingController _controller;
+
   bool _isExpanded = false;
+  bool _isUpdated = false;
+  Color _cardToggleColor = Colors.white;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _expandAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
 
-    final _description = widget.contextDescription;
-    _descriptionController = TextEditingController(text: _description);
+    _originalContent = widget.contextContent;
+
+    _controller = TextEditingController(
+      text: _originalContent,
+    );
+    _controller.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
-    _descriptionController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
-  void _toggleExpand() {
+  bool get _hasChanged => _controller.text.trim() != _originalContent.trim();
+
+  void _stackInChanged() {
+    ref.read(contextVMProvider.notifier).stackInLatestChanges(
+          index: widget.contextId,
+          latestContext: ContextModel(
+            id: widget.contextId,
+            name: widget.contextName,
+            content: _controller.text,
+          ),
+        );
+  }
+
+  void _saveChanges() {
+    ref.read(contextVMProvider.notifier).updateContext(
+          updatedContext: ContextModel(
+            id: widget.contextId,
+            name: widget.contextName,
+            content: _controller.text,
+          ),
+        );
     setState(() {
-      _isExpanded = !_isExpanded;
+      _cardToggleColor = Colors.green;
+      _originalContent = _controller.text;
     });
-    if (_isExpanded) {
-      _animationController.forward();
-    } else {
-      _animationController.reverse();
-    }
+  }
+
+  void _deleteContext() {
+    setState(() {
+      _cardToggleColor = Colors.redAccent;
+    });
+    ref.read(contextVMProvider.notifier).deleteById(id: widget.contextId);
+  }
+
+  Future<void> _toggleUpdateColor() async {
+    setState(() {
+      _isUpdated = true;
+    });
+    await Future.delayed(const Duration(milliseconds: 500));
+    setState(() {
+      _isUpdated = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final contextVmState = ref.watch(contextVMProvider);
     final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final customColors = theme.extension<CustomColors>()!;
-    final textColor = theme.colorScheme.onSurface;
-    final cardColor = customColors.contextScrCard;
-    final cardStrokeColor = customColors.contextScrCardStroke;
-    final cardExpandedColor = customColors.contextScrExpandedCard;
-    final cardExpandedTxtFieldColor =
-        customColors.contextScrExpandedCardTxtField;
-    final clearBtnTxtColor = customColors.contextScrButtonClearTxt;
 
-    return Container(
-      child: Column(
-        children: [
-          // Collapsed state - Header
-          Container(
-            margin: const EdgeInsets.only(bottom: 6),
-            decoration: BoxDecoration(
-              color: cardColor,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: cardStrokeColor,
-                width: 0.5,
-              ),
-            ),
-            child: InkWell(
-              onTap: _toggleExpand,
+    final colorScheme = theme.colorScheme;
+    final customColors = theme.extension<CustomColors>()!;
+    final textColor = colorScheme.onSurface;
+    final cardColor = customColors.contextScrCard;
+    final fieldColor = customColors.contextScrExpandedCardTxtField;
+    final borderColor = customColors.contextScrCardStroke;
+    final expandedColor = customColors.contextScrExpandedCard;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 260),
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        color: _isUpdated
+            ? _cardToggleColor
+            : (_isExpanded ? expandedColor : cardColor),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(
+          color: borderColor,
+          width: 1,
+        ),
+      ),
+      child: AnimatedSize(
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeInOut,
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              },
               child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 25, top: 12, right: 12, bottom: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
+                  vertical: 20,
+                ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      flex: 6,
-                      child: Text(
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                        widget.contextName,
-                        style: GoogleFonts.quicksand(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.contextName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.baloo2(
+                              fontSize: 19,
+                              fontWeight: FontWeight.w600,
+                              color: textColor,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _controller.text,
+                            maxLines: _isExpanded ? null : 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.quicksand(
+                              fontSize: 13,
+                              height: 1.5,
+                              fontWeight: FontWeight.w500,
+                              color: textColor.withOpacity(0.58),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    if (!_isExpanded) (const SizedBox(height: 6)),
-                    if (!_isExpanded)
-                      Expanded(
-                        flex: 4,
-                        child: Text(
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                          _descriptionController.text,
-                          style: GoogleFonts.quicksand(
-                            color: textColor,
-                            fontSize: 12.0,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
+                    const SizedBox(width: 14),
+                    AnimatedRotation(
+                      duration: const Duration(milliseconds: 240),
+                      turns: _isExpanded ? 0.5 : 0,
+                      child: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: textColor.withOpacity(0.72),
+                        size: 26,
                       ),
-                    const SizedBox(width: 8),
-                    Icon(
-                      _isExpanded
-                          ? Icons.expand_less_rounded
-                          : Icons.expand_more_rounded,
-                      color: textColor,
                     ),
                   ],
                 ),
               ),
             ),
-          ),
-          ScaleTransition(
-            scale: _expandAnimation,
-            child: ClipRect(
-              child: SizeTransition(
-                sizeFactor: _expandAnimation,
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: cardExpandedColor,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 14),
-                        // Context description
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.0)),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.0),
-                              color: cardExpandedTxtFieldColor,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 17, vertical: 14),
-                              child: TextField(
-                                controller: _descriptionController,
-                                enabled: _isEditable,
-                                minLines: 1,
-                                maxLines: 6,
-                                keyboardType: TextInputType.multiline,
-                                style: GoogleFonts.baloo2(
-                                  color: textColor.withAlpha(200),
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w100,
-                                ),
-                                decoration: const InputDecoration(
-                                  border: InputBorder
-                                      .none, // Removes the default underline
-                                  enabledBorder: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  contentPadding: EdgeInsets
-                                      .zero, // Removes extra padding inside the field
-                                ),
-                                onChanged: (value) {
-                                  _descriptionController =
-                                      TextEditingController(text: value);
-                                  var contextVM =
-                                      ref.read(contextVMProvider.notifier);
-                                  contextVM.stackInLatestChanges(
-                                      index: widget.contextId,
-                                      latestContext: ContextModel(
-                                        id: widget.contextId,
-                                        name: widget.contextName,
-                                        content: value,
-                                      ));
-                                },
-                              ),
-                            ),
+            if (_isExpanded)
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 18,
+                  right: 18,
+                  bottom: 18,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: fieldColor,
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                      child: TextField(
+                        controller: _controller,
+                        minLines: 4,
+                        maxLines: 10,
+                        keyboardType: TextInputType.multiline,
+                        style: GoogleFonts.quicksand(
+                          fontSize: 14,
+                          height: 1.6,
+                          fontWeight: FontWeight.w500,
+                          color: textColor,
+                        ),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Write something...',
+                          hintStyle: GoogleFonts.quicksand(
+                            color: textColor.withOpacity(0.4),
                           ),
                         ),
-                        const SizedBox(height: 35),
-                        // Action buttons
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isEditable = !_isEditable;
-                                });
-                              },
-                              icon: Container(
-                                height: 39,
-                                width: 96,
-                                decoration: BoxDecoration(
-                                    color: textColor,
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: Center(
-                                  child: Text(
-                                    'Edit',
-                                    style: GoogleFonts.quicksand(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                      color: clearBtnTxtColor,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: null,
-                              icon: Container(
-                                height: 39,
-                                width: 96,
-                                decoration: BoxDecoration(
-                                    color: theme.colorScheme.surface,
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: Center(
-                                  child: Text(
-                                    'Done',
-                                    style: GoogleFonts.quicksand(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                      color: textColor,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _ActionButton(
+                            text: 'Delete',
+                            isDestructive: true,
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return DeleteContextDialog(
+                                    onDelete: () async {
+                                      _deleteContext();
+                                      setState(() {
+                                        _isExpanded = false;
+                                      });
+                                      await _toggleUpdateColor();
+                                      await Future.delayed(
+                                          const Duration(milliseconds: 520));
+                                      ref
+                                          .read(contextVMProvider.notifier)
+                                          .loadContexts();
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
-                        SizedBox(height: 19)
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _ActionButton(
+                            text: 'Save',
+                            enabled: _hasChanged,
+                            loading: ref.watch(contextVMProvider).updating,
+                            onTap: () async {
+                              _saveChanges();
+                              setState(() {
+                                _isExpanded = false;
+                              });
+                              await _toggleUpdateColor();
+                              await Future.delayed(
+                                  const Duration(milliseconds: 520));
+                              ref
+                                  .read(contextVMProvider.notifier)
+                                  .loadContexts();
+                            },
+                          ),
+                        ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  final String text;
+  final bool enabled;
+  final bool loading;
+  final VoidCallback onTap;
+  final bool isDestructive;
+
+  const _ActionButton({
+    required this.text,
+    required this.onTap,
+    this.enabled = true,
+    this.loading = false,
+    this.isDestructive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: Container(
+        height: 50,
+        decoration: BoxDecoration(
+          color: isDestructive
+              ? Colors.red.withOpacity(0.1)
+              : (enabled ? textColor : textColor.withOpacity(0.30)),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Center(
+          child: loading
+              ? CircularProgressIndicator(
+                  constraints: const BoxConstraints(
+                    maxHeight: 20,
+                    maxWidth: 20,
+                    minHeight: 20,
+                    minWidth: 20,
+                  ),
+                  strokeWidth: 2,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black
+                      : Colors.white,
+                )
+              : Text(
+                  text,
+                  style: GoogleFonts.quicksand(
+                    color: isDestructive
+                        ? Colors.redAccent
+                        : Theme.of(context).brightness == Brightness.dark
+                            ? Colors.black
+                            : Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+class DeleteContextDialog extends StatelessWidget {
+  final VoidCallback onDelete;
+
+  const DeleteContextDialog({
+    super.key,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final customColors = theme.extension<CustomColors>()!;
+
+    final textColor = theme.colorScheme.onSurface;
+
+    return Dialog(
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(
+        horizontal: 24,
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: customColors.contextScrCard,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+            color: customColors.contextScrCardStroke,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Delete Context',
+              style: GoogleFonts.baloo2(
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+                color: textColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'This action cannot be undone later.',
+              style: GoogleFonts.quicksand(
+                fontSize: 14,
+                height: 1.5,
+                color: textColor.withOpacity(0.65),
+              ),
+            ),
+            const SizedBox(height: 26),
+            Row(
+              children: [
+                Expanded(
+                  child: _DialogButton(
+                    text: 'Cancel',
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _DialogButton(
+                    text: 'Delete',
+                    isDestructive: true,
+                    onTap: () {
+                      onDelete();
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DialogButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onTap;
+  final bool isDestructive;
+
+  const _DialogButton({
+    required this.text,
+    required this.onTap,
+    this.isDestructive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 50,
+        decoration: BoxDecoration(
+          color: isDestructive
+              ? Colors.red.withOpacity(0.12)
+              : textColor.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: GoogleFonts.quicksand(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: isDestructive ? Colors.redAccent : textColor,
             ),
           ),
-        ],
+        ),
       ),
     );
   }
