@@ -1,6 +1,5 @@
 import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
-import 'package:aida/features/welcome/presentation/widgets/RevealDivider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:aida/core/theme/theme_provider.dart';

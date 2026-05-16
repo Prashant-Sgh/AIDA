@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 class AuthenticationStatusWidget extends StatelessWidget {
   final bool? status;
 
-  const AuthenticationStatusWidget({Key? key, required this.status})
-      : super(key: key);
+  const AuthenticationStatusWidget({super.key, required this.status});
 
   @override
   Widget build(BuildContext context) {

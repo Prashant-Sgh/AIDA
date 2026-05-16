@@ -19,11 +19,11 @@ class PasswordInputWidget extends ConsumerStatefulWidget {
   final FocusNode focusNode;
 
   const PasswordInputWidget({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onChanged,
     required this.focusNode,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<PasswordInputWidget> createState() =>

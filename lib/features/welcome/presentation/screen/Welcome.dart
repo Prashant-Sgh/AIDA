@@ -2,7 +2,6 @@ import 'package:aida/core/theme/theme_provider.dart';
 import 'package:aida/features/welcome/model/AnimationController.dart';
 import 'package:aida/features/welcome/presentation/widgets/IntroductionText.dart';
 import 'package:aida/features/welcome/presentation/widgets/TapAnimation.dart';
-import 'package:aida/features/welcome/presentation/widgets/TopRevealHeader.dart';
 import 'package:aida/features/welcome/presentation/widgets/tap_guide_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

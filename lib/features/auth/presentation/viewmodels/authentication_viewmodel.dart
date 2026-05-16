@@ -1,13 +1,20 @@
+import 'package:aida/features/auth/data/repos/firebase_auth_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final authenticationViewModelProvider =
     StateNotifierProvider<AuthenticationViewModel, AuthenticationState>(
-  (ref) => AuthenticationViewModel(),
+  (ref) {
+    final repo = ref.watch(firebaseAuthRepoProvider);
+    return AuthenticationViewModel(repo);
+  },
 );
 
 class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
-  AuthenticationViewModel() : super(AuthenticationState());
+  final FirebaseAuthRepo _firebaseAuthRepo;
+  AuthenticationViewModel(FirebaseAuthRepo firebaseAuthRepo)
+      : _firebaseAuthRepo = firebaseAuthRepo,
+        super(AuthenticationState());
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -44,17 +51,27 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     state = state.copyWith(isOtpVerified: false);
   }
 
-  Future<void> login() async {
-    // Perform authentication logic here
-    // You can use the email and password variables for authentication
-    // Update the authentication status in the state
-    state = state.copyWith(authenticated: true);
+  Future<void> loginAdmin({
+    required String email,
+    required String password,
+  }) async {
+    // Perform login logic here
+    final response =
+        await _firebaseAuthRepo.login(email: email, password: password);
+    state = state.copyWith(
+      authenticated: response.authenticated,
+      error: response.error,
+      email: response.email,
+    );
   }
 
-  Future<void> logout() async {
-    // Perform logout logic here
-    // Reset the authentication status in the state
-    state = state.copyWith(authenticated: false);
+  Future<String?> getFirebaseIdToken() async {
+    return await _firebaseAuthRepo.getFirebaseIdToken();
+  }
+
+  // Logout
+  Future<void> logoutAdmin() async {
+    await _firebaseAuthRepo.logout();
   }
 
   Future<void> verifyOtp(String otp) async {

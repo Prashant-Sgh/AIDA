@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:aida/core/theme/theme_provider.dart';
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:aida/features/otp/presentation/view/widgets/otp_action_widget.dart';
 import 'package:aida/features/otp/presentation/view/widgets/otp_row_widget.dart';
 import 'package:aida/features/otp/presentation/view/widgets/verify_otp_button.dart';
-import 'package:flutter/widget_previews.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -73,10 +71,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     super.dispose();
   }
 
-  /// =======================================================
-  /// ⏱ TIMER
-  /// =======================================================
-
+  // Timer
   void _startTimer() {
     _remainingSeconds = 60;
 
@@ -96,10 +91,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     );
   }
 
-  /// =======================================================
-  /// 🔢 OTP VALUE
-  /// =======================================================
-
+  // OTP value
   bool get isOtpFilled {
     return _controllers.every(
       (controller) => controller.text.isNotEmpty,
@@ -110,25 +102,27 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     return _controllers.map((controller) => controller.text).join();
   }
 
-  /// =======================================================
-  /// 🔐 VERIFY
-  /// =======================================================
-
-  void _verifyOtp() {
+  // Verify
+  Future<void> _verifyOtp() async {
     FocusScope.of(context).unfocus();
 
     debugPrint("OTP: $otp");
 
-    ref.read(authenticationViewModelProvider.notifier).verifyOtp(otp);
+    await ref.read(authenticationViewModelProvider.notifier).verifyOtp(otp);
+
+    // LOGOUT TEMPORARY
+    await ref.read(authenticationViewModelProvider.notifier).logoutAdmin();
+
+    if (mounted) {
+      debugPrint("OTP VERIFIED SUCCESSFULLY navigating to context screen");
+      context.go('/authentication');
+    }
 
     /// TODO:
     /// verify otp
   }
 
-  /// =======================================================
-  /// 🔁 RESEND OTP
-  /// =======================================================
-
+  // Resend
   void _resendOtp() {
     _startTimer();
 
@@ -150,9 +144,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
       backgroundColor: theme.scaffoldBackgroundColor,
       resizeToAvoidBottomInset: true,
 
-      /// ===================================================
-      /// BODY
-      /// ===================================================
+      // Body
       body: Stack(
         children: [
           SafeArea(
@@ -162,10 +154,6 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
               ),
               child: Column(
                 children: [
-                  /// ============================================
-                  /// CONTENT
-                  /// ============================================
-
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(

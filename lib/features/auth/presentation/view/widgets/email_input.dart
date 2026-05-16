@@ -21,13 +21,13 @@ class EmailInputWidget extends ConsumerStatefulWidget {
 final FocusNode nextFocusNode;
 
   const EmailInputWidget({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onChanged,
     required this.isEmailValid,
     required this.focusNode,
     required this.nextFocusNode,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<EmailInputWidget> createState() => _EmailInputWidgetState();

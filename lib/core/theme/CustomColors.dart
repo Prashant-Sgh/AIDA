@@ -46,7 +46,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
       contextScrExpandedCardTxtField:
           contextScrExpandedCardTxtField ?? this.contextScrExpandedCardTxtField,
       contextScrButtonClearTxt:
-          contextScrButtonClearTxt ?? this.contextScrButtonClearTxt,
+          contextScrButtonClearTxt ?? contextScrButtonClearTxt,
     );
   }
 

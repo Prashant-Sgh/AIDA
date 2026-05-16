@@ -14,7 +14,7 @@ class ChatScrAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final theme = Theme.of(context);
     return AppBar(
       foregroundColor: Theme.of(context).colorScheme.onSurface,
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       // leading: IconButton(onPressed: onPressed, icon: Icon(Icons.menu_rounded)),
       title: Center(
         child: Text(

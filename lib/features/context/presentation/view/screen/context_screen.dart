@@ -11,7 +11,7 @@ import 'package:aida/core/theme/CustomColors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ContextScreen extends ConsumerStatefulWidget {
-  const ContextScreen({Key? key}) : super(key: key);
+  const ContextScreen({super.key});
 
   @override
   ConsumerState<ContextScreen> createState() => _ContextScreenState();
@@ -53,7 +53,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
           ),
         ),
         centerTitle: false,
-        backgroundColor: colorScheme.background,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         actions: [
           IconButton(

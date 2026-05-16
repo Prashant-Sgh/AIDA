@@ -1,6 +1,5 @@
 import 'package:aida/features/auth/data/providers/firebase_auth_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final firebaseAuthServicesProvider = Provider<FirebaseAuthServices>((ref) {

@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 
 class TapAnimation extends StatefulWidget {
   const TapAnimation({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _TapAnimationState createState() => _TapAnimationState();

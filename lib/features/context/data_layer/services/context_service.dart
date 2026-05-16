@@ -44,7 +44,7 @@ class ContextServices {
         responseState = ResponseState.error;
       }
     } catch (e) {
-      print('FIRESTORE - ' + e.toString());
+      print('FIRESTORE - $e');
       responseState = ResponseState.error;
     }
 
@@ -140,7 +140,7 @@ class ContextServices {
 
   // Delete context by id
   Future<ResponseState> deleteById({required String id}) async {
-    ResponseState _responseState = ResponseState.notInitiated;
+    ResponseState responseState = ResponseState.notInitiated;
 
     final url = Uri.https(
       _baseUrl,
@@ -162,6 +162,6 @@ class ContextServices {
       updateResponseState(ResponseState.error);
     }
 
-    return _responseState;
+    return responseState;
   }
 }

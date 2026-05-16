@@ -18,9 +18,34 @@ class AuthenticationScreen extends ConsumerStatefulWidget {
 class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
   final emailFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
-  
+
   // void onAuthenticate() => ref.read(authenticationViewModelProvider.notifier).login();
-  void onAuthenticate() => context.push('/otp');
+  Future<void> onAuthenticate() async {
+    // context.push('/otp');
+    final email = ref.watch(authenticationViewModelProvider).email;
+    final password = ref.watch(authenticationViewModelProvider).email;
+
+    debugPrint(
+        " - Ready to authenticate with email: $email and password: $password");
+
+    await ref
+        .read(authenticationViewModelProvider.notifier)
+        .loginAdmin(email: email, password: password);
+
+    if (ref.watch(authenticationViewModelProvider).authenticated) {
+      final idToken = await ref
+          .read(authenticationViewModelProvider.notifier)
+          .getFirebaseIdToken();
+
+      debugPrint(" - Firebase Id Token is: $idToken");
+
+      Future.delayed(Duration(seconds: 2), () {
+        if (mounted) {
+          context.push('/otp');
+        }
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -79,7 +104,11 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                     const SizedBox(height: 40),
                     EmailInputWidget(
                       controller: viewModel.emailController,
-                      onChanged: viewModel.setEmail,
+                      onChanged: (email) {
+                        viewModel.setEmail(email);
+                        debugPrint(
+                            ref.watch(authenticationViewModelProvider).email);
+                      },
                       isEmailValid: state.isEmailValid,
                       focusNode: emailFocusNode,
                       nextFocusNode: passwordFocusNode,
@@ -87,7 +116,12 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                     const SizedBox(height: 16),
                     PasswordInputWidget(
                       controller: viewModel.passwordController,
-                      onChanged: viewModel.setPassword,
+                      onChanged: (password) {
+                        viewModel.setPassword(password);
+                        debugPrint(ref
+                            .watch(authenticationViewModelProvider)
+                            .password);
+                      },
                       focusNode: passwordFocusNode,
                     ),
                   ],

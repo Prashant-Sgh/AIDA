@@ -20,12 +20,12 @@ class _ChatInputBar extends State<ChatInputBar> {
 
   @override
   Widget build(BuildContext context) {
-    final _theme = Theme.of(context);
-    final _iconColor = _theme.colorScheme.onSurface.withOpacity(0.7);
-    final _singleChildScrollController = ScrollController();
-    final _textFieldScrollController = ScrollController();
-    final _backgroundColor = _theme.colorScheme.onSurface.withAlpha(15);
-    final _isEnabled = _controller.text.isNotEmpty;
+    final theme = Theme.of(context);
+    final iconColor = theme.colorScheme.onSurface.withOpacity(0.7);
+    final singleChildScrollController = ScrollController();
+    final textFieldScrollController = ScrollController();
+    final backgroundColor = theme.colorScheme.onSurface.withAlpha(15);
+    final isEnabled = _controller.text.isNotEmpty;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: ConstrainedBox(
@@ -37,9 +37,9 @@ class _ChatInputBar extends State<ChatInputBar> {
         child: Container(
           // height: 58,
           decoration: BoxDecoration(
-            color: _backgroundColor,
+            color: backgroundColor,
             border: Border.all(
-              color: _theme.colorScheme.onSurface.withAlpha(50),
+              color: theme.colorScheme.onSurface.withAlpha(50),
               width: 0.5,
             ),
             borderRadius: BorderRadius.circular(20),
@@ -52,7 +52,7 @@ class _ChatInputBar extends State<ChatInputBar> {
                 padding:
                     const EdgeInsets.only(left: 20.0, right: 20.0, top: 12.0),
                 child: SingleChildScrollView(
-                  controller: _singleChildScrollController,
+                  controller: singleChildScrollController,
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
                       minHeight: 20,
@@ -66,16 +66,16 @@ class _ChatInputBar extends State<ChatInputBar> {
                       maxLines: null,
                       autofocus: false,
                       keyboardType: TextInputType.text,
-                      cursorColor: _theme.colorScheme.onSurface,
-                      scrollController: _textFieldScrollController,
+                      cursorColor: theme.colorScheme.onSurface,
+                      scrollController: textFieldScrollController,
                       style: GoogleFonts.quicksand(
                           fontWeight: FontWeight.w400,
                           fontSize: 14,
-                          color: _theme.colorScheme.onSurface),
+                          color: theme.colorScheme.onSurface),
                       decoration: InputDecoration(
                         hintText: 'What would you like to know?',
-                        hintStyle: _theme.textTheme.bodyMedium?.copyWith(
-                          color: _theme.colorScheme.onSurface.withOpacity(0.6),
+                        hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurface.withOpacity(0.6),
                         ),
                         border: InputBorder.none,
                         isDense: true,
@@ -113,17 +113,17 @@ class _ChatInputBar extends State<ChatInputBar> {
                 children: [
                   const SizedBox(width: 12),
                   IconButton(
-                    icon: Icon(Icons.image_outlined, color: _iconColor),
+                    icon: Icon(Icons.image_outlined, color: iconColor),
                     onPressed: () {},
                     splashRadius: 24,
                   ),
                   IconButton(
-                    icon: Icon(Icons.code, color: _iconColor),
+                    icon: Icon(Icons.code, color: iconColor),
                     onPressed: () {},
                     splashRadius: 24,
                   ),
                   IconButton(
-                    icon: Icon(Icons.mic_none, color: _iconColor),
+                    icon: Icon(Icons.mic_none, color: iconColor),
                     onPressed: () {},
                     splashRadius: 24,
                   ),
@@ -134,12 +134,12 @@ class _ChatInputBar extends State<ChatInputBar> {
                       height: 32,
                       width: 32,
                       decoration: BoxDecoration(
-                        color: _isEnabled ? _theme.colorScheme.primary : _theme.colorScheme.onSurface.withAlpha(100),
+                        color: isEnabled ? theme.colorScheme.primary : theme.colorScheme.onSurface.withAlpha(100),
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
-                        icon: Icon(Icons.arrow_upward_rounded, size: 14, color: _theme.colorScheme.surface),
-                        onPressed: _isEnabled ? () {
+                        icon: Icon(Icons.arrow_upward_rounded, size: 14, color: theme.colorScheme.surface),
+                        onPressed: isEnabled ? () {
                           widget.sendMessage(_controller.text);
                           _controller.clear();
                       } : null,

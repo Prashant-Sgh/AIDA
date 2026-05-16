@@ -47,7 +47,7 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
       extendBodyBehindAppBar: true,
       resizeToAvoidBottomInset: false,
       appBar: ChatScrAppBar(),
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: WillPopScope(
           onWillPop: () async {
@@ -58,7 +58,7 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  backgroundColor: Theme.of(context).colorScheme.background,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                   title: Text(
                     'Leaving so soon?',
                     style: GoogleFonts.baloo2(
@@ -119,9 +119,9 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
               StreamBuilder(
                   stream: _messageManager.conversationStream,
                   builder: (context, snapshot) {
-                    final _conversations = snapshot.data ?? [];
+                    final conversations = snapshot.data ?? [];
 
-                    final _coreConversations = _conversations.reversed.map((c) {
+                    final coreConversations = conversations.reversed.map((c) {
                       return Conversations(
                         id: c.id,
                         time: c.time.toString(),
@@ -131,13 +131,13 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
                     });
 
                     return Expanded(
-                      child: _conversations.isEmpty
+                      child: conversations.isEmpty
                           ? Center(
                               child: ChatHint(),
                             )
                           : ListView(
                               children: [
-                                ..._coreConversations,
+                                ...coreConversations,
                                 if (_messageManager.responseState ==
                                     ResponseState.loading)
                                   ProcessingAnimation(),

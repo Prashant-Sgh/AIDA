@@ -35,7 +35,7 @@ class ContextViewModel extends Notifier<ContextState> {
   void updateNewContextModel({String? name, String? content}) {
     newContextModel = newContextModel.copyWith(name: name, content: content);
     debugPrint(
-        'New context model changed to: ' + newContextModel.toJson().toString());
+        'New context model changed to: ${newContextModel.toJson()}');
   }
 
   void clearNewContextModel() =>

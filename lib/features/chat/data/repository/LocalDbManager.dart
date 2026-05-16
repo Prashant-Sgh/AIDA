@@ -58,7 +58,7 @@ class DatabaseManager {
       messages = [];
     }
 
-    print('sendMessage - loadMessages - messages loaded from DB: ${messages}');
+    print('sendMessage - loadMessages - messages loaded from DB: $messages');
 
     return messages;
   }
