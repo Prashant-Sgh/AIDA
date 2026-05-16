@@ -76,6 +76,7 @@ class AuthenticationState {
     this.isLoading = false,
     this.email = '',
     this.password = '',
+    this.error,
     this.authenticated = false,
     this.isEmailValid = false,
     this.isOtpVerified = false,
@@ -85,6 +86,7 @@ class AuthenticationState {
   final String email;
   final String password;
   final bool authenticated;
+  final String? error;
   final bool isEmailValid;
   final bool isOtpVerified;
 
@@ -92,6 +94,7 @@ class AuthenticationState {
     bool? isLoading,
     String? email,
     String? password,
+    String? error,
     bool? authenticated,
     bool? isEmailValid,
     bool? isOtpVerified,
@@ -100,6 +103,7 @@ class AuthenticationState {
       isLoading: isLoading ?? this.isLoading,
       email: email ?? this.email,
       password: password ?? this.password,
+      error: error ?? this.error,
       authenticated: authenticated ?? this.authenticated,
       isEmailValid: isEmailValid ?? this.isEmailValid,
       isOtpVerified: isOtpVerified ?? this.isOtpVerified,

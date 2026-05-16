@@ -1,18 +1,11 @@
-// import 'dart:math';
+import 'package:aida/features/auth/data/repos/firebase_auth_repo.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// import 'package:aida/features/context/data_layer/repositories/context_repository.dart';
-// import 'package:aida/features/context/data_layer/services/context_service.dart';
-// import 'package:aida/features/context/domain_layer/context_model.dart';
+void main() {
+  print('it\'s working');
+  // final container = ProviderContainer();
 
-// void main() async {
-//   print('it\'s working');
-//   final service = ContextRepository();
-//   service.getContexts();
+  // final FirebaseAuthRepo repo = container.read(firebaseAuthRepoProvider);
 
-//   // final context = ContextModel(
-//   //     id: '1778349927744',
-//   //     name: 'Context 02 Updated',
-//   //     content: 'Updated context content');
-  
-  // await service.deleteContextWithId(id: 'd');
-// }
+  // repo.working();
+}
