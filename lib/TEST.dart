@@ -1,12 +1,10 @@
+// import 'package:aida/features/auth/data/services/backend_2fa_services.dart';
 
-// import 'package:aida/features/auth/data/repos/firebase_auth_repo.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
+// void main() async {
+//   print('It\'s on work..');
+//   final backend2faServices = Backend2faServices();
 
-// void main() {
-//   print('it\'s working');
-//   final container = ProviderContainer();
-
-//   final FirebaseAuthRepo repo = container.read(firebaseAuthRepoProvider);
-
-//   repo.working();
+//   await backend2faServices.sendOTP(email: "roshansingh190804@gmail.com");
+//   // await backend2faServices.verifyOtp(
+//   //     otp: "3416", email: "roshansingh190804@gmail.com");
 // }

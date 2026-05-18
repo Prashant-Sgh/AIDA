@@ -21,29 +21,12 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
 
   // void onAuthenticate() => ref.read(authenticationViewModelProvider.notifier).login();
   Future<void> onAuthenticate() async {
-    // context.push('/otp');
-    final email = ref.watch(authenticationViewModelProvider).email;
-    final password = ref.watch(authenticationViewModelProvider).email;
+    await ref.read(authenticationViewModelProvider.notifier).loginAdmin();
 
-    debugPrint(
-        " - Ready to authenticate with email: $email and password: $password");
+    final state = ref.read(authenticationViewModelProvider);
 
-    await ref
-        .read(authenticationViewModelProvider.notifier)
-        .loginAdmin(email: email, password: password);
-
-    if (ref.watch(authenticationViewModelProvider).authenticated) {
-      final idToken = await ref
-          .read(authenticationViewModelProvider.notifier)
-          .getFirebaseIdToken();
-
-      debugPrint(" - Firebase Id Token is: $idToken");
-
-      Future.delayed(Duration(seconds: 2), () {
-        if (mounted) {
-          context.push('/otp');
-        }
-      });
+    if (state.firebaseIdToken != null) {
+      if (mounted) context.go('/otp');
     }
   }
 
@@ -70,7 +53,6 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(authenticationViewModelProvider);
     final viewModel = ref.read(authenticationViewModelProvider.notifier);
-
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       resizeToAvoidBottomInset: true, // important
@@ -107,7 +89,7 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                       onChanged: (email) {
                         viewModel.setEmail(email);
                         debugPrint(
-                            ref.watch(authenticationViewModelProvider).email);
+                            "Email:${ref.watch(authenticationViewModelProvider).email}");
                       },
                       isEmailValid: state.isEmailValid,
                       focusNode: emailFocusNode,
@@ -118,9 +100,8 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                       controller: viewModel.passwordController,
                       onChanged: (password) {
                         viewModel.setPassword(password);
-                        debugPrint(ref
-                            .watch(authenticationViewModelProvider)
-                            .password);
+                        debugPrint(
+                            "Password:${ref.watch(authenticationViewModelProvider).password}");
                       },
                       focusNode: passwordFocusNode,
                     ),

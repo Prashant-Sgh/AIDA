@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:aida/features/otp/presentation/view/widgets/otp_action_widget.dart';
 import 'package:aida/features/otp/presentation/view/widgets/otp_row_widget.dart';
+import 'package:aida/features/otp/presentation/view/widgets/otp_status_message.dart';
 import 'package:aida/features/otp/presentation/view/widgets/verify_otp_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -105,17 +106,19 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   // Verify
   Future<void> _verifyOtp() async {
     FocusScope.of(context).unfocus();
+    await ref
+        .read(authenticationViewModelProvider.notifier)
+        .verifyOtp(otp: otp);
 
-    debugPrint("OTP: $otp");
+    Future.delayed(const Duration(seconds: 1));
 
-    await ref.read(authenticationViewModelProvider.notifier).verifyOtp(otp);
+    final state = ref.read(authenticationViewModelProvider);
 
-    // LOGOUT TEMPORARY
-    await ref.read(authenticationViewModelProvider.notifier).logoutAdmin();
-
-    if (mounted) {
-      debugPrint("OTP VERIFIED SUCCESSFULLY navigating to context screen");
-      context.go('/authentication');
+    if (state.isOtpVerified) {
+      if (mounted) {
+        debugPrint("OTP VERIFIED SUCCESSFULLY navigating to context screen");
+        context.go('/context');
+      }
     }
 
     /// TODO:
@@ -123,11 +126,17 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   }
 
   // Resend
-  void _resendOtp() {
+  Future<void> _resendOtp() async {
     _startTimer();
 
-    /// TODO:
-    /// resend otp api
+    await ref.read(authenticationViewModelProvider.notifier).reSendOtp();
+  }
+
+  Future<void> _onChangeEmail() async {
+    await ref.read(authenticationViewModelProvider.notifier).logoutAdmin();
+    if (mounted) {
+      context.pop();
+    }
   }
 
   @override
@@ -135,7 +144,6 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     final email = ref.watch(authenticationViewModelProvider).email;
     final state = ref.watch(authenticationViewModelProvider);
     final loading = state.isLoading;
-    final isOtpVerified = state.isOtpVerified;
     final theme = Theme.of(context);
 
     final colorScheme = theme.colorScheme;
@@ -147,6 +155,32 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
       // Body
       body: Stack(
         children: [
+          if (state.error != null)
+            Positioned(
+              bottom: 110,
+              left: 24,
+              right: 24,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 260),
+                child: OtpStatusMessage(
+                  key: ValueKey(state.error),
+                  message: state.error!,
+                  isError: true,
+                ),
+              ),
+            ),
+          if (state.isOtpVerified)
+            Positioned(
+              bottom: 110,
+              left: 24,
+              right: 24,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 260),
+                child: OtpStatusMessage(
+                  message: 'OTP verified successfully',
+                ),
+              ),
+            ),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -227,9 +261,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                           OtpActionsWidget(
                             remainingSeconds: _remainingSeconds,
                             onResend: _resendOtp,
-                            onChangeEmail: () {
-                              context.go('/authentication');
-                            },
+                            onChangeEmail: _onChangeEmail,
                           ),
                         ],
                       ),
