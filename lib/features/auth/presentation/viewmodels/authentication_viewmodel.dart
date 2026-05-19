@@ -59,30 +59,35 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
 
   Future<void> loginAdmin() async {
     // Perform login logic here
-    final email = state.email;
-    final password = state.password;
-
-    final response =
-        await _firebaseAuthRepo.login(email: email, password: password);
+    state = state.copyWith(isLoading: true);
+    final response = await _firebaseAuthRepo.login(
+        email: state.email, password: state.password);
 
     if (response.authenticated) {
       final idToken = await getFirebaseIdToken();
       if (idToken != null) {
-        state = state.copyWith(firebaseIdToken: idToken);
+        state = state.copyWith(
+            isLoading: false, firebaseIdToken: idToken, error: null);
         await _backend2faRepo.start2fa(token: idToken);
       } else {
         state = state.copyWith(
+            isLoading: false,
             authenticated: false,
             error: 'No Firebase authentication token found.');
         logoutAdmin();
       }
+    } else {
+      _emailController.clear();
+      _passwordController.clear();
+      state = state.copyWith(
+        isLoading: false,
+        authenticated: false,
+        error: response.error,
+        isEmailValid: false,
+        email: '',
+        password: '',
+      );
     }
-
-    state = state.copyWith(
-      authenticated: response.authenticated,
-      error: response.error,
-      email: response.email,
-    );
   }
 
   Future<String?> getFirebaseIdToken() async {
@@ -96,19 +101,30 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
   // Logout
   Future<void> logoutAdmin() async {
     await _firebaseAuthRepo.logout();
+    _emailController.clear();
+    _passwordController.clear();
+    state = state.copyWith(
+        isEmailValid: false,
+        email: null,
+        password: null,
+        firebaseIdToken: null,
+        authenticated: false,
+        isOtpVerified: false);
   }
 
-  Future<void> reSendOtp() async{
+  Future<void> reSendOtp() async {
     await _backend2faRepo.sendOTP(email: state.email);
   }
 
   Future<void> verifyOtp({required String otp}) async {
     state = state.copyWith(isLoading: true);
-    final response = await _backend2faRepo.verifyOtp(otp: otp, email: state.email);
-    if (response == ResponseState.success) {
-      state = state.copyWith(isLoading: false, isOtpVerified: true);
+    final response =
+        await _backend2faRepo.verifyOtp(otp: otp, email: state.email);
+    if (response.isNotEmpty) {
+      state = state.copyWith(
+          isLoading: false, isOtpVerified: true, jwtToken: response);
     } else {
-      state = state.copyWith(isLoading: false, isOtpVerified: false);
+      state = state.copyWith(isLoading: false, isOtpVerified: false, error: "OTP invalid.");
     }
   }
 }
@@ -123,6 +139,7 @@ class AuthenticationState {
     this.firebaseIdToken,
     this.isEmailValid = false,
     this.isOtpVerified = false,
+    this.jwtToken,
   });
 
   bool isLoading = false;
@@ -133,6 +150,7 @@ class AuthenticationState {
   final String? error;
   final bool isEmailValid;
   final bool isOtpVerified;
+  final String? jwtToken;
 
   AuthenticationState copyWith({
     bool? isLoading,
@@ -143,6 +161,7 @@ class AuthenticationState {
     String? firebaseIdToken,
     bool? isEmailValid,
     bool? isOtpVerified,
+    String? jwtToken,
   }) {
     return AuthenticationState(
       isLoading: isLoading ?? this.isLoading,
@@ -153,6 +172,7 @@ class AuthenticationState {
       firebaseIdToken: firebaseIdToken ?? this.firebaseIdToken,
       isEmailValid: isEmailValid ?? this.isEmailValid,
       isOtpVerified: isOtpVerified ?? this.isOtpVerified,
+      jwtToken: jwtToken ?? this.jwtToken,
     );
   }
 }

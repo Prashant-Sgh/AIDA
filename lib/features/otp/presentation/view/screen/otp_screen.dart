@@ -110,8 +110,6 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
         .read(authenticationViewModelProvider.notifier)
         .verifyOtp(otp: otp);
 
-    Future.delayed(const Duration(seconds: 1));
-
     final state = ref.read(authenticationViewModelProvider);
 
     if (state.isOtpVerified) {
@@ -147,6 +145,8 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     final theme = Theme.of(context);
 
     final colorScheme = theme.colorScheme;
+
+    debugPrint("OTP: $otp");
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,

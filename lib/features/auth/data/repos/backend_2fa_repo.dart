@@ -18,7 +18,7 @@ class Backend2faRepo {
     await _backend2faServices.sendOTP(email: email);
   }
 
-  Future<ResponseState> verifyOtp(
+  Future<String> verifyOtp(
       {required String otp, required String email}) async {
     return await _backend2faServices.verifyOtp(otp: otp, email: email);
   }

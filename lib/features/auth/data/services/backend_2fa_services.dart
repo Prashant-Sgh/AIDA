@@ -66,19 +66,20 @@ class Backend2faServices {
     // debugdebugPrint('OTP sent to $email');
   }
 
-  Future<ResponseState> verifyOtp(
-      {required String otp, required String email}) async {
+  Future<String> verifyOtp({required String otp, required String email}) async {
     final uri = Uri.https(_baseUrl, '/auth/verifyOtp');
     final body = jsonEncode({'otp': otp, 'uid': email});
 
     final response = await http.post(uri, headers: headers, body: body);
+    final jwtToken = jsonDecode(response.body)['token'];
 
-    if (response.statusCode == 200) {
-      debugPrint('Status code: ${response.statusCode}, response.message: ${response.body}');
-      return ResponseState.success;
+    if (response.statusCode == 200 && jwtToken != null && jwtToken is String) {
+      debugPrint('Status code: ${response.statusCode}, Token: $jwtToken');
+      return jwtToken;
     } else {
-      debugPrint('Status code: ${response.statusCode}, response.message: ${response.body}');
-      return ResponseState.error;
+      debugPrint(
+          'Status code: ${response.statusCode}, response.message: ${response.body}');
+      return '';
     }
   }
 }

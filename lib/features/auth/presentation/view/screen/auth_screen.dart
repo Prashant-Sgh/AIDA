@@ -26,7 +26,7 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
     final state = ref.read(authenticationViewModelProvider);
 
     if (state.firebaseIdToken != null) {
-      if (mounted) context.go('/otp');
+      if (mounted) context.push('/otp');
     }
   }
 
@@ -52,6 +52,7 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(authenticationViewModelProvider);
+    final isError = state.error != null;
     final viewModel = ref.read(authenticationViewModelProvider.notifier);
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -77,10 +78,14 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "Sign in to continue",
+                      isError
+                          // ? "Credentials error, please check your credentials"
+                          ? state.error ?? "Error"
+                          : "Sign in to continue",
                       style: GoogleFonts.quicksand(
-                        fontSize: 16,
-                        color: Colors.grey.shade600,
+                        fontSize: isError ? 15 : 16,
+                        color:
+                            isError ? Colors.redAccent : Colors.grey.shade600,
                       ),
                     ),
                     const SizedBox(height: 40),

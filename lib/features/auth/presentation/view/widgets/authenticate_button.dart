@@ -1,7 +1,9 @@
+import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AuthenticateButtonWidget extends StatefulWidget {
+class AuthenticateButtonWidget extends ConsumerStatefulWidget {
   final VoidCallback onPressed;
   final bool enable;
 
@@ -12,15 +14,17 @@ class AuthenticateButtonWidget extends StatefulWidget {
   });
 
   @override
-  State<AuthenticateButtonWidget> createState() =>
+  ConsumerState<AuthenticateButtonWidget> createState() =>
       _AuthenticateButtonWidgetState();
 }
 
-class _AuthenticateButtonWidgetState extends State<AuthenticateButtonWidget> {
+class _AuthenticateButtonWidgetState
+    extends ConsumerState<AuthenticateButtonWidget> {
   bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(authenticationViewModelProvider).isLoading;
     final bgColor = widget.enable ? Colors.blueAccent : Colors.grey.shade400;
 
     return GestureDetector(
@@ -63,14 +67,18 @@ class _AuthenticateButtonWidgetState extends State<AuthenticateButtonWidget> {
         child: AnimatedOpacity(
           duration: const Duration(milliseconds: 200),
           opacity: widget.enable ? 1.0 : 0.7,
-          child: Text(
-            "Authenticate",
-            style: GoogleFonts.quicksand(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
+          child: isLoading
+              ? CircularProgressIndicator(
+                  color: Colors.white,
+                )
+              : Text(
+                  "Authenticate",
+                  style: GoogleFonts.quicksand(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
         ),
       ),
     );

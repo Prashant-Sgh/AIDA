@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_viewmodel.dart';
 import 'package:aida/features/context/presentation/view/widgets/context_item_widget.dart';
 import 'package:aida/core/theme/CustomColors.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ContextScreen extends ConsumerStatefulWidget {
@@ -23,7 +24,8 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
     super.initState();
     // Load contexts when screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await ref.read(contextVMProvider.notifier).loadContexts();
+      // await ref.read(contextVMProvider.notifier).loadContexts();
+          context.push('/temp');
     });
   }
 
@@ -40,7 +42,6 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
 
     final isContextNotSaved =
         ref.read(contextVMProvider.notifier).hasDataChanged;
-
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
