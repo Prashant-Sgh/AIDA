@@ -20,6 +20,11 @@ class Backend2faRepo {
 
   Future<String> verifyOtp(
       {required String otp, required String email}) async {
-    return await _backend2faServices.verifyOtp(otp: otp, email: email);
+        final response = await _backend2faServices.verifyOtp(otp: otp, email: email);
+        return response;
+  }
+
+  Future<bool> validateJwt({required String token}) async {
+    return await _backend2faServices.validateJwt(token: token);
   }
 }

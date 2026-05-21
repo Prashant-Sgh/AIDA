@@ -2,6 +2,7 @@ import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/core/theme/app_colors.dart';
 import 'package:aida/core/theme/theme_provider.dart';
 import 'package:aida/firebase_options.dart';
+import 'package:aida/shared/widgets/global_status_overlay.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,9 +12,7 @@ import 'core/router/app_router.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const ProviderScope(child: MainApp()));
 }
 

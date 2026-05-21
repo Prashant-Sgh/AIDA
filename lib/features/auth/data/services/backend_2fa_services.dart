@@ -82,4 +82,9 @@ class Backend2faServices {
       return '';
     }
   }
+
+  Future<bool> validateJwt({required String token}) async {
+    // TODO: implement validateJwt
+    return false;
+  }
 }

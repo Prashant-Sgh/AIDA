@@ -1,4 +1,5 @@
 import 'package:aida/core/enums/response_state.dart';
+import 'package:aida/core/services/secure_storage_service.dart';
 import 'package:aida/features/auth/data/repos/backend_2fa_repo.dart';
 import 'package:aida/features/auth/data/repos/firebase_auth_repo.dart';
 import 'package:flutter/material.dart';
@@ -9,17 +10,21 @@ final authenticationViewModelProvider =
   (ref) {
     final repo = ref.watch(firebaseAuthRepoProvider);
     final backend2faRepo = ref.watch(backend2faRepoProvider);
-    return AuthenticationViewModel(repo, backend2faRepo);
+    final secureStorageService = ref.watch(secureStorageServiceProvider);
+    return AuthenticationViewModel(repo, backend2faRepo, secureStorageService);
   },
 );
 
 class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
   final FirebaseAuthRepo _firebaseAuthRepo;
   final Backend2faRepo _backend2faRepo;
-  AuthenticationViewModel(
-      FirebaseAuthRepo firebaseAuthRepo, Backend2faRepo backend2faRepo)
+  final SecureStorageService _secureStorageService;
+
+  AuthenticationViewModel(FirebaseAuthRepo firebaseAuthRepo,
+      Backend2faRepo backend2faRepo, SecureStorageService secureStorageService)
       : _firebaseAuthRepo = firebaseAuthRepo,
         _backend2faRepo = backend2faRepo,
+        _secureStorageService = secureStorageService,
         super(AuthenticationState());
 
   final _emailController = TextEditingController();
@@ -30,6 +35,7 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
   String get email => _emailController.text;
   String get password => _passwordController.text;
 
+  // Handle email and password changes
   void setEmail(String value) {
     final isValid = isValidEmail(value);
 
@@ -57,6 +63,7 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     state = state.copyWith(isOtpVerified: false);
   }
 
+  // Login
   Future<void> loginAdmin() async {
     // Perform login logic here
     state = state.copyWith(isLoading: true);
@@ -90,6 +97,7 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     }
   }
 
+  // Get Firebase ID Token
   Future<String?> getFirebaseIdToken() async {
     final idToken = await _firebaseAuthRepo.getFirebaseIdToken();
     if (idToken != null) {
@@ -112,20 +120,73 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
         isOtpVerified: false);
   }
 
+  // Show OTP Pending Banner
+  void showOtpPendingBanner() {
+    state = state.copyWith(showOtpPendingBanner: true);
+  }
+
+  // Dismiss OTP Pending Banner
+  void dismissOtpPendingBanner() {
+    state = state.copyWith(showOtpPendingBanner: false);
+  }
+
+  // Resend OTP
   Future<void> reSendOtp() async {
     await _backend2faRepo.sendOTP(email: state.email);
   }
 
+  // Verify OTP
   Future<void> verifyOtp({required String otp}) async {
     state = state.copyWith(isLoading: true);
     final response =
         await _backend2faRepo.verifyOtp(otp: otp, email: state.email);
     if (response.isNotEmpty) {
+      _secureStorageService.saveJwt(jwtToken: response);
       state = state.copyWith(
           isLoading: false, isOtpVerified: true, jwtToken: response);
     } else {
-      state = state.copyWith(isLoading: false, isOtpVerified: false, error: "OTP invalid.");
+      state = state.copyWith(
+          isLoading: false, isOtpVerified: false, error: "OTP invalid.");
     }
+  }
+
+  // Check Auth State
+  Future<void> checkAuthState() async {
+    final jwtToken = await _secureStorageService.getJwt();
+
+    // 1. JWT exists
+    if (jwtToken != null) {
+      final valid = await _backend2faRepo.validateJwt(token: jwtToken);
+
+      if (valid) {
+        final firebaseToken = await getFirebaseIdToken();
+        state = state.copyWith(
+            authenticated: true,
+            jwtToken: jwtToken,
+            firebaseIdToken: firebaseToken,
+            isOtpVerified: true);
+        return;
+      }
+      _secureStorageService.clearJwt();
+    }
+
+    // 2. JWT doesn't exist Fall back to Firebase
+    final firebaseToken = await getFirebaseIdToken();
+    if (firebaseToken != null) {
+      state = state.copyWith(
+        authenticated: true,
+        firebaseIdToken: firebaseToken,
+        isOtpVerified: false,
+      );
+      showOtpPendingBanner();
+      return;
+    }
+
+    state = state.copyWith(
+      authenticated: false,
+      firebaseIdToken: null,
+      isOtpVerified: false,
+    );
   }
 }
 
@@ -139,6 +200,7 @@ class AuthenticationState {
     this.firebaseIdToken,
     this.isEmailValid = false,
     this.isOtpVerified = false,
+    this.showOtpPendingBanner = false,
     this.jwtToken,
   });
 
@@ -150,6 +212,7 @@ class AuthenticationState {
   final String? error;
   final bool isEmailValid;
   final bool isOtpVerified;
+  final bool showOtpPendingBanner;
   final String? jwtToken;
 
   AuthenticationState copyWith({
@@ -161,6 +224,7 @@ class AuthenticationState {
     String? firebaseIdToken,
     bool? isEmailValid,
     bool? isOtpVerified,
+    bool? showOtpPendingBanner,
     String? jwtToken,
   }) {
     return AuthenticationState(
@@ -172,6 +236,7 @@ class AuthenticationState {
       firebaseIdToken: firebaseIdToken ?? this.firebaseIdToken,
       isEmailValid: isEmailValid ?? this.isEmailValid,
       isOtpVerified: isOtpVerified ?? this.isOtpVerified,
+      showOtpPendingBanner: showOtpPendingBanner ?? this.showOtpPendingBanner,
       jwtToken: jwtToken ?? this.jwtToken,
     );
   }

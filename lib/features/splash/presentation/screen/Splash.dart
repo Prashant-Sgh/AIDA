@@ -1,23 +1,28 @@
+import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:aida/features/splash/presentation/widgets/AIDA_animation.dart';
 import 'package:aida/features/splash/presentation/widgets/MetaText.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class Splash extends StatefulWidget {
+class Splash extends ConsumerStatefulWidget {
   const Splash({super.key});
 
   @override
-  State<Splash> createState() => _SplashState();
+  ConsumerState<Splash> createState() => _SplashState();
 }
 
-class _SplashState extends State<Splash> {
+class _SplashState extends ConsumerState<Splash> {
   @override
   void initState() {
     super.initState();
-    // Navigate to Welcome screen after 2 sec
-    Future.delayed(const Duration(seconds: 4), () {
-      if (mounted) context.go('/chat');
-      // if (mounted) context.go('/welcome');
+
+    Future.microtask(() async {
+      await ref.read(authenticationViewModelProvider.notifier).checkAuthState();
+
+      if (!mounted) return;
+
+      context.go('/');
     });
   }
 
