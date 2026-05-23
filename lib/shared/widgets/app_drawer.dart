@@ -1,5 +1,6 @@
 import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/core/theme/theme_provider.dart';
+import 'package:aida/core/utils/open_protected_route.dart';
 import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -86,11 +87,11 @@ class AppDrawer extends ConsumerWidget {
               ),
 
               _DrawerTile(
-                title: 'Admin controll',
+                title: 'Context controll',
                 icon: Icons.shield_outlined,
                 textColor: textColor,
                 onTap: () {
-                  context.push('/authentication');
+                  openProtectedContextRoute(context: context, ref: ref);
                 },
               ),
 
