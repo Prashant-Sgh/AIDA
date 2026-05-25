@@ -1,3 +1,4 @@
+import 'package:aida/core/services/secure_storage_service.dart';
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:aida/features/splash/presentation/widgets/AIDA_animation.dart';
 import 'package:aida/features/splash/presentation/widgets/MetaText.dart';
@@ -22,7 +23,13 @@ class _SplashState extends ConsumerState<Splash> {
 
       if (!mounted) return;
 
-      context.go('/');
+      final secureStorageService = ref.read(secureStorageServiceProvider);
+      final isUserRegistered = await secureStorageService.getFirebaseId();
+
+      if (mounted) {
+        isUserRegistered == null ? context.push('/') : context.push('/chat');
+        debugPrint('isUserRegistered: $isUserRegistered');
+      }
     });
   }
 

@@ -21,4 +21,19 @@ class SecureStorageService {
   Future<void> clearJwt() async {
     await _secureStorage.delete(key: _jwtKey);
   }
+
+  static const _firebaeseIdKey = 'firebaseIdKey';
+
+  Future<void> saveFirebaseId({required String firebaseIdKey}) async {
+    await _secureStorage.write(key: _firebaeseIdKey, value: firebaseIdKey);
+  }
+
+  Future<String?> getFirebaseId() async {
+    return await _secureStorage.read(key: _firebaeseIdKey);
+  }
+
+  Future<void> clearFirebaseId() async {
+    await _secureStorage.delete(key: _firebaeseIdKey);
+  }
+
 }

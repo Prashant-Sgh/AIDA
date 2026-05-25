@@ -109,6 +109,8 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
   // Logout
   Future<void> logoutAdmin() async {
     await _firebaseAuthRepo.logout();
+    await _secureStorageService.clearJwt();
+    await _secureStorageService.clearFirebaseId();
     _emailController.clear();
     _passwordController.clear();
     state = state.copyWith(
@@ -141,7 +143,10 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     final response =
         await _backend2faRepo.verifyOtp(otp: otp, email: state.email);
     if (response.isNotEmpty) {
+      final firebaseToken = await getFirebaseIdToken();
       _secureStorageService.saveJwt(jwtToken: response);
+      _secureStorageService.saveFirebaseId(
+          firebaseIdKey: firebaseToken ?? '');
       state = state.copyWith(
           isLoading: false, isOtpVerified: true, jwtToken: response);
     } else {

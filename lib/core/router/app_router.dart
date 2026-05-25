@@ -1,5 +1,4 @@
 import 'package:aida/features/auth/presentation/view/screen/auth_screen.dart';
-import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:aida/features/chat/presentation/screen/ChatScreen.dart';
 import 'package:aida/features/context/presentation/view/screen/context_screen.dart';
 import 'package:aida/features/otp/presentation/view/screen/otp_screen.dart';
@@ -12,19 +11,6 @@ import 'package:go_router/go_router.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/splash',
-  redirect: (context, state) {
-    final container = ProviderScope.containerOf(context);
-
-    final authState = container.read(authenticationViewModelProvider);
-
-    final location = state.matchedLocation;
-
-    // DELETE AFTER TEST
-    final userIsGuest = false;
-    if (userIsGuest) return '/';
-
-    return '/chat';
-  },
   routes: [
     /// Splash
     GoRoute(

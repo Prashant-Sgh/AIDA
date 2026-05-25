@@ -1,7 +1,10 @@
 import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/core/theme/theme_provider.dart';
 import 'package:aida/core/utils/open_protected_route.dart';
+import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
+import 'package:aida/shared/widgets/login_out_button.dart';
+import 'package:aida/shared/widgets/start2fa_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,18 +27,16 @@ class AppDrawer extends ConsumerWidget {
 
     /// Colors
     final backgroundColor = customColors?.lightCardColor ?? colorScheme.surface;
-
     final lineColor = colorScheme.onSurface.withOpacity(0.08);
-
     final textColor = colorScheme.onSurface;
-
     final secondaryTextColor = colorScheme.onSurface.withOpacity(0.65);
-
     final dangerColor = Colors.redAccent;
 
     /// Theme state
-
     final isDarkMode = theme.brightness == Brightness.dark;
+
+    // Auth State
+    final authState = ref.watch(authenticationViewModelProvider);
 
     return Drawer(
       backgroundColor: backgroundColor,
@@ -139,13 +140,25 @@ class AppDrawer extends ConsumerWidget {
                 padding: const EdgeInsets.only(
                   bottom: 10,
                 ),
-                child: Text(
-                  'Built with intention.',
-                  style: GoogleFonts.quicksand(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: secondaryTextColor,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Built with intention.',
+                      style: GoogleFonts.quicksand(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: secondaryTextColor,
+                      ),
+                    ),
+                    if (authState.authenticated && !authState.isOtpVerified)
+                      Start2FAButton()
+                    else if (authState.authenticated && authState.isOtpVerified)
+                      LoginOutButton(isLoginButton: false)
+                    else if (!authState.authenticated)
+                      LoginOutButton(isLoginButton: true),
+                  ],
                 ),
               ),
             ],
