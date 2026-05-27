@@ -1,4 +1,5 @@
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
+import 'package:aida/features/otp/presentation/view/custom_banners/custom_otp_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,50 +23,25 @@ class _TempScreenState extends ConsumerState<TempScreen> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic decodedToken = '';
-    bool isExpired = false;
-    dynamic expirationDate = '';
+    final theme = Theme.of(context);
+    final backgroundColor = theme.colorScheme.surface;
 
-    if (jwtToken.isNotEmpty) {
-      decodedToken = JwtDecoder.decode(jwtToken);
-      isExpired = JwtDecoder.isExpired(jwtToken);
-      expirationDate = JwtDecoder.getExpirationDate(jwtToken);
-    }
-
+    final spaceBtBanners = 20.0;
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Column(
+            mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                "Decoded token:",
-                style: GoogleFonts.quicksand(color: Colors.black, fontSize: 20),
-              ),
-              SizedBox(height: 20),
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(
-                  decodedToken.toString(),
-                  textAlign: TextAlign.start,
-                  style: GoogleFonts.quicksand(
-                      color: Colors.blueGrey, fontSize: 20),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Is Expired: $isExpired",
-                  textAlign: TextAlign.start,
-                  style: GoogleFonts.quicksand(
-                      color: Colors.blueGrey, fontSize: 20),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Expiration Date: $expirationDate",
-                  textAlign: TextAlign.start,
-                  style: GoogleFonts.quicksand(
-                      color: Colors.blueGrey, fontSize: 20),
-                ),
-              ])
+              CustomOtpBanner(bannerType: BannerType.wrongOtp),
+              SizedBox(height: spaceBtBanners),
+              CustomOtpBanner(bannerType: BannerType.tooManyAttempts),
+              SizedBox(height: spaceBtBanners),
+              CustomOtpBanner(bannerType: BannerType.otpExpired),
+              SizedBox(height: spaceBtBanners),
+              CustomOtpBanner(bannerType: BannerType.successfullyVerified),
             ]),
       ),
     );
