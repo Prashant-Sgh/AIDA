@@ -2,6 +2,7 @@ import 'package:aida/core/enums/response_state.dart';
 import 'package:aida/core/services/secure_storage_service.dart';
 import 'package:aida/features/auth/data/repos/backend_2fa_repo.dart';
 import 'package:aida/features/auth/data/repos/firebase_auth_repo.dart';
+import 'package:aida/features/otp/presentation/view/custom_banners/custom_otp_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -142,17 +143,40 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     state = state.copyWith(isLoading: true);
     final response =
         await _backend2faRepo.verifyOtp(otp: otp, email: state.email);
-    if (response.isNotEmpty) {
+    if (response.jwtToken != null && response.jwtToken!.isNotEmpty) {
       final firebaseToken = await getFirebaseIdToken();
-      _secureStorageService.saveJwt(jwtToken: response);
-      _secureStorageService.saveFirebaseId(
-          firebaseIdKey: firebaseToken ?? '');
+      _secureStorageService.saveJwt(jwtToken: response.jwtToken!);
+      _secureStorageService.saveFirebaseId(firebaseIdKey: firebaseToken ?? '');
       state = state.copyWith(
-          isLoading: false, isOtpVerified: true, jwtToken: response);
+          isLoading: false, isOtpVerified: true, jwtToken: response.jwtToken);
     } else {
       state = state.copyWith(
-          isLoading: false, isOtpVerified: false, error: "OTP invalid.");
+          isLoading: false, isOtpVerified: false, error: "Invalid OTP");
     }
+
+    switch (response.statusCode) {
+      case 200:
+        await setOtpBannerType(BannerType.successfullyVerified);
+        break;
+      case 401:
+        await setOtpBannerType(BannerType.wrongOtp);
+        break;
+      case 410:
+        await setOtpBannerType(BannerType.otpExpired);
+      default:
+        await setOtpBannerType(BannerType.tooManyAttempts);
+    }
+  }
+
+  Future<void> setOtpBannerType(BannerType type) async {
+    state = state.copyWith(otpBannerType: type, showOtpBannerType: true);
+    await Future.delayed(const Duration(seconds: 2), () {
+      closeOtpBannerType();
+    });
+  }
+
+  void closeOtpBannerType() {
+    state = state.copyWith(showOtpBannerType: false);
   }
 
   // Check Auth State
@@ -207,6 +231,8 @@ class AuthenticationState {
     this.isOtpVerified = false,
     this.showOtpPendingBanner = false,
     this.jwtToken,
+    this.showOtpBannerType = false,
+    this.otpBannerType,
   });
 
   bool isLoading = false;
@@ -219,6 +245,8 @@ class AuthenticationState {
   final bool isOtpVerified;
   final bool showOtpPendingBanner;
   final String? jwtToken;
+  final bool showOtpBannerType;
+  final BannerType? otpBannerType;
 
   AuthenticationState copyWith({
     bool? isLoading,
@@ -231,6 +259,8 @@ class AuthenticationState {
     bool? isOtpVerified,
     bool? showOtpPendingBanner,
     String? jwtToken,
+    bool? showOtpBannerType,
+    BannerType? otpBannerType,
   }) {
     return AuthenticationState(
       isLoading: isLoading ?? this.isLoading,
@@ -243,6 +273,8 @@ class AuthenticationState {
       isOtpVerified: isOtpVerified ?? this.isOtpVerified,
       showOtpPendingBanner: showOtpPendingBanner ?? this.showOtpPendingBanner,
       jwtToken: jwtToken ?? this.jwtToken,
+      showOtpBannerType: showOtpBannerType ?? this.showOtpBannerType,
+      otpBannerType: otpBannerType ?? this.otpBannerType,
     );
   }
 }

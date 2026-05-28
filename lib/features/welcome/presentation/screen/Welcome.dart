@@ -47,69 +47,67 @@ class _WelcomeState extends ConsumerState<Welcome>
       value: animationController,
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        body: GlobalStatusOverlay(
-          child: Stack(
-            children: [
+        body: Stack(
+          children: [
+            Positioned(
+              top: 30,
+              left: 0,
+              right: 0,
+              child: IconButton(
+                onPressed: () =>
+                    ref.read(themeModeProvider.notifier).toggleTheme(),
+                icon: Icon(
+                  isDarkMode ? Icons.light_mode_outlined : Icons.light_mode,
+                  size: 22,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 268,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: IntroductionText(),
+            ),
+            Positioned.fill(
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Expanded(child: TapAnimation()),
+            ),
+        
+            // Tap_ gesture guide
+        
+            if (!isFirstTap)
               Positioned(
-                top: 30,
-                left: 0,
                 right: 0,
-                child: IconButton(
-                  onPressed: () =>
-                      ref.read(themeModeProvider.notifier).toggleTheme(),
-                  icon: Icon(
-                    isDarkMode ? Icons.light_mode_outlined : Icons.light_mode,
-                    size: 22,
-                    color: Theme.of(context).colorScheme.onSurface,
+                left: 0,
+                top: 300,
+                bottom: 0,
+                child: GestureDetector(
+                  onTap: () => animationController.onTap(),
+                  child: Container(
+                    color: Colors.transparent,
                   ),
                 ),
               ),
+        
+            if (isFirstTap)
               Positioned(
-                top: 268,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: IntroductionText(),
-              ),
-              Positioned.fill(
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Expanded(child: TapAnimation()),
-              ),
-
-              // Tap_ gesture guide
-
-              if (!isFirstTap)
-                Positioned(
-                  right: 0,
-                  left: 0,
-                  top: 300,
-                  bottom: 0,
-                  child: GestureDetector(
-                    onTap: () => animationController.onTap(),
-                    child: Container(
-                      color: Colors.transparent,
-                    ),
-                  ),
+                right: 40,
+                bottom: 80,
+                child: TapGuideWidget(
+                  onTap: () {
+                    animationController.onTap();
+                    setState(() {
+                      isFirstTap = false;
+                    });
+                  },
                 ),
-
-              if (isFirstTap)
-                Positioned(
-                  right: 40,
-                  bottom: 80,
-                  child: TapGuideWidget(
-                    onTap: () {
-                      animationController.onTap();
-                      setState(() {
-                        isFirstTap = false;
-                      });
-                    },
-                  ),
-                ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
     );

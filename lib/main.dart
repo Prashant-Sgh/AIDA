@@ -1,6 +1,7 @@
 import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/core/theme/app_colors.dart';
 import 'package:aida/core/theme/theme_provider.dart';
+import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:aida/firebase_options.dart';
 import 'package:aida/shared/widgets/global_status_overlay.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,6 +23,9 @@ class MainApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+
+    // auth viewmodel
+    final authVM = ref.watch(authenticationViewModelProvider);
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,

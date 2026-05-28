@@ -66,7 +66,7 @@ class Backend2faServices {
     // debugdebugPrint('OTP sent to $email');
   }
 
-  Future<String> verifyOtp({required String otp, required String email}) async {
+  Future<OtpVerificationResponse> verifyOtp({required String otp, required String email}) async {
     final uri = Uri.https(_baseUrl, '/auth/verifyOtp');
     final body = jsonEncode({'otp': otp, 'uid': email});
 
@@ -75,11 +75,11 @@ class Backend2faServices {
 
     if (response.statusCode == 200 && jwtToken != null && jwtToken is String) {
       debugPrint('Status code: ${response.statusCode}, Token: $jwtToken');
-      return jwtToken;
+      return OtpVerificationResponse(success: true, message: 'OTP verified successfully.', jwtToken: jwtToken, statusCode: response.statusCode);
     } else {
       debugPrint(
           'Status code: ${response.statusCode}, response.message: ${response.body}');
-      return '';
+      return OtpVerificationResponse(success: false, message: 'Failed to verify OTP.', jwtToken: null, statusCode: response.statusCode);
     }
   }
 
@@ -87,4 +87,18 @@ class Backend2faServices {
     // TODO: implement validateJwt
     return false;
   }
+}
+
+class OtpVerificationResponse {
+  final bool success;
+  final String message;
+  final int statusCode;
+  final String? jwtToken;
+
+  OtpVerificationResponse({
+    required this.success,
+    required this.message,
+    required this.statusCode,
+    this.jwtToken,
+  });
 }

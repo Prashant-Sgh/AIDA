@@ -2,6 +2,7 @@ import 'package:aida/features/auth/presentation/view/widgets/authenticate_button
 import 'package:aida/features/auth/presentation/view/widgets/email_input.dart';
 import 'package:aida/features/auth/presentation/view/widgets/password_input.dart';
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
+import 'package:aida/features/otp/presentation/view/custom_banners/custom_otp_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -33,6 +34,7 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
   @override
   void initState() {
     super.initState();
+    // ref.read(authenticationViewModelProvider.notifier).setOtpBannerType(BannerType.successfullyVerified);
     WidgetsBinding.instance
         .addPostFrameCallback((someValue) => Future.microtask(() {
               final state = ref.read(authenticationViewModelProvider);
@@ -54,6 +56,7 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
     final state = ref.watch(authenticationViewModelProvider);
     final isError = state.error != null;
     final viewModel = ref.read(authenticationViewModelProvider.notifier);
+    debugPrint("AuthenticationScreen - Build");
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       resizeToAvoidBottomInset: true, // important

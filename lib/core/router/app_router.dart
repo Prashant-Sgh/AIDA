@@ -5,6 +5,7 @@ import 'package:aida/features/otp/presentation/view/screen/otp_screen.dart';
 import 'package:aida/features/splash/presentation/screen/Splash.dart';
 import 'package:aida/features/temp/temp_screen.dart';
 import 'package:aida/features/welcome/presentation/screen/Welcome.dart';
+import 'package:aida/shared/widgets/global_status_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +13,59 @@ import 'package:go_router/go_router.dart';
 final GoRouter appRouter = GoRouter(
   initialLocation: '/temp',
   routes: [
+    /// SHELL
+    ShellRoute(
+      builder: (context, state, child) {
+        return GlobalStatusOverlay(
+            currentLocation: state.matchedLocation, child: child);
+      },
+      routes: [
+        /// Authentication
+        GoRoute(
+          path: '/authentication',
+          pageBuilder: (context, state) {
+            return _buildAnimatedPage(
+              state: state,
+              child: const AuthenticationScreen(),
+            );
+          },
+        ),
+
+        /// OTP
+        GoRoute(
+          path: '/otp',
+          pageBuilder: (context, state) {
+            return _buildAnimatedPage(
+              state: state,
+              child: const OtpVerificationScreen(),
+            );
+          },
+        ),
+
+        /// Context Screen
+        GoRoute(
+          path: '/context',
+          pageBuilder: (context, state) {
+            return _buildAnimatedPage(
+              state: state,
+              child: const ContextScreen(),
+            );
+          },
+        ),
+
+        /// Temp Screen
+        GoRoute(
+          path: '/temp',
+          pageBuilder: (context, state) {
+            return _buildAnimatedPage(
+              state: state,
+              child: const TempScreen(),
+            );
+          },
+        ),
+      ],
+    ),
+
     /// Splash
     GoRoute(
       path: '/splash',
@@ -24,39 +78,6 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const Welcome(),
     ),
 
-    /// Authentication
-    GoRoute(
-      path: '/authentication',
-      pageBuilder: (context, state) {
-        return _buildAnimatedPage(
-          state: state,
-          child: const AuthenticationScreen(),
-        );
-      },
-    ),
-
-    /// OTP
-    GoRoute(
-      path: '/otp',
-      pageBuilder: (context, state) {
-        return _buildAnimatedPage(
-          state: state,
-          child: const OtpVerificationScreen(),
-        );
-      },
-    ),
-
-    /// Context Screen
-    GoRoute(
-      path: '/context',
-      pageBuilder: (context, state) {
-        return _buildAnimatedPage(
-          state: state,
-          child: const ContextScreen(),
-        );
-      },
-    ),
-
     /// Chat Screen
     GoRoute(
       path: '/chat',
@@ -64,17 +85,6 @@ final GoRouter appRouter = GoRouter(
         return _buildAnimatedPage(
           state: state,
           child: const ChatScreen(),
-        );
-      },
-    ),
-
-    /// Chat Screen
-    GoRoute(
-      path: '/temp',
-      pageBuilder: (context, state) {
-        return _buildAnimatedPage(
-          state: state,
-          child: const TempScreen(),
         );
       },
     ),

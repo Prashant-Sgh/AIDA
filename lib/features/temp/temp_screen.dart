@@ -14,35 +14,39 @@ class TempScreen extends ConsumerStatefulWidget {
 
 class _TempScreenState extends ConsumerState<TempScreen> {
   late String jwtToken;
+  // bool showBanner = false;
+
+  Future<void> showBannerNow() async {
+    debugPrint('Show banner now');
+    await ref
+        .read(authenticationViewModelProvider.notifier)
+        .setOtpBannerType(BannerType.wrongOtp);
+    debugPrint('Hide banner now');
+  }
 
   @override
   void initState() {
     super.initState();
-    jwtToken = ref.read(authenticationViewModelProvider).jwtToken ?? '';
+    // showBannerNow();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final backgroundColor = theme.colorScheme.surface;
+    // final theme = Theme.of(context);
+    // final backgroundColor = theme.colorScheme.surface;
 
-    final spaceBtBanners = 20.0;
+
+    debugPrint('Building temp screen');
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CustomOtpBanner(bannerType: BannerType.wrongOtp),
-              SizedBox(height: spaceBtBanners),
-              CustomOtpBanner(bannerType: BannerType.tooManyAttempts),
-              SizedBox(height: spaceBtBanners),
-              CustomOtpBanner(bannerType: BannerType.otpExpired),
-              SizedBox(height: spaceBtBanners),
-              CustomOtpBanner(bannerType: BannerType.successfullyVerified),
-            ]),
+      // backgroundColor: Colors.black,
+      body: Center(
+        child: IconButton(
+          icon: Icon(Icons.refresh_rounded),
+          onPressed: () async {
+            debugPrint('Show banner pressed');
+            await showBannerNow();
+          },
+        ),
       ),
     );
   }
