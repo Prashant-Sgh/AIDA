@@ -145,7 +145,7 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
         await _backend2faRepo.verifyOtp(otp: otp, email: state.email);
     if (response.jwtToken != null && response.jwtToken!.isNotEmpty) {
       final firebaseToken = await getFirebaseIdToken();
-      _secureStorageService.saveJwt(jwtToken: response.jwtToken!);
+      _secureStorageService.saveJwt(jwtToken: response.jwtToken ?? '');
       _secureStorageService.saveFirebaseId(firebaseIdKey: firebaseToken ?? '');
       state = state.copyWith(
           isLoading: false, isOtpVerified: true, jwtToken: response.jwtToken);
@@ -170,7 +170,7 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
 
   Future<void> setOtpBannerType(BannerType type) async {
     state = state.copyWith(otpBannerType: type, showOtpBannerType: true);
-    await Future.delayed(const Duration(seconds: 2), () {
+    await Future.delayed(const Duration(seconds: 7), () {
       closeOtpBannerType();
     });
   }

@@ -20,7 +20,7 @@ class _TempScreenState extends ConsumerState<TempScreen> {
     debugPrint('Show banner now');
     await ref
         .read(authenticationViewModelProvider.notifier)
-        .setOtpBannerType(BannerType.wrongOtp);
+        .setOtpBannerType(BannerType.successfullyVerified);
     debugPrint('Hide banner now');
   }
 

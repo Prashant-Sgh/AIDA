@@ -44,21 +44,22 @@ class GlobalStatusOverlay extends ConsumerWidget {
                 ),
               ),
             ),
+          
           Positioned(
             top: 12,
             left: 16,
             right: 16,
             child: AnimatedSlide(
               // duration: const Duration(milliseconds: 320),
-              duration: const Duration(milliseconds: 5000),
+              duration: const Duration(milliseconds: 1200),
               // curve: Curves.easeOutCubic,
-              curve: Curves.elasticInOut,
+              curve: Curves.fastEaseInToSlowEaseOut,
               offset: authState.showOtpBannerType
                   ? Offset.zero
                   : const Offset(0, -1.4),
               child: AnimatedOpacity(
                 // duration: const Duration(milliseconds: 220),
-                duration: const Duration(milliseconds: 4000),
+                duration: const Duration(milliseconds: 420),
                 opacity: authState.showOtpBannerType ? 1 : 0,
                 child: CustomOtpBanner(
                   bannerType: authState.otpBannerType ??

@@ -36,7 +36,7 @@ class CustomOtpBanner extends StatelessWidget {
       case BannerType.wrongOtp:
         bannerTitle = 'The OTP doesn\'t match';
         bannerText =
-            'Please enter the correct 6-digit\ncode we sent to you.';
+            'Please enter the correct 4-digit\ncode we sent to you.';
         bannerColor = const Color(0xfffdf3ec);
         bannerIconColor = const Color(0xFFf96f5a);
         bannerAccentColor = const Color(0xFFfdcabd);
@@ -281,19 +281,10 @@ class CustomOtpBanner extends StatelessWidget {
                       top: closeButtonTop,
                       child: GestureDetector(
                         onTap: onClose,
-                        child: Container(
-                          padding:
-                              const EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: bannerIconColor
-                                .withOpacity(0.10),
-                          ),
-                          child: Icon(
-                            Icons.close_rounded,
-                            color: bannerIconColor,
-                            size: isCompact ? 18 : 20,
-                          ),
+                        child: Icon(
+                          Icons.close_rounded,
+                          color: bannerIconColor,
+                          size: isCompact ? 18 : 20,
                         ),
                       ),
                     ),

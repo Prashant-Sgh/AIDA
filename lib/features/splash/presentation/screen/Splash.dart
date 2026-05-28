@@ -28,7 +28,6 @@ class _SplashState extends ConsumerState<Splash> {
 
       if (mounted) {
         isUserRegistered == null ? context.push('/') : context.push('/chat');
-        debugPrint('isUserRegistered: $isUserRegistered');
       }
     });
   }

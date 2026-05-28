@@ -1,9 +1,7 @@
-import 'package:aida/core/theme/theme_provider.dart';
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:aida/features/chat/data/repository/messageManager.dart';
 import 'package:aida/features/context/presentation/view/widgets/add_context_dialog.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_state.dart';
-import 'package:aida/features/otp/presentation/view/custom_banners/custom_otp_banner.dart';
 import 'package:aida/shared/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,10 +24,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // await ref.read(contextVMProvider.notifier).loadContexts();
-
-      // TEMP
-      context.push('/temp');
+      await ref.read(contextVMProvider.notifier).loadContexts();
     });
   }
 
