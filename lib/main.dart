@@ -1,9 +1,9 @@
 import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/core/theme/app_colors.dart';
 import 'package:aida/core/theme/theme_provider.dart';
-import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:aida/firebase_options.dart';
-import 'package:aida/shared/widgets/global_status_overlay.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:device_preview_screenshot/device_preview_screenshot.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,7 +14,20 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const ProviderScope(child: MainApp()));
+  runApp(
+    DevicePreview(
+      enabled: true,
+      tools: [
+        ...DevicePreview.defaultTools,
+        DevicePreviewScreenshot(
+          
+        ),
+      ],
+      builder: (context) => ProviderScope(
+        child: MainApp(),
+      ),
+    ),
+  );
 }
 
 class MainApp extends ConsumerWidget {
@@ -24,10 +37,10 @@ class MainApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
 
-    // auth viewmodel
-    final authVM = ref.watch(authenticationViewModelProvider);
-
     return MaterialApp.router(
+      useInheritedMediaQuery: true,
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
       debugShowCheckedModeBanner: false,
       routerConfig: appRouter,
       theme: ThemeData(

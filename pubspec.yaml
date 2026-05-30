@@ -31,6 +31,8 @@ dependencies:
   jwt_decoder: ^2.0.1
   flutter_secure_storage: ^10.2.0
   material_symbols_icons: ^4.2928.1
+  device_preview: ^1.3.1
+  device_preview_screenshot: ^1.0.0
 
 # flutter_launcher_icons:
 #   android: true
@@ -56,7 +58,9 @@ flutter:
     - assets/mascots/
     - assets/mascots/otp/
     - assets/mascots/welcome/
+    - assets/icon/appIcon/
     - assets/icon/
+
 
   fonts:
     - family: Baloo2SemiBold

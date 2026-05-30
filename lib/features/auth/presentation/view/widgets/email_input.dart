@@ -2,22 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// 🎨 Design Tokens (keep at top)
-const double _borderRadius = 14;
-const double _borderWidth = 1.5;
+/// Design Tokens
+const double _borderRadius = 18;
+const double _borderWidth = 1.2;
 const double _fontSize = 16;
-const Duration _animationDuration = Duration(milliseconds: 200);
-
-final Color _focusedBorderColor = Colors.blueAccent;
-final Color _unfocusedBorderColor = Colors.grey.shade300;
-final Color _backgroundColor = Colors.white;
-final Color _shadowColor = Colors.blueAccent.withOpacity(0.15);
+const Duration _animationDuration = Duration(milliseconds: 220);
 
 class EmailInputWidget extends ConsumerStatefulWidget {
   final TextEditingController controller;
   final Function(String) onChanged;
-  final bool isEmailValid;
-  final bool error; // 👈 added
+  // final bool isEmailValid;
+  final EmailValidationState emailValidationState;
   final FocusNode focusNode;
   final FocusNode nextFocusNode;
 
@@ -25,10 +20,10 @@ class EmailInputWidget extends ConsumerStatefulWidget {
     super.key,
     required this.controller,
     required this.onChanged,
-    required this.isEmailValid,
+    // required this.isEmailValid,
     required this.focusNode,
     required this.nextFocusNode,
-    this.error = false, // 👈 default false
+    this.emailValidationState = EmailValidationState.initial,
   });
 
   @override
@@ -43,34 +38,48 @@ class _EmailInputWidgetState extends ConsumerState<EmailInputWidget> {
     super.initState();
 
     widget.focusNode.addListener(() {
-      setState(() {
-        isFocused = widget.focusNode.hasFocus;
-      });
+      if (mounted) {
+        setState(() {
+          isFocused = widget.focusNode.hasFocus;
+        });
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool showError = widget.error;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final bool showError = widget.emailValidationState == EmailValidationState.invalid;
+
+    final focusedColor = colorScheme.primary;
+    final unfocusedColor = colorScheme.outline.withOpacity(0.25);
+    final errorColor = Colors.redAccent;
+
+    final fillColor = theme.brightness == Brightness.dark
+        ? colorScheme.surface
+        : Colors.white;
 
     final borderColor = showError
-        ? Colors.redAccent
+        ? errorColor
         : isFocused
-            ? _focusedBorderColor
-            : _unfocusedBorderColor;
+            ? focusedColor
+            : unfocusedColor;
 
     final backgroundColor =
-        showError ? Colors.red.withOpacity(0.04) : _backgroundColor;
+        showError ? errorColor.withOpacity(0.05) : fillColor;
 
     final shadowColor = showError
-        ? Colors.red.withOpacity(0.14)
-        : _shadowColor;
+        ? errorColor.withOpacity(0.12)
+        : focusedColor.withOpacity(0.10);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnimatedContainer(
           duration: _animationDuration,
+          curve: Curves.easeOutCubic,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             color: backgroundColor,
@@ -83,9 +92,9 @@ class _EmailInputWidgetState extends ConsumerState<EmailInputWidget> {
                 ? [
                     BoxShadow(
                       color: shadowColor,
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    )
+                      blurRadius: 18,
+                      offset: const Offset(0, 6),
+                    ),
                   ]
                 : [],
           ),
@@ -93,48 +102,57 @@ class _EmailInputWidgetState extends ConsumerState<EmailInputWidget> {
             controller: widget.controller,
             focusNode: widget.focusNode,
             keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
             style: GoogleFonts.quicksand(
               fontSize: _fontSize,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
+              fontWeight: FontWeight.w600,
+              color: colorScheme.onSurface,
             ),
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText:
-                  showError ? 'Please enter a valid email' : 'Enter your email',
+                  showError ? 'Please enter a valid email' : 'Email address',
               hintStyle: GoogleFonts.quicksand(
-                fontSize: _fontSize,
-                color: showError ? Colors.redAccent : Colors.grey,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: colorScheme.onSurface.withOpacity(0.45),
               ),
               icon: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 180),
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: ScaleTransition(
+                      scale: animation,
+                      child: child,
+                    ),
+                  );
+                },
                 child: showError
                     ? const Icon(
                         Icons.error_outline_rounded,
                         key: ValueKey('error'),
                         color: Colors.redAccent,
                       )
-                    : widget.isEmailValid
+                    : widget.emailValidationState == EmailValidationState.valid
                         ? const Icon(
-                            Icons.mark_email_read_rounded,
+                            Icons.check_circle_rounded,
                             key: ValueKey('valid'),
                             color: Colors.green,
                           )
-                        : const Icon(
+                        : Icon(
                             Icons.email_rounded,
-                            key: ValueKey('default'),
+                            key: const ValueKey('default'),
+                            color: colorScheme.onSurface.withOpacity(0.55),
                           ),
               ),
             ),
             onChanged: widget.onChanged,
             onFieldSubmitted: (_) {
-              FocusScope.of(context)
-                  .requestFocus(widget.nextFocusNode);
+              FocusScope.of(context).requestFocus(widget.nextFocusNode);
             },
           ),
         ),
-
-        /// Optional error message
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 180),
           child: showError
@@ -144,11 +162,11 @@ class _EmailInputWidgetState extends ConsumerState<EmailInputWidget> {
                     left: 4,
                   ),
                   child: Text(
-                    'That email doesn’t look right',
+                    'That email doesn\'t look right',
                     style: GoogleFonts.quicksand(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: Colors.redAccent,
+                      color: errorColor,
                     ),
                   ),
                 )
@@ -158,3 +176,5 @@ class _EmailInputWidgetState extends ConsumerState<EmailInputWidget> {
     );
   }
 }
+
+enum EmailValidationState { initial, valid, invalid }

@@ -2,29 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// 🎨 Design Tokens
-const double _borderRadius = 14;
-const double _borderWidth = 1.5;
+/// Design Tokens
+const double _borderRadius = 18;
+const double _borderWidth = 1.2;
 const double _fontSize = 16;
-const Duration _animationDuration = Duration(milliseconds: 200);
-
-final Color _focusedBorderColor = Colors.blueAccent;
-final Color _unfocusedBorderColor = Colors.grey.shade300;
-final Color _backgroundColor = Colors.white;
-final Color _shadowColor = Colors.blueAccent.withOpacity(0.15);
+const Duration _animationDuration = Duration(milliseconds: 220);
 
 class PasswordInputWidget extends ConsumerStatefulWidget {
   final TextEditingController controller;
   final Function(String) onChanged;
   final FocusNode focusNode;
-  final bool error; // 👈 added
+final PasswordValidationState? passwordValidationState;
 
   const PasswordInputWidget({
     super.key,
     required this.controller,
     required this.onChanged,
     required this.focusNode,
-    this.error = false,
+    this.passwordValidationState = PasswordValidationState.none,
   });
 
   @override
@@ -32,7 +27,8 @@ class PasswordInputWidget extends ConsumerStatefulWidget {
       _PasswordInputWidgetState();
 }
 
-class _PasswordInputWidgetState extends ConsumerState<PasswordInputWidget> {
+class _PasswordInputWidgetState
+    extends ConsumerState<PasswordInputWidget> {
   bool isFocused = false;
   bool obscurePassword = true;
 
@@ -41,9 +37,11 @@ class _PasswordInputWidgetState extends ConsumerState<PasswordInputWidget> {
     super.initState();
 
     widget.focusNode.addListener(() {
-      setState(() {
-        isFocused = widget.focusNode.hasFocus;
-      });
+      if (mounted) {
+        setState(() {
+          isFocused = widget.focusNode.hasFocus;
+        });
+      }
     });
   }
 
@@ -55,24 +53,38 @@ class _PasswordInputWidgetState extends ConsumerState<PasswordInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final bool showError = widget.error;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final bool showError = widget.passwordValidationState == PasswordValidationState.invalid;
+
+    final focusedColor = colorScheme.primary;
+    final unfocusedColor = colorScheme.outline.withOpacity(0.25);
+    final errorColor = Colors.redAccent;
+
+    final fillColor = theme.brightness == Brightness.dark
+        ? colorScheme.surface
+        : Colors.white;
 
     final borderColor = showError
-        ? Colors.redAccent
+        ? errorColor
         : isFocused
-            ? _focusedBorderColor
-            : _unfocusedBorderColor;
+            ? focusedColor
+            : unfocusedColor;
 
     final backgroundColor =
-        showError ? Colors.red.withOpacity(0.04) : _backgroundColor;
+        showError ? errorColor.withOpacity(0.05) : fillColor;
 
-    final shadowColor = showError ? Colors.red.withOpacity(0.14) : _shadowColor;
+    final shadowColor = showError
+        ? errorColor.withOpacity(0.12)
+        : focusedColor.withOpacity(0.10);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnimatedContainer(
           duration: _animationDuration,
+          curve: Curves.easeOutCubic,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             color: backgroundColor,
@@ -85,9 +97,9 @@ class _PasswordInputWidgetState extends ConsumerState<PasswordInputWidget> {
                 ? [
                     BoxShadow(
                       color: shadowColor,
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    )
+                      blurRadius: 18,
+                      offset: const Offset(0, 6),
+                    ),
                   ]
                 : [],
           ),
@@ -95,50 +107,74 @@ class _PasswordInputWidgetState extends ConsumerState<PasswordInputWidget> {
             controller: widget.controller,
             focusNode: widget.focusNode,
             obscureText: obscurePassword,
+            textInputAction: TextInputAction.done,
             style: GoogleFonts.quicksand(
               fontSize: _fontSize,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
+              fontWeight: FontWeight.w600,
+              color: colorScheme.onSurface,
             ),
             decoration: InputDecoration(
               border: InputBorder.none,
-              hintText:
-                  showError ? 'Password is incorrect' : 'Enter your password',
+              hintText: showError
+                  ? 'Password is incorrect'
+                  : 'Password',
               hintStyle: GoogleFonts.quicksand(
-                fontSize: _fontSize,
-                color: showError ? Colors.redAccent : Colors.grey,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: colorScheme.onSurface.withOpacity(0.45),
               ),
 
-              /// LEFT ICON
+              /// Left Icon
               icon: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 180),
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: ScaleTransition(
+                      scale: animation,
+                      child: child,
+                    ),
+                  );
+                },
                 child: showError
                     ? const Icon(
-                        Icons.lock_outline_rounded,
+                        Icons.error_outline_rounded,
                         key: ValueKey('error'),
                         color: Colors.redAccent,
                       )
                     : Icon(
                         obscurePassword
-                            ? Icons.lock_rounded
-                            : Icons.lock_open_rounded,
+                            ? Icons.password_rounded
+                            : Icons.password_outlined,
                         key: ValueKey(obscurePassword),
-                        color: Colors.grey.shade700,
+                        color:
+                            colorScheme.onSurface.withOpacity(0.55),
                       ),
               ),
 
-              /// RIGHT ICON
+              /// Right Icon
               suffixIcon: IconButton(
                 splashRadius: 18,
                 onPressed: toggleObscurePassword,
                 icon: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 180),
+                  transitionBuilder: (child, animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: ScaleTransition(
+                        scale: animation,
+                        child: child,
+                      ),
+                    );
+                  },
                   child: Icon(
                     obscurePassword
                         ? Icons.visibility_off_rounded
                         : Icons.visibility_rounded,
                     key: ValueKey(obscurePassword),
-                    color: showError ? Colors.redAccent : Colors.grey.shade600,
+                    color: showError
+                        ? errorColor
+                        : colorScheme.onSurface.withOpacity(0.55),
                   ),
                 ),
               ),
@@ -147,7 +183,7 @@ class _PasswordInputWidgetState extends ConsumerState<PasswordInputWidget> {
           ),
         ),
 
-        /// ERROR MESSAGE
+        /// Error Message
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 180),
           child: showError
@@ -161,7 +197,7 @@ class _PasswordInputWidgetState extends ConsumerState<PasswordInputWidget> {
                     style: GoogleFonts.quicksand(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: Colors.redAccent,
+                      color: errorColor,
                     ),
                   ),
                 )
@@ -170,4 +206,10 @@ class _PasswordInputWidgetState extends ConsumerState<PasswordInputWidget> {
       ],
     );
   }
+}
+
+enum PasswordValidationState {
+  valid,
+  invalid,
+  none,
 }

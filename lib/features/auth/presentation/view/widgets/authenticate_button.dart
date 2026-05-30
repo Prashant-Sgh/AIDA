@@ -24,60 +24,104 @@ class _AuthenticateButtonWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(authenticationViewModelProvider).isLoading;
-    final bgColor = widget.enable ? Colors.blueAccent : Colors.grey.shade400;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final isLoading =
+        ref.watch(authenticationViewModelProvider).isLoading;
+
+    final primaryColor = colorScheme.primary;
+
+    final disabledColor =
+        colorScheme.outline.withOpacity(0.15);
+
+    final backgroundColor =
+        widget.enable ? primaryColor : disabledColor;
+
+    final textColor = widget.enable
+        ? colorScheme.onPrimary
+        : colorScheme.onSurface.withOpacity(0.45);
 
     return GestureDetector(
       onTapDown: (_) {
-        if (widget.enable) {
-          setState(() => _isPressed = true);
-        }
+        if (!widget.enable || isLoading) return;
+
+        setState(() {
+          _isPressed = true;
+        });
       },
       onTapUp: (_) {
-        if (widget.enable) {
-          setState(() => _isPressed = false);
-          widget.onPressed();
-        }
+        if (!widget.enable || isLoading) return;
+
+        setState(() {
+          _isPressed = false;
+        });
+
+        widget.onPressed();
       },
       onTapCancel: () {
-        if (widget.enable) {
-          setState(() => _isPressed = false);
-        }
+        if (!widget.enable || isLoading) return;
+
+        setState(() {
+          _isPressed = false;
+        });
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
-        transform: Matrix4.identity()..scale(_isPressed ? 0.97 : 1.0),
-        height: 54,
+        curve: Curves.easeOutCubic,
+        height: 58,
         width: double.infinity,
+        alignment: Alignment.center,
+        transform: Matrix4.identity()
+          ..scale(_isPressed ? 0.97 : 1.0),
         decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(14),
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(18),
           boxShadow: widget.enable
               ? [
                   BoxShadow(
-                    color: Colors.blueAccent.withOpacity(0.25),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
-                  )
+                    color: primaryColor.withOpacity(0.20),
+                    blurRadius: 20,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 8),
+                  ),
                 ]
               : [],
         ),
-        alignment: Alignment.center,
-        child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 200),
-          opacity: widget.enable ? 1.0 : 0.7,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 220),
+          switchInCurve: Curves.easeOut,
+          switchOutCurve: Curves.easeIn,
           child: isLoading
-              ? CircularProgressIndicator(
-                  color: Colors.white,
-                )
-              : Text(
-                  "Authenticate",
-                  style: GoogleFonts.quicksand(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+              ? SizedBox(
+                  key: const ValueKey('loading'),
+                  height: 22,
+                  width: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.4,
+                    color: colorScheme.onPrimary,
                   ),
+                )
+              : Row(
+                  key: const ValueKey('text'),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Authenticate',
+                      style: GoogleFonts.quicksand(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: textColor,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 18,
+                      color: textColor,
+                    ),
+                  ],
                 ),
         ),
       ),

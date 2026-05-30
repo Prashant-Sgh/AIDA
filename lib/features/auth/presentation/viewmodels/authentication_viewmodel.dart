@@ -2,6 +2,8 @@ import 'package:aida/core/enums/response_state.dart';
 import 'package:aida/core/services/secure_storage_service.dart';
 import 'package:aida/features/auth/data/repos/backend_2fa_repo.dart';
 import 'package:aida/features/auth/data/repos/firebase_auth_repo.dart';
+import 'package:aida/features/auth/presentation/view/widgets/email_input.dart';
+import 'package:aida/features/auth/presentation/view/widgets/password_input.dart';
 import 'package:aida/features/otp/presentation/view/custom_banners/custom_otp_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,13 +40,14 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
 
   // Handle email and password changes
   void setEmail(String value) {
-    final isValid = isValidEmail(value);
+    final validationState = validateEmail(value);
 
-    // _emailController.text = value;
+    // final isValid = validationState == EmailValidationState.valid;
 
     state = state.copyWith(
       email: value,
-      isEmailValid: isValid,
+      // isEmailValid: isValid,
+      emailValidationState: validationState,
     );
   }
 
@@ -53,11 +56,31 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     state = state.copyWith(password: value);
   }
 
-  bool isValidEmail(String email) {
+  EmailValidationState validateEmail(String email) {
+    if (email.isEmpty) {
+      return EmailValidationState.initial;
+    }
+
     final emailRegex = RegExp(
       r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
     );
-    return emailRegex.hasMatch(email);
+
+    // If it matches, it's valid
+    if (emailRegex.hasMatch(email)) {
+      return EmailValidationState.valid;
+    }
+
+    // If the user has typed something that *looks like* an email attempt
+    // (contains '@' and at least one '.' after it), but fails regex → invalid
+    if (email.contains('@') && email.split('@').length == 2) {
+      final domainPart = email.split('@')[1];
+      if (domainPart.contains('.')) {
+        return EmailValidationState.invalid;
+      }
+    }
+
+    // Otherwise, still in progress → initial
+    return EmailValidationState.initial;
   }
 
   void resetOtpVerificationStatus() {
@@ -75,12 +98,19 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
       final idToken = await getFirebaseIdToken();
       if (idToken != null) {
         state = state.copyWith(
-            isLoading: false, firebaseIdToken: idToken, error: null);
+          isLoading: false,
+          firebaseIdToken: idToken,
+          emailValidationState: EmailValidationState.valid,
+          passwordValidationState: PasswordValidationState.valid,
+          error: null,
+        );
         await _backend2faRepo.start2fa(token: idToken);
       } else {
         state = state.copyWith(
             isLoading: false,
             authenticated: false,
+            emailValidationState: EmailValidationState.invalid,
+            passwordValidationState: PasswordValidationState.invalid,
             error: 'No Firebase authentication token found.');
         logoutAdmin();
       }
@@ -91,7 +121,9 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
         isLoading: false,
         authenticated: false,
         error: response.error,
-        isEmailValid: false,
+        // isEmailValid: false,
+        emailValidationState: EmailValidationState.invalid,
+        passwordValidationState: PasswordValidationState.invalid,
         email: '',
         password: '',
       );
@@ -115,12 +147,15 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     _emailController.clear();
     _passwordController.clear();
     state = state.copyWith(
-        isEmailValid: false,
-        email: null,
-        password: null,
-        firebaseIdToken: null,
-        authenticated: false,
-        isOtpVerified: false);
+      emailValidationState: EmailValidationState.initial,
+      passwordValidationState: PasswordValidationState.none,
+      // isEmailValid: false,
+      email: null,
+      password: null,
+      firebaseIdToken: null,
+      authenticated: false,
+      isOtpVerified: false,
+    );
   }
 
   // Show OTP Pending Banner
@@ -227,7 +262,9 @@ class AuthenticationState {
     this.error,
     this.authenticated = false,
     this.firebaseIdToken,
-    this.isEmailValid = false,
+    // this.isEmailValid = false,
+    this.emailValidationState = EmailValidationState.initial,
+    this.passwordValidationState = PasswordValidationState.none,
     this.isOtpVerified = false,
     this.showOtpPendingBanner = false,
     this.jwtToken,
@@ -241,7 +278,9 @@ class AuthenticationState {
   final bool authenticated;
   final String? firebaseIdToken;
   final String? error;
-  final bool isEmailValid;
+  // final bool isEmailValid;
+  final EmailValidationState emailValidationState;
+  final PasswordValidationState passwordValidationState;
   final bool isOtpVerified;
   final bool showOtpPendingBanner;
   final String? jwtToken;
@@ -255,7 +294,9 @@ class AuthenticationState {
     String? error,
     bool? authenticated,
     String? firebaseIdToken,
-    bool? isEmailValid,
+    // bool? isEmailValid,
+    EmailValidationState? emailValidationState,
+    PasswordValidationState? passwordValidationState,
     bool? isOtpVerified,
     bool? showOtpPendingBanner,
     String? jwtToken,
@@ -269,7 +310,10 @@ class AuthenticationState {
       error: error ?? this.error,
       authenticated: authenticated ?? this.authenticated,
       firebaseIdToken: firebaseIdToken ?? this.firebaseIdToken,
-      isEmailValid: isEmailValid ?? this.isEmailValid,
+      // isEmailValid: isEmailValid ?? this.isEmailValid,
+      emailValidationState: emailValidationState ?? this.emailValidationState,
+      passwordValidationState:
+          passwordValidationState ?? this.passwordValidationState,
       isOtpVerified: isOtpVerified ?? this.isOtpVerified,
       showOtpPendingBanner: showOtpPendingBanner ?? this.showOtpPendingBanner,
       jwtToken: jwtToken ?? this.jwtToken,
