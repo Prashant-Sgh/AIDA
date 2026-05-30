@@ -1,4 +1,6 @@
 import 'package:aida/features/auth/data/services/firebase_auth_services.dart';
+import 'package:aida/features/auth/presentation/view/widgets/email_input.dart';
+import 'package:aida/features/auth/presentation/view/widgets/password_input.dart';
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/rendering.dart';
@@ -14,7 +16,6 @@ class FirebaseAuthRepo {
 
   FirebaseAuthRepo(this._firebaseAuthService);
 
-  
   void working() {
     debugPrint('working');
   }
@@ -33,30 +34,30 @@ class FirebaseAuthRepo {
         email: email,
         password: password,
       );
-      return authenticationState.copyWith(
+      authenticationState = authenticationState.copyWith(
         isLoading: false,
-        authenticated: true,
         email: email,
+        emailValidationState: EmailValidationState.valid,
+        passwordValidationState: PasswordValidationState.valid,
+        authenticated: true,
         error: null,
       );
+      return authenticationState;
     } on FirebaseAuthException catch (e) {
       String errorMessage = '';
 
       switch (e.code) {
-        case 'user-not-found':
-          errorMessage = 'No user found for that email.';
-          break;
 
-        case 'wrong-password':
-          errorMessage = 'Wrong password provided.';
-          break;
-
-        case 'invalid-email':
-          errorMessage = 'Invalid email address.';
+        case 'invalid-credential':
+          errorMessage = 'Invalid email or password. If you forgot your password, reset it.';
+          authenticationState = authenticationState.copyWith(
+            // emailValidationState: EmailValidationState.invalid,
+            // passwordValidationState: PasswordValidationState.invalid,
+          );
           break;
 
         default:
-          errorMessage = e.message ?? 'Authentication failed';
+          errorMessage = 'Authentication failed: ${e.message ?? "Unknown error"}';
       }
 
       return authenticationState.copyWith(

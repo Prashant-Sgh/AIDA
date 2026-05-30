@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:aida/features/auth/presentation/view/widgets/authenticate_button.dart';
 import 'package:aida/features/auth/presentation/view/widgets/email_input.dart';
 import 'package:aida/features/auth/presentation/view/widgets/password_input.dart';
@@ -35,6 +37,10 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
     //     .signInWithGoogle();
   }
 
+  Future<void> _resetPassword() async {
+    // await ref.read(authenticationViewModelProvider.notifier).resetPassword();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -61,8 +67,7 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
     final colorScheme = theme.colorScheme;
 
     final state = ref.watch(authenticationViewModelProvider);
-    final viewModel =
-        ref.read(authenticationViewModelProvider.notifier);
+    final viewModel = ref.read(authenticationViewModelProvider.notifier);
 
     final isError = state.error != null;
 
@@ -113,8 +118,7 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                         fontWeight: FontWeight.w600,
                         color: isError
                             ? colorScheme.error
-                            : colorScheme.onSurface
-                                .withOpacity(.65),
+                            : colorScheme.onSurface.withOpacity(.65),
                       ),
                     ),
 
@@ -137,11 +141,27 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                       controller: viewModel.passwordController,
                       onChanged: viewModel.setPassword,
                       focusNode: passwordFocusNode,
-                      passwordValidationState:
-                          state.passwordValidationState,
+                      passwordValidationState: state.passwordValidationState,
                     ),
 
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 14),
+
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _resetPassword,
+                        child: Text(
+                          'Reset Password',
+                          style: GoogleFonts.quicksand(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.lightBlue,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
 
                     /// Divider
                     Row(
@@ -159,8 +179,7 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                             'or',
                             style: GoogleFonts.quicksand(
                               fontWeight: FontWeight.w700,
-                              color: colorScheme.onSurface
-                                  .withOpacity(.6),
+                              color: colorScheme.onSurface.withOpacity(.6),
                             ),
                           ),
                         ),
@@ -192,15 +211,12 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor:
-                              colorScheme.onSurface,
+                          foregroundColor: colorScheme.onSurface,
                           side: BorderSide(
-                            color: colorScheme.outline
-                                .withOpacity(.25),
+                            color: colorScheme.outline.withOpacity(.25),
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(16),
                           ),
                         ),
                       ),
@@ -222,11 +238,28 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                 ),
                 child: AuthenticateButtonWidget(
                   onPressed: onAuthenticate,
-                  enable: state.emailValidationState == EmailValidationState.valid &&
+                  enable: state.emailValidationState ==
+                          EmailValidationState.valid &&
                       state.password.isNotEmpty,
                 ),
               ),
             ),
+
+            if (state.isLoading)
+              Positioned.fill(
+                child: Container(
+                  color: colorScheme.onSurface.withOpacity(0.1),
+                  alignment: Alignment.center,
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(
+                        colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

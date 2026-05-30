@@ -21,8 +21,7 @@ class CustomOtpBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textColor = theme.colorScheme.onSurface;
+    final textColor = Colors.black;
 
     String bannerTitle;
     String bannerText;
