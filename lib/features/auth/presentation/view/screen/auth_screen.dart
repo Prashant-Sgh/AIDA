@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:aida/features/auth/presentation/view/widgets/authenticate_button.dart';
 import 'package:aida/features/auth/presentation/view/widgets/email_input.dart';
 import 'package:aida/features/auth/presentation/view/widgets/password_input.dart';
+import 'package:aida/features/auth/presentation/view/widgets/reset_password_dialog_widget.dart';
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,25 +21,56 @@ class AuthenticationScreen extends ConsumerStatefulWidget {
 class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
   final emailFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
+  bool _newUser = false;
 
-  Future<void> onAuthenticate() async {
-    await ref.read(authenticationViewModelProvider.notifier).loginAdmin();
+  Future<void> _onAuthenticate() async {
+    if (!_newUser) {
+      await ref.read(authenticationViewModelProvider.notifier).loginAdmin();
+      final state = ref.read(authenticationViewModelProvider);
 
-    final state = ref.read(authenticationViewModelProvider);
-
-    if (state.firebaseIdToken != null) {
-      if (mounted) context.push('/otp');
+      if (state.firebaseIdToken != null) {
+        if (mounted) context.push('/otp');
+      }
+    } else {
+      // TODO:
+      // Sign-up user
+      // await ref.read(authenticationViewModelProvider.notifier).signUp();
     }
   }
 
-  Future<void> onGoogleAuthenticate() async {
+  Future<void> _onGoogleAuthenticate() async {
     // TODO:
     // await ref.read(authenticationViewModelProvider.notifier)
     //     .signInWithGoogle();
+
+    // final state = ref.read(authenticationViewModelProvider);
+
+    // if (state.firebaseIdToken != null) {
+    //   if (mounted) context.push('/otp');
+    // }
   }
 
   Future<void> _resetPassword() async {
-    // await ref.read(authenticationViewModelProvider.notifier).resetPassword();
+    showDialog(
+      context: context,
+      builder: (_) => ResetPasswordDialog(
+        email: ref.watch(authenticationViewModelProvider).email,
+        onConfirm: () async {
+          // await ref
+          //     .read(authenticationViewModelProvider.notifier)
+          //     .resetPassword();
+        },
+      ),
+    );
+  }
+
+  Future<void> _onSignUp() async {
+    // await ref.read(authenticationViewModelProvider.notifier).signUp();
+  }
+
+  void _toogleLoginSignUp() {
+    _newUser = !_newUser;
+    setState(() {});
   }
 
   @override
@@ -70,6 +102,8 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
     final viewModel = ref.read(authenticationViewModelProvider.notifier);
 
     final isError = state.error != null;
+    final forgetPasswordValid = state.email.isNotEmpty &&
+        state.emailValidationState == EmailValidationState.valid;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -114,8 +148,8 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                           ? (state.error ?? 'Authentication failed')
                           : 'Secure access to your AI workspace.',
                       style: GoogleFonts.quicksand(
-                        fontSize: isError ? 15 : 16,
-                        fontWeight: FontWeight.w600,
+                        fontSize: isError ? 14.5 : 15.5,
+                        fontWeight: FontWeight.w400,
                         color: isError
                             ? colorScheme.error
                             : colorScheme.onSurface.withOpacity(.65),
@@ -144,22 +178,28 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                       passwordValidationState: state.passwordValidationState,
                     ),
 
-                    const SizedBox(height: 14),
+                    if (forgetPasswordValid) const SizedBox(height: 8),
 
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: _resetPassword,
-                        child: Text(
-                          'Reset Password',
-                          style: GoogleFonts.quicksand(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.lightBlue,
+                    if (forgetPasswordValid)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: _resetPassword,
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(
+                            'Forgot Password?',
+                            style: GoogleFonts.quicksand(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.primary,
+                            ),
                           ),
                         ),
                       ),
-                    ),
 
                     const SizedBox(height: 16),
 
@@ -198,7 +238,7 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                       width: double.infinity,
                       height: 56,
                       child: OutlinedButton.icon(
-                        onPressed: onGoogleAuthenticate,
+                        onPressed: _onGoogleAuthenticate,
                         icon: Image.asset(
                           'assets/icon/google_logo.png',
                           height: 20,
@@ -221,6 +261,41 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                         ),
                       ),
                     ),
+
+                    const SizedBox(height: 28),
+
+                    Center(
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            _newUser
+                                ? 'Already have an account?'
+                                : 'New to AIDA?',
+                            style: GoogleFonts.quicksand(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: colorScheme.onSurface.withOpacity(.65),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: _toogleLoginSignUp,
+                            style: TextButton.styleFrom(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 6),
+                            ),
+                            child: Text(
+                              _newUser ? 'Sign In' : 'Create Account',
+                              style: GoogleFonts.quicksand(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -237,7 +312,7 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
                   bottom: 16,
                 ),
                 child: AuthenticateButtonWidget(
-                  onPressed: onAuthenticate,
+                  onPressed: _onAuthenticate,
                   enable: state.emailValidationState ==
                           EmailValidationState.valid &&
                       state.password.isNotEmpty,

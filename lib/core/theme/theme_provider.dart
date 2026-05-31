@@ -8,14 +8,15 @@ final themeModeProvider =
 });
 
 class ThemeNotifier extends StateNotifier<ThemeMode> {
-  ThemeNotifier() : super(ThemeMode.dark) {
+  ThemeNotifier() : super(ThemeMode.light) {
     // Default to system
     _load();
   }
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
-    final isDark = prefs.getBool('isDarkMode') ?? false;
+    // final isDark = prefs.getBool('isDarkMode') ?? false;
+    final isDark = true;
     state = isDark ? ThemeMode.dark : ThemeMode.light;
   }
 
