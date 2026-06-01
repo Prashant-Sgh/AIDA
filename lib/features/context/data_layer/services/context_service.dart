@@ -26,13 +26,13 @@ class ContextServices {
 
   // Create
   Future<ResponseState> createContext(
-      {required ContextModel newContext}) async {
+      {required ContextModel context, required String email}) async {
     ResponseState responseState = ResponseState.notInitiated;
 
     final uri = Uri.parse('https://$_baseUrl/crud/create');
     final id = DateTime.now().millisecondsSinceEpoch.toString();
-    newContext = newContext.copyWith(id: id);
-    final body = jsonEncode(newContext.toJson());
+    context = context.copyWith(id: id);
+    final body = jsonEncode({"context": context, "email_id": email});
 
     try {
       responseState = ResponseState.loading;

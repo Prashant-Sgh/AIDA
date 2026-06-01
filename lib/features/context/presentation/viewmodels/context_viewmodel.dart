@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:aida/core/enums/response_state.dart';
+import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:aida/features/context/data_layer/model/context_model.dart';
 import 'package:aida/features/context/data_layer/repositories/context_repository.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,10 +18,14 @@ final contextVMProvider = NotifierProvider<ContextViewModel, ContextState>(
 
 class ContextViewModel extends Notifier<ContextState> {
   late final ContextRepository _repository;
+  late final AuthenticationViewModel _authVM;
+
+  String get userEmail => _authVM.email;
 
   @override
   ContextState build() {
     _repository = ref.read(contextRepositoryProvider);
+    _authVM = ref.read(authenticationViewModelProvider.notifier);
     return ContextState(); // initial state
   }
 
@@ -65,7 +70,7 @@ class ContextViewModel extends Notifier<ContextState> {
       {required ContextModel newContext}) async {
     state = state.copyWith(creating: true, error: null);
     ResponseState responseState =
-        await _repository.create(newContextModel: newContext);
+        await _repository.create(newContextModel: newContext, email: userEmail);
     state = state.copyWith(
         creating: false,
         error: responseState == ResponseState.error

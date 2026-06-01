@@ -53,7 +53,8 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
 
   void setPassword(String value) {
     // _passwordController.text = value;
-    state = state.copyWith(password: value, passwordValidationState: PasswordValidationState.none);
+    state = state.copyWith(
+        password: value, passwordValidationState: PasswordValidationState.none);
   }
 
   EmailValidationState validateEmail(String email) {
@@ -98,6 +99,7 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
       final idToken = await getFirebaseIdToken();
       if (idToken != null) {
         await Future.delayed(const Duration(seconds: 1));
+        await _backend2faRepo.start2fa(token: idToken);
         state = state.copyWith(
           isLoading: false,
           firebaseIdToken: idToken,
@@ -105,7 +107,6 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
           passwordValidationState: PasswordValidationState.valid,
           error: null,
         );
-        await _backend2faRepo.start2fa(token: idToken);
       } else {
         state = state.copyWith(
             isLoading: false,
@@ -115,7 +116,7 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
             error: 'No Firebase authentication token found.');
         logoutAdmin();
       }
-    } else  {
+    } else {
       // _emailController.clear();
       // _passwordController.clear();
       state = state.copyWith(

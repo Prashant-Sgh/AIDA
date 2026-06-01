@@ -12,9 +12,9 @@ class ContextRepository {
 
   ContextRepository(this._contextService);
 
-  Future<ResponseState> create({required ContextModel newContextModel}) async {
+  Future<ResponseState> create({required ContextModel newContextModel, required String email}) async {
     ResponseState responseState =
-        await _contextService.createContext(newContext: newContextModel);
+        await _contextService.createContext(context: newContextModel, email: email);
     return responseState;
   }
 
