@@ -81,7 +81,7 @@ class _ContextItemWidgetState extends ConsumerState<ContextItemWidget>
     setState(() {
       _cardToggleColor = Colors.redAccent;
     });
-    ref.read(contextVMProvider.notifier).deleteById(id: widget.contextId);
+    ref.read(contextVMProvider.notifier).deleteById(contextId: widget.contextId);
   }
 
   Future<void> _toggleUpdateColor() async {

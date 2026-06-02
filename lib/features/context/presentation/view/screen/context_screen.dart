@@ -40,7 +40,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
     final backgroundColor = customColors.contextScrBackground;
 
     /// Providers
-    final authVM = ref.watch(authenticationViewModelProvider);
+    final authState = ref.watch(authenticationViewModelProvider);
     final contextVM = ref.watch(contextVMProvider);
     final messageManager = ref.watch(messageManagerProvider);
 
@@ -292,7 +292,7 @@ Widget _buildBodyContent({
           final contextItem = contextVM.allContexts[index];
 
           return ContextItemWidget(
-            contextId: contextItem.id ?? 'tempContextId',
+            contextId: contextItem.id,
             contextName: contextItem.name,
             contextContent: contextItem.content,
           );

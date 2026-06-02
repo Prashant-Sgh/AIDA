@@ -48,10 +48,6 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     ref.listenManual<AuthenticationState>(authenticationViewModelProvider,
         (previous, next) {
       if (next.isOtpVerified) {
-        ref
-            .read(authenticationViewModelProvider.notifier)
-            .resetOtpVerificationStatus();
-        debugPrint("OTP VERIFIED SUCCESSFULLY navigating to context screen");
         context.go('/context');
       }
     });
@@ -114,7 +110,6 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
 
     if (state.isOtpVerified) {
       if (mounted) {
-        debugPrint("OTP VERIFIED SUCCESSFULLY navigating to context screen");
         context.go('/context');
       }
     }
@@ -146,7 +141,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
 
     final colorScheme = theme.colorScheme;
 
-    debugPrint("OTP: $otp");
+    // debugPrint("OTP: $otp");
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,

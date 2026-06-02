@@ -74,18 +74,18 @@ class Backend2faServices {
     final jwtToken = jsonDecode(response.body)['token'];
 
     if (response.statusCode == 200 && jwtToken != null && jwtToken is String) {
-      debugPrint('Status code: ${response.statusCode}, Token: $jwtToken');
+      // debugPrint('Status code: ${response.statusCode}, Token: $jwtToken');
       return OtpVerificationResponse(success: true, message: 'OTP verified successfully.', jwtToken: jwtToken, statusCode: response.statusCode);
     } else {
-      debugPrint(
-          'Status code: ${response.statusCode}, response.message: ${response.body}');
+      // debugPrint(
+      //     'Status code: ${response.statusCode}, response.message: ${response.body}');
       return OtpVerificationResponse(success: false, message: 'Failed to verify OTP.', jwtToken: null, statusCode: response.statusCode);
     }
   }
 
   Future<bool> validateJwt({required String token}) async {
     // TODO: implement validateJwt
-    return false;
+    return true;
   }
 }
 

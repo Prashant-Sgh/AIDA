@@ -41,10 +41,11 @@ class ContextServices {
       if (response.statusCode == 200) {
         responseState = ResponseState.success;
       } else {
+        debugPrint('Status code: ${response.statusCode}, body: ${response.body}');
         responseState = ResponseState.error;
       }
     } catch (e) {
-      print('FIRESTORE - $e');
+      debugPrint('FIRESTORE - $e');
       responseState = ResponseState.error;
     }
 
@@ -76,10 +77,11 @@ class ContextServices {
   }
 
   // Read
-  Future<List<ContextModel>?> getContexts() async {
+  Future<List<ContextModel>?> getContexts({required String emailId}) async {
     final uri = Uri.https(
       _baseUrl,
       '/crud/readAll',
+      {'email_id': emailId}
     );
 
     try {
@@ -114,11 +116,11 @@ class ContextServices {
   }
 
   // Update
-  Future<ResponseState> updateContext({required ContextModel context}) async {
+  Future<ResponseState> updateContext({required ContextModel context, required String emailId}) async {
     ResponseState responseState = ResponseState.notInitiated;
 
     final uri = Uri.parse('https://$_baseUrl/crud/update');
-    final body = jsonEncode(context.toJson());
+    final body = jsonEncode({"context": context.toJson(), "email_id": emailId});
 
     try {
       responseState = ResponseState.loading;
@@ -139,13 +141,13 @@ class ContextServices {
   }
 
   // Delete context by id
-  Future<ResponseState> deleteById({required String id}) async {
+  Future<ResponseState> deleteById({required String contextId, required String emailId}) async {
     ResponseState responseState = ResponseState.notInitiated;
 
     final url = Uri.https(
       _baseUrl,
-      '/crud/deleteById',
-      {'id': id},
+      '/crud/delete',
+      {'context_id': contextId, 'email_id': emailId},
     );
 
     try {

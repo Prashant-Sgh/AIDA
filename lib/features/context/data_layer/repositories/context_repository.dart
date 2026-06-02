@@ -12,26 +12,30 @@ class ContextRepository {
 
   ContextRepository(this._contextService);
 
-  Future<ResponseState> create({required ContextModel newContextModel, required String email}) async {
-    ResponseState responseState =
-        await _contextService.createContext(context: newContextModel, email: email);
+  Future<ResponseState> create(
+      {required ContextModel newContextModel, required String email}) async {
+    ResponseState responseState = await _contextService.createContext(
+        context: newContextModel, email: email);
     return responseState;
   }
 
-  Future<List<ContextModel>?> getContexts() async {
-    final contexts = await _contextService.getContexts();
+  Future<List<ContextModel>?> getContexts({required String emailId}) async {
+    final contexts = await _contextService.getContexts(emailId: emailId);
     // if (contexts == null) throw Exception('Could not get contexts');
     return contexts;
   }
 
   Future<ResponseState> updateContext(
-      {required ContextModel newContextModel}) async {
-    final state = await _contextService.updateContext(context: newContextModel);
+      {required ContextModel newContextModel, required String emailId}) async {
+    final state = await _contextService.updateContext(
+        context: newContextModel, emailId: emailId);
     return state;
   }
 
-  Future<ResponseState> deleteContextWithId({required String id}) async {
-    final state = await _contextService.deleteById(id: id);
+  Future<ResponseState> deleteContextWithId(
+      {required String contextId, required String emailId}) async {
+    final state = await _contextService.deleteById(
+        contextId: contextId, emailId: emailId);
     return state;
   }
 }

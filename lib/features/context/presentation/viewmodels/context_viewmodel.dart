@@ -86,7 +86,7 @@ class ContextViewModel extends Notifier<ContextState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      final data = await _repository.getContexts();
+      final data = await _repository.getContexts(emailId: userEmail);
       if (data is List<ContextModel>) {
         state = state.copyWith(allContexts: data, isLoading: false);
 
@@ -131,7 +131,7 @@ class ContextViewModel extends Notifier<ContextState> {
     try {
       for (var modifiedContext in updatedModels.changedModels) {
         final contextData = modifiedContext.values.first;
-        await _repository.updateContext(newContextModel: contextData);
+        await _repository.updateContext(newContextModel: contextData, emailId: userEmail);
       }
 
       contextChangeState = contextChangeState.copyWith(
@@ -157,7 +157,7 @@ class ContextViewModel extends Notifier<ContextState> {
       {required ContextModel updatedContext}) async {
     state = state.copyWith(updating: true, error: null);
     final response =
-        await _repository.updateContext(newContextModel: updatedContext);
+        await _repository.updateContext(newContextModel: updatedContext, emailId: userEmail);
     state = state.copyWith(
         updating: false,
         error: response == ResponseState.error
@@ -169,9 +169,9 @@ class ContextViewModel extends Notifier<ContextState> {
   // -----------------------------
   // CRUD - Delete Methods
   // -----------------------------
-  Future<ResponseState> deleteById({required String id}) async {
+  Future<ResponseState> deleteById({required String contextId}) async {
     state = state.copyWith(deleting: true, error: null);
-    final response = await _repository.deleteContextWithId(id: id);
+    final response = await _repository.deleteContextWithId(contextId: contextId, emailId: userEmail);
     state = state.copyWith(
         deleting: false,
         error: response == ResponseState.error

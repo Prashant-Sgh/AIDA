@@ -84,10 +84,6 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     return EmailValidationState.initial;
   }
 
-  void resetOtpVerificationStatus() {
-    state = state.copyWith(isOtpVerified: false);
-  }
-
   // Login
   Future<void> loginAdmin() async {
     // Perform login logic here
@@ -102,6 +98,7 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
         await _backend2faRepo.start2fa(token: idToken);
         state = state.copyWith(
           isLoading: false,
+          authenticated: true,
           firebaseIdToken: idToken,
           emailValidationState: EmailValidationState.valid,
           passwordValidationState: PasswordValidationState.valid,
@@ -180,15 +177,24 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     state = state.copyWith(isLoading: true);
     final response =
         await _backend2faRepo.verifyOtp(otp: otp, email: state.email);
-    if (response.jwtToken != null && response.jwtToken!.isNotEmpty) {
+
+    if (response.success) {
       final firebaseToken = await getFirebaseIdToken();
       _secureStorageService.saveJwt(jwtToken: response.jwtToken ?? '');
       _secureStorageService.saveFirebaseId(firebaseIdKey: firebaseToken ?? '');
       state = state.copyWith(
-          isLoading: false, isOtpVerified: true, jwtToken: response.jwtToken);
+        isLoading: false,
+        isOtpVerified: true,
+        jwtToken: response.jwtToken,
+      );
+
+      debugPrint(
+          "\n  - AthenticationViewModel OTP verified but - isOtpVerified: ${state.isOtpVerified}, \n where as, loading  state: ${state.isLoading}, \n");
     } else {
       state = state.copyWith(
           isLoading: false, isOtpVerified: false, error: "Invalid OTP");
+      debugPrint(
+          "OTP VERIFICATION FAILED, isOtpVerified: ${state.isOtpVerified}, error: ${state.error}");
     }
 
     switch (response.statusCode) {
@@ -207,7 +213,7 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
 
   Future<void> setOtpBannerType(BannerType type) async {
     state = state.copyWith(otpBannerType: type, showOtpBannerType: true);
-    await Future.delayed(const Duration(seconds: 7), () {
+    await Future.delayed(const Duration(seconds: 4), () {
       closeOtpBannerType();
     });
   }
@@ -227,10 +233,11 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
       if (valid) {
         final firebaseToken = await getFirebaseIdToken();
         state = state.copyWith(
-            authenticated: true,
-            jwtToken: jwtToken,
-            firebaseIdToken: firebaseToken,
-            isOtpVerified: true);
+          authenticated: true,
+          jwtToken: jwtToken,
+          firebaseIdToken: firebaseToken,
+          isOtpVerified: true,
+        );
         return;
       }
       _secureStorageService.clearJwt();

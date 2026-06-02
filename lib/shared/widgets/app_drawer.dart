@@ -38,6 +38,9 @@ class AppDrawer extends ConsumerWidget {
     // Auth State
     final authState = ref.watch(authenticationViewModelProvider);
 
+    // debugPrint(
+        // 'From AppDrawer - authenticated?: ${authState.authenticated}, isOtpVerified: ${authState.isOtpVerified}, userEmail: ${authState.email} \n  ' );
+
     return Drawer(
       backgroundColor: backgroundColor,
       child: SafeArea(

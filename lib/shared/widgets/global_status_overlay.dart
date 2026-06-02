@@ -22,8 +22,6 @@ class GlobalStatusOverlay extends ConsumerWidget {
     // final showOtpBanner = authState.showOtpPendingBanner && currentGoLocation != '/otp' && currentGoLocation != '/authentication';
     final showOtpBanner = authState.showOtpPendingBanner;
 
-    debugPrint('GlobalStatusOverlay CustomBannerType: ${authState.showOtpBannerType}, ${authState.otpBannerType}');
-
     return Scaffold(
       body: Stack(
         children: [
@@ -72,30 +70,7 @@ class GlobalStatusOverlay extends ConsumerWidget {
                 ),
               ),
             ),
-          ),
-        //   Positioned.fill(
-        //       child: Column(
-                
-        //           mainAxisAlignment: MainAxisAlignment.center,
-        //           children: [
-        //         CustomOtpBanner(
-        //           bannerType: BannerType.wrongOtp,
-        //           onClose: () {},
-        //         ),
-        //         CustomOtpBanner(
-        //           bannerType: BannerType.otpExpired,
-        //           onClose: () {},
-        //         ),
-        //         CustomOtpBanner(
-        //           bannerType: BannerType.tooManyAttempts,
-        //           onClose: () {},
-        //         ),
-        //         CustomOtpBanner(
-        //           bannerType: BannerType.successfullyVerified,
-        //           onClose: () {},
-        //         ),
-        //       ]))
-       
+          ),       
         ],
       ),
     );
