@@ -1,5 +1,6 @@
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:aida/features/chat/data/repository/messageManager.dart';
+import 'package:aida/features/chat/presentation/viewmodel/chat_viewmodel.dart';
 import 'package:aida/features/context/presentation/view/widgets/add_context_dialog.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_state.dart';
 import 'package:aida/shared/widgets/app_drawer.dart';
@@ -42,7 +43,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
     /// Providers
     final authState = ref.watch(authenticationViewModelProvider);
     final contextVM = ref.watch(contextVMProvider);
-    final messageManager = ref.watch(messageManagerProvider);
+    // final messageManager = ref.watch(messageManagerProvider);
 
     /// Local state
     final isContextNotSaved =
@@ -109,7 +110,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
 
       /// DRAWER
       drawer: AppDrawer(
-        onClearChat: messageManager.clearChat,
+        onClearChat: ref.read(chatVMProvider.notifier).clearChat,
       ),
     );
   }

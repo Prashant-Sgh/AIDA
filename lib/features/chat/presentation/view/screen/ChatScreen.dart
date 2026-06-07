@@ -2,13 +2,16 @@ import 'dart:io';
 
 import 'package:aida/core/enums/response_state.dart';
 import 'package:aida/core/theme/CustomColors.dart';
+import 'package:aida/features/chat/data/model/Conversation.dart';
+import 'package:aida/features/chat/data/model/message.dart';
 import 'package:aida/features/chat/data/repository/messageManager.dart';
 import 'package:aida/features/chat/data/repository/messageRepository.dart';
-import 'package:aida/features/chat/presentation/widget/ChatHint.dart';
-import 'package:aida/features/chat/presentation/widget/ChatInputBar.dart';
-import 'package:aida/features/chat/presentation/widget/ChatScrAppBar.dart';
-import 'package:aida/features/chat/presentation/widget/Conversations.dart';
-import 'package:aida/features/chat/presentation/widget/processingAnimation.dart';
+import 'package:aida/features/chat/presentation/view/widget/ChatHint.dart';
+import 'package:aida/features/chat/presentation/view/widget/ChatInputBar.dart';
+import 'package:aida/features/chat/presentation/view/widget/ChatScrAppBar.dart';
+import 'package:aida/features/chat/presentation/view/widget/Conversations.dart';
+import 'package:aida/features/chat/presentation/view/widget/processingAnimation.dart';
+import 'package:aida/features/chat/presentation/viewmodel/chat_viewmodel.dart';
 import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
 import 'package:aida/shared/functionalities/showConfirmationDialog.dart';
 import 'package:aida/shared/widgets/app_drawer.dart';
@@ -25,20 +28,25 @@ class ChatScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatScreen extends ConsumerState<ChatScreen> {
-  late final MessageManager _messageManager;
+  // late final MessageManager _messageManager;
+  late final ChatViewmodel chatVM;
   bool _isExiting = false;
 
   @override
   void initState() {
     super.initState();
-    _messageManager = ref.read(messageManagerProvider);
+    // _messageManager = ref.read(messageManagerProvider);
+    chatVM = ref.read(chatVMProvider.notifier);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _messageManager.loadConversations();
+      // _messageManager.loadConversations();
+      chatVM.loadConversations();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final chatState = ref.watch(chatVMProvider);
+
     // final bottomInset = 10.0;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final textColor = Theme.of(context).colorScheme.onSurface;
@@ -117,29 +125,33 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
           child: Column(
             children: [
               StreamBuilder(
-                  stream: _messageManager.conversationStream,
+                  stream: chatVM.conversationStream,
+                  // stream: _messageManager.conversationStream,
                   builder: (context, snapshot) {
-                    final conversations = snapshot.data ?? [];
+                    final conversations =
+                        snapshot.data ?? Conversation(messages: [MessageObj()]);
 
-                    final coreConversations = conversations.reversed.map((c) {
+                    final coreConversations = conversations.messages.map((c) {
                       return Conversations(
-                        id: c.id,
-                        time: c.time.toString(),
-                        isUser: c.isUser,
-                        message: c.message,
+                        // id: c.id,
+                        // time: c.createdAt.toString(),
+                        // isUser: c.isUser,
+                        // message: c.message,
+                        messageObj: c,
                       );
                     });
 
                     return Expanded(
-                      child: conversations.isEmpty
+                      child: chatState.isEmpty
                           ? Center(
                               child: ChatHint(),
                             )
                           : ListView(
                               children: [
                                 ...coreConversations,
-                                if (_messageManager.responseState ==
-                                    ResponseState.loading)
+                                // if (_messageManager.responseState ==
+                                //     ResponseState.loading)
+                                if(chatState.isWaitingForResponse)
                                   ProcessingAnimation(),
                               ],
                             ),
@@ -149,7 +161,8 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
               Padding(
                 padding: EdgeInsets.only(bottom: bottomInset + 10),
                 child: ChatInputBar(
-                  sendMessage: (it) => _messageManager.sendMessage(it),
+                  // sendMessage: (it) => _messageManager.sendMessage(it),
+                  sendMessage: (it) => chatVM.sendMessage(it),
                 ),
               )
             ],
@@ -157,7 +170,8 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
         ),
       ),
       drawer: AppDrawer(
-        onClearChat: _messageManager.clearChat,
+        // onClearChat: _messageManager.clearChat,
+        onClearChat: chatVM.clearChat,
       ),
     );
   }

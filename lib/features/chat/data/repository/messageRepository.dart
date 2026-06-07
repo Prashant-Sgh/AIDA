@@ -2,7 +2,7 @@ import 'dart:convert';
 // import 'package:aida/features/chat/data/model/message.dart';
 import 'package:aida/core/enums/response_state.dart';
 import 'package:aida/features/chat/data/model/Conversation.dart';
-import 'package:aida/features/chat/data/repository/LocalDbManager.dart';
+// import 'package:aida/features/chat/data/repository/LocalDbManager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,7 +16,7 @@ class MessageRepository {
 
   ResponseState _responseState = ResponseState.notInitiated;
 
-  DatabaseManager databaseManager = DatabaseManager();
+  // DatabaseManager databaseManager = DatabaseManager();
 
   void updateResponseState(ResponseState newState) {
     _responseState = newState;
@@ -48,20 +48,21 @@ class MessageRepository {
     }
   }
 
-  Future<List<Conversation>> loadMessages() async {
-    final messages = await databaseManager.loadMessages();
-    return messages;
-  }
+  // Future<List<Conversation>> loadMessages() async {
+  //   final messages = await databaseManager.loadMessages();
+  //   return messages;
+  // }
 
-  Future<void> saveMessage(Conversation newMessage) async {
-    await databaseManager.saveMessage(newMessage);
-  }
+  // Future<void> saveMessage(Conversation newMessage) async {
+  //   await databaseManager.saveMessage(newMessage);
+  // }
 
-  Future<void> deleteMessage(String messageId) async {
-    databaseManager.deleteMessage(messageId);
-  }
+  // Future<void> deleteMessage(String messageId) async {
+  //   databaseManager.deleteMessage(messageId);
+  // }
 
-  Future<void> clearChat() async {
-    await databaseManager.clearChat();
-  }
+  // Future<void> clearChat() async {
+  //   await databaseManager.clearChat();
+  // }
+
 }

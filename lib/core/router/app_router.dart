@@ -1,5 +1,5 @@
 import 'package:aida/features/auth/presentation/view/screen/auth_screen.dart';
-import 'package:aida/features/chat/presentation/screen/ChatScreen.dart';
+import 'package:aida/features/chat/presentation/view/screen/ChatScreen.dart';
 import 'package:aida/features/context/presentation/view/screen/context_screen.dart';
 import 'package:aida/features/otp/presentation/view/screen/otp_screen.dart';
 import 'package:aida/features/splash/presentation/screen/Splash.dart';

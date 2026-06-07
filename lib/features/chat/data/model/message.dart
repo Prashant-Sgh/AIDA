@@ -1,33 +1,38 @@
 class MessageObj {
-  final String id;
-  final String authorId;
+  final String role;
+  final String content;
   final DateTime? createdAt;
-  final String? text;
 
   const MessageObj({
-    required this.id,
-    required this.authorId,
+    this.role = 'user',
+    this.content = '',
     this.createdAt,
-    this.text,
   });
 
   factory MessageObj.fromJson(Map<String, dynamic> json) {
+    DateTime? createdAt;
+
+    final rawCreatedAt = json['createdAt'];
+
+    final seconds = rawCreatedAt['_seconds'] as int?;
+    final nanoseconds = rawCreatedAt['_nanoseconds'] as int ?? 0;
+    if (seconds != null) {
+      createdAt = DateTime.fromMillisecondsSinceEpoch(
+          seconds * 1000 + nanoseconds ~/ 1000000);
+    }
+
     return MessageObj(
-      id: json['id'] as String,
-      authorId: json['authorId'] as String,
-      createdAt: json['createdAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'] as int)
-          : null,
-      text: json['text'] as String?,
+      role: json['role'] as String,
+      content: json['content'] as String,
+      createdAt: createdAt,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'authorId': authorId,
-      'createdAt': createdAt?.millisecondsSinceEpoch,
-      'text': text,
-    };
-  }
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     'role': role,
+  //     'content': content,
+  //     'createdAt': createdAt?.millisecondsSinceEpoch,
+  //   };
+  // }
 }

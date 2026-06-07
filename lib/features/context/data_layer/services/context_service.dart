@@ -85,10 +85,10 @@ class ContextServices {
     );
 
     try {
-      debugPrint('Getting contexts...');
+      // debugPrint('Getting contexts...');
       final response = await http.get(uri, headers: headers);
 
-      debugPrint('Response status code: ${response.statusCode}');
+      // debugPrint('Response status code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         List<ContextModel> contexts = [];

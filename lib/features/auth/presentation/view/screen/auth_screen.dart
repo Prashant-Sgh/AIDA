@@ -29,7 +29,8 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
       final state = ref.read(authenticationViewModelProvider);
 
       if (state.firebaseIdToken != null) {
-        if (mounted) context.push('/otp');
+        // if (mounted) context.push('/otp');
+        if (mounted) context.go('/context');
       }
     } else {
       // TODO:

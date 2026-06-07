@@ -1,18 +1,25 @@
+import 'package:aida/features/chat/data/model/Conversation.dart';
+import 'package:aida/features/chat/data/model/message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Conversations extends StatelessWidget {
-  final String id;
-  final bool isUser;
-  final String time;
-  final String message;
+  // final String id;
+  // final bool isUser;
+  // final String time;
+  // final String message;
+  final MessageObj messageObj;
+
   const Conversations(
       {super.key,
-      required this.id,
-      required this.time,
-      required this.isUser,
-      required this.message});
+      // required this.id,
+      // required this.time,
+      // required this.isUser,
+      // required this.message
+      required this.messageObj});
+
+  bool get isUser => messageObj.role == 'user';
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +56,7 @@ class Conversations extends StatelessWidget {
                 ),
               ),
               child: Text(
-                message,
+                messageObj.content,
                 style: TextStyle(color: textColor, fontSize: 13.0),
               ),
             ),
@@ -57,11 +64,14 @@ class Conversations extends StatelessWidget {
             SizedBox(height: 4.0), // Space between message and timestamp
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Text('01:00 am',
-                  style: GoogleFonts.quicksand(
-                      color: textColor,
-                      fontSize: 8.0,
-                      fontWeight: FontWeight.w100)),
+              child: Text(
+                // '01:00 am',
+                messageObj.createdAt.toString(),
+                style: GoogleFonts.quicksand(
+                    color: textColor,
+                    fontSize: 8.0,
+                    fontWeight: FontWeight.w100),
+              ),
             ),
           ],
         ),
