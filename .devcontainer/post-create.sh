@@ -19,17 +19,27 @@ sudo apt-get install -y \
   fonts-noto-mono \
   fonts-noto-nerd \
   wget \
-  gnupg
+  gnupg \
+  apt-transport-https \
+  ca-certificates
 
 # Install Chrome
 echo "Installing Chrome..."
-wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 2>/dev/null || true
+echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list > /dev/null
 sudo apt-get update
-sudo apt-get install -y google-chrome-stable
+sudo apt-get install -y google-chrome-stable 2>&1 || echo "Chrome installation encountered issues, continuing..."
 
-echo "Chrome version:"
-google-chrome --version
+# Verify Chrome installation
+if command -v google-chrome &> /dev/null; then
+  echo "Chrome installed successfully:"
+  google-chrome --version
+else
+  echo "Warning: Chrome not found in PATH. Attempting alternative location..."
+  if [ -f /opt/google/chrome/chrome ]; then
+    echo "Found Chrome at /opt/google/chrome/chrome"
+  fi
+fi
 
 # Install Flutter
 echo "Cloning Flutter repository..."
@@ -39,17 +49,12 @@ git clone https://github.com/flutter/flutter.git /opt/flutter --depth 1
 export PATH="/opt/flutter/bin:$PATH"
 echo 'export PATH="/opt/flutter/bin:$PATH"' >> /home/vscode/.bashrc
 
+# Source bashrc to apply PATH changes in this session
+source /home/vscode/.bashrc
+
 # Run Flutter doctor
 echo "Running Flutter doctor..."
 flutter doctor -v
-
-# Accept licenses
-echo "Accepting Android SDK licenses..."
-flutter config --android-sdk /usr/lib/android-sdk || true
-
-# Upgrade Flutter
-echo "Upgrading Flutter..."
-flutter upgrade
 
 # Disable analytics and crash reporting
 flutter config --no-analytics
@@ -59,6 +64,7 @@ flutter config --no-crash-reporting
 echo "Enabling Flutter web platform..."
 flutter config --enable-web
 
+echo ""
 echo "Flutter setup complete!"
 echo "Available devices:"
 flutter devices
