@@ -17,7 +17,19 @@ sudo apt-get install -y \
   fonts-liberation \
   fonts-noto-core \
   fonts-noto-mono \
-  fonts-noto-nerd
+  fonts-noto-nerd \
+  wget \
+  gnupg
+
+# Install Chrome
+echo "Installing Chrome..."
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+sudo apt-get update
+sudo apt-get install -y google-chrome-stable
+
+echo "Chrome version:"
+google-chrome --version
 
 # Install Flutter
 echo "Cloning Flutter repository..."
@@ -43,4 +55,10 @@ flutter upgrade
 flutter config --no-analytics
 flutter config --no-crash-reporting
 
+# Enable web platform
+echo "Enabling Flutter web platform..."
+flutter config --enable-web
+
 echo "Flutter setup complete!"
+echo "Available devices:"
+flutter devices
