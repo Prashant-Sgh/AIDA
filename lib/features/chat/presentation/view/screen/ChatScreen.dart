@@ -1,23 +1,16 @@
 import 'dart:io';
 
-import 'package:aida/core/enums/response_state.dart';
-import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/features/chat/data/model/Conversation.dart';
 import 'package:aida/features/chat/data/model/message.dart';
-import 'package:aida/features/chat/data/repository/messageManager.dart';
-import 'package:aida/features/chat/data/repository/messageRepository.dart';
 import 'package:aida/features/chat/presentation/view/widget/ChatHint.dart';
 import 'package:aida/features/chat/presentation/view/widget/ChatInputBar.dart';
 import 'package:aida/features/chat/presentation/view/widget/ChatScrAppBar.dart';
 import 'package:aida/features/chat/presentation/view/widget/Conversations.dart';
 import 'package:aida/features/chat/presentation/view/widget/processingAnimation.dart';
 import 'package:aida/features/chat/presentation/viewmodel/chat_viewmodel.dart';
-import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
-import 'package:aida/shared/functionalities/showConfirmationDialog.dart';
 import 'package:aida/shared/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
@@ -31,14 +24,14 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
   // late final MessageManager _messageManager;
   late final ChatViewmodel chatVM;
   bool _isExiting = false;
+  final ScrollController _scrollController = ScrollController();
+  bool _showScrollToBottomButton = false;
 
   @override
   void initState() {
     super.initState();
-    // _messageManager = ref.read(messageManagerProvider);
     chatVM = ref.read(chatVMProvider.notifier);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // _messageManager.loadConversations();
       chatVM.loadConversations();
     });
   }
@@ -49,7 +42,17 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
 
     // final bottomInset = 10.0;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final textColor = Theme.of(context).colorScheme.onSurface;
+    final theme = Theme.of(context);
+    final textColor = theme.colorScheme.onSurface;
+
+    _scrollController.addListener(() {
+      if (_scrollController.offset <
+          _scrollController.position.maxScrollExtent - 100) {
+        setState(() => _showScrollToBottomButton = true);
+      } else {
+        setState(() => _showScrollToBottomButton = false);
+      }
+    });
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -126,17 +129,12 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
             children: [
               StreamBuilder(
                   stream: chatVM.conversationStream,
-                  // stream: _messageManager.conversationStream,
                   builder: (context, snapshot) {
                     final conversations =
                         snapshot.data ?? Conversation(messages: [MessageObj()]);
 
                     final coreConversations = conversations.messages.map((c) {
                       return Conversations(
-                        // id: c.id,
-                        // time: c.createdAt.toString(),
-                        // isUser: c.isUser,
-                        // message: c.message,
                         messageObj: c,
                       );
                     });
@@ -146,22 +144,51 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
                           ? Center(
                               child: ChatHint(),
                             )
-                          : ListView(
+                          : Stack(
                               children: [
-                                ...coreConversations,
-                                // if (_messageManager.responseState ==
-                                //     ResponseState.loading)
-                                if(chatState.isWaitingForResponse)
-                                  ProcessingAnimation(),
+                                ListView(
+                                  controller: _scrollController,
+                                  children: [
+                                    ...coreConversations,
+                                    if (chatState.isWaitingForResponse)
+                                      ProcessingAnimation(),
+                                  ],
+                                ),
+                                if (_showScrollToBottomButton)
+                                  Positioned(
+                                    bottom: 20,
+                                    right: 20,
+                                    child: Container(
+                                      height: 32,
+                                      width: 32,
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.primary,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: IconButton(
+                                        icon: Icon(Icons.arrow_downward_rounded,
+                                            size: 14,
+                                            color: theme.colorScheme.surface),
+                                        onPressed: () {
+                                          _scrollController.animateTo(
+                                            _scrollController
+                                                .position.maxScrollExtent,
+                                            duration: const Duration(
+                                                milliseconds: 500),
+                                            curve: Curves.easeOutSine,
+                                          );
+                                        },
+                                        splashRadius: 22,
+                                      ),
+                                    ),
+                                  )
                               ],
                             ),
                     );
                   }),
-              // ProcessingAnimation(),
               Padding(
                 padding: EdgeInsets.only(bottom: bottomInset + 10),
                 child: ChatInputBar(
-                  // sendMessage: (it) => _messageManager.sendMessage(it),
                   sendMessage: (it) => chatVM.sendMessage(it),
                 ),
               )
@@ -170,7 +197,6 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
         ),
       ),
       drawer: AppDrawer(
-        // onClearChat: _messageManager.clearChat,
         onClearChat: chatVM.clearChat,
       ),
     );

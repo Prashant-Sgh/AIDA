@@ -21,9 +21,14 @@ class ChatRepo {
     _responseState = newState;
   }
 
-  Future<String?> sendMessage({ required String message, required String email, required String conversationId}) async {
-    final url = Uri.parse('$_baseUrl/ai/send-message');
-    final body = jsonEncode({'message': message, 'email': email, 'conversation': conversationId});
+  Future<String?> sendMessage({
+    required String message,
+    required String email,
+    required String conversationId,
+  }) async {
+    final url = Uri.parse('https://$_baseUrl/ai/send-message');
+    final body = jsonEncode(
+        {'message': message, 'email': email, 'conversation': conversationId});
     final headers = {
       'Content-Type': 'application/json',
       'x-vercel-protection-bypass': 'EVdAY3uz4Y2FsMNKsNMVLudVBt9yXzPh'
@@ -32,14 +37,22 @@ class ChatRepo {
     updateResponseState(ResponseState.loading);
     try {
       final response = await http.post(url, headers: headers, body: body);
+    //   debugPrint(
+    //       'Request sent and response has status code: ${response.statusCode}');
+
+      // final  responseBody = jsonDecode(response.body.toString());
+    //   debugPrint('Response body: ${response.body[0].toString()}');
+      // debugPrint('Response body: $responseBody');
       if (response.statusCode == 200) {
         updateResponseState(ResponseState.success);
         return response.body;
       } else {
         updateResponseState(ResponseState.error);
-        return "Sorry... \nError: ${response.statusCode} + API call failed. \nPlease try again later.";
+        // debugPrint('Error code: ${response.statusCode}, Error body: ${jsonDecode(response.body)}');
+        return "Sorry... something went wrong \nError code: ${response.statusCode}, \nError body: ${jsonDecode(response.body)} \n+ API call failed. \nPlease try again later.";
       }
     } catch (error) {
+    //   debugPrint('Bad Request: ${error.toString()}');
       updateResponseState(ResponseState.error);
       return "Bad Request or Server error happened. \nPlease try again later.";
     }
@@ -63,7 +76,7 @@ class ChatRepo {
           final message = MessageObj.fromJson(d);
           conversations.add(message);
         }
-        debugPrint('Conversation fetched successfully: ${response.body}');
+        // debugPrint('Conversation fetched successfully: ${response.body}');
         return conversations;
       } else {
         debugPrint(

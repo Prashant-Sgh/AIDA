@@ -7,11 +7,10 @@ import 'package:aida/features/temp/temp_screen.dart';
 import 'package:aida/features/welcome/presentation/screen/Welcome.dart';
 import 'package:aida/shared/widgets/global_status_overlay.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/splash',
+  initialLocation: '/chat',
   routes: [
     /// SHELL
     ShellRoute(

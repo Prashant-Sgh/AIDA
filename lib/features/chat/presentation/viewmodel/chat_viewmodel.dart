@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:aida/features/chat/data/model/Conversation.dart';
+import 'package:aida/features/chat/data/model/message.dart';
 import 'package:aida/features/chat/data/repository/chat_repo.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final chatVMProvider = NotifierProvider<ChatViewmodel, ChatState>(
@@ -25,25 +27,49 @@ class ChatViewmodel extends Notifier<ChatState> {
 
   Stream<Conversation> get conversationStream =>
       _conversationStreamController.stream;
+
   Future<void> clearChat() async {
     state = state.copyWith(conversation: Conversation(messages: []));
   }
 
   Future<void> loadConversations() async {
-    final conversations = await ref.read(chatRepoProvider).loadConversation(
-        userEmail: _authVM.email, conversationId: "SMW-Conversation_Testing_01");
+    final conversations = await _chatRepo.loadConversation(
+        userEmail: "test@aida.com",
+        conversationId: "SMW-Conversation_Testing_01");
 
     if (conversations != null) {
-      state =
-          state.copyWith(conversation: Conversation(messages: conversations), isEmpty: false);
+      //   debugPrint("This user conversations are: $conversations");
+      state = state.copyWith(
+          conversation: Conversation(messages: conversations), isEmpty: false);
     }
+
+    bool hasError = state.isError;
+
+    if (hasError) {
+      final conversationWithError = [...conversations, Conversation(messages: [MessageObj(text: "Error", isUser: false)])];      
+    }
+
+    _conversationStreamController.add(state.conversation);
   }
 
   Future<void> sendMessage(String text) async {
+    // debugPrint("\nSending message:- $text");
     state = state.copyWith(isWaitingForResponse: true);
-    await ref.read(chatRepoProvider).sendMessage(
-        email: _authVM.email, conversationId: "SMW-Conversation_Testing_01", message: text);
-    loadConversations();
+    final sentResponse = await _chatRepo.sendMessage(
+      //   email: _authVM.email,
+      email: "test@aida.com",
+      conversationId: "SMW-Conversation_Testing_01",
+      message: text,
+    );
+
+    // debugPrint("\nResponse:- $sentResponse");
+
+    if (sentResponse == null) {
+      state.copyWith(isWaitingForResponse: false, isError: true);
+    }
+    ;
+
+    await loadConversations();
     state = state.copyWith(isWaitingForResponse: false);
   }
 }

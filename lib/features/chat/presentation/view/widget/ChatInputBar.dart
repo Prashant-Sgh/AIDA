@@ -83,31 +83,6 @@ class _ChatInputBar extends State<ChatInputBar> {
                     ),
                   ),
                 ),
-
-                // child: Row(
-                //   children: [
-                //     Expanded(
-                //       child: TextField(
-                //         controller: _controller,
-                //         maxLines: 1,
-                //         scrollController: scrollController,
-                //         style: GoogleFonts.quicksand(
-                //             fontWeight: FontWeight.w400,
-                //             fontSize: 16,
-                //             color: theme.colorScheme.onSurface),
-                //         decoration: InputDecoration(
-                //           hintText: 'What would you like to know?',
-                //           hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                //             color: theme.colorScheme.onSurface.withOpacity(0.6),
-                //           ),
-                //           border: InputBorder.none,
-                //           isDense: true,
-                //         ),
-                //       ),
-                //     ),
-                //     // const SizedBox(width: 8),
-                //   ],
-                // ),
               ),
               Row(
                 children: [

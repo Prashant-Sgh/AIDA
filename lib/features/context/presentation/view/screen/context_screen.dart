@@ -1,5 +1,4 @@
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
-import 'package:aida/features/chat/data/repository/messageManager.dart';
 import 'package:aida/features/chat/presentation/viewmodel/chat_viewmodel.dart';
 import 'package:aida/features/context/presentation/view/widgets/add_context_dialog.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_state.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_viewmodel.dart';
 import 'package:aida/features/context/presentation/view/widgets/context_item_widget.dart';
 import 'package:aida/core/theme/CustomColors.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ContextScreen extends ConsumerStatefulWidget {
