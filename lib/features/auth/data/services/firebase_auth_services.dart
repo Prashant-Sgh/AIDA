@@ -12,6 +12,17 @@ class FirebaseAuthServices {
 
   FirebaseAuthServices(this._firebaseAuth);
 
+  // Sign up using email & password
+  Future<UserCredential> signUp({
+    required String email,
+    required String password,
+  }) async {
+    return await _firebaseAuth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+  }
+
   // Login using email & password
   Future<UserCredential> login({
     required String email,
@@ -33,5 +44,10 @@ class FirebaseAuthServices {
   // Logout
   Future<void> logout() async {
     await _firebaseAuth.signOut();
+  }
+
+  // Continue with google
+  Future<void> continueWithGoogle() async {
+    await _firebaseAuth.signInWithPopup(GoogleAuthProvider());
   }
 }

@@ -87,16 +87,16 @@ class _ChatInputBar extends State<ChatInputBar> {
               Row(
                 children: [
                   const SizedBox(width: 12),
-                  IconButton(
-                    icon: Icon(Icons.image_outlined, color: iconColor),
-                    onPressed: () {},
-                    splashRadius: 24,
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.code, color: iconColor),
-                    onPressed: () {},
-                    splashRadius: 24,
-                  ),
+                  // IconButton(
+                  //   icon: Icon(Icons.image_outlined, color: iconColor),
+                  //   onPressed: () {},
+                  //   splashRadius: 24,
+                  // ),
+                  // IconButton(
+                  //   icon: Icon(Icons.code, color: iconColor),
+                  //   onPressed: () {},
+                  //   splashRadius: 24,
+                  // ),
                   IconButton(
                     icon: Icon(Icons.mic_none, color: iconColor),
                     onPressed: () {},

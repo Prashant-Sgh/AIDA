@@ -28,10 +28,6 @@ class ChatViewmodel extends Notifier<ChatState> {
   Stream<Conversation> get conversationStream =>
       _conversationStreamController.stream;
 
-  Future<void> clearChat() async {
-    state = state.copyWith(conversation: Conversation(messages: []));
-  }
-
   Future<void> loadConversations() async {
     final conversations = await _chatRepo.loadConversation(
         userEmail: "test@aida.com",
@@ -46,7 +42,18 @@ class ChatViewmodel extends Notifier<ChatState> {
     bool hasError = state.isError;
 
     if (hasError) {
-      final conversationWithError = [...conversations, Conversation(messages: [MessageObj(text: "Error", isUser: false)])];      
+      //   final conversationWithError = [...conversations, Conversation(messages: [MessageObj(text: "Error", isUser: false)])];
+      final conversationWithError = [
+        ...state.conversation.messages,
+        MessageObj(
+          role: "assistant",
+          content: "Error",
+          createdAt: DateTime.now(),
+        )
+      ];
+
+      state = state.copyWith(
+          conversation: Conversation(messages: conversationWithError));
     }
 
     _conversationStreamController.add(state.conversation);
@@ -54,23 +61,56 @@ class ChatViewmodel extends Notifier<ChatState> {
 
   Future<void> sendMessage(String text) async {
     // debugPrint("\nSending message:- $text");
+
+    final updatedConversation = [
+      ...state.conversation.messages,
+      MessageObj(
+        role: "user",
+        content: text,
+        createdAt: DateTime.now(),
+      ),
+    ];
+
+    state = state.copyWith(
+      conversation: Conversation(messages: updatedConversation),
+    );
+
+    _conversationStreamController.add(state.conversation);
+
     state = state.copyWith(isWaitingForResponse: true);
     final sentResponse = await _chatRepo.sendMessage(
-      //   email: _authVM.email,
-      email: "test@aida.com",
-      conversationId: "SMW-Conversation_Testing_01",
+      email: _authVM.email,
+      // email: "test@aida.com",
+      conversationId: "Default_Conversation_Id",
       message: text,
     );
 
     // debugPrint("\nResponse:- $sentResponse");
 
-    if (sentResponse == null) {
-      state.copyWith(isWaitingForResponse: false, isError: true);
-    }
-    ;
+    final newConversation = [
+      ...state.conversation.messages,
+      MessageObj(
+        role: "assistant",
+        content: sentResponse,
+        createdAt: DateTime.now(),
+      )
+    ];
+    state =
+        state.copyWith(conversation: Conversation(messages: newConversation));
 
-    await loadConversations();
+    _conversationStreamController.add(state.conversation);
+
+    // await loadConversations();
     state = state.copyWith(isWaitingForResponse: false);
+  }
+
+  Future<void> clearConversation() async {
+    String email = _authVM.email;
+    String conversationId = "Default_Conversation_Id";
+
+    await _chatRepo.clearConversation(
+        email: email, conversationId: conversationId);
+    await loadConversations();
   }
 }
 

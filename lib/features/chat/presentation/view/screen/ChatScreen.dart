@@ -197,7 +197,7 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
         ),
       ),
       drawer: AppDrawer(
-        onClearChat: chatVM.clearChat,
+        // onClearChat: chatVM.clearChat,
       ),
     );
   }

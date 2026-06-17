@@ -108,7 +108,7 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
 
       /// DRAWER
       drawer: AppDrawer(
-        onClearChat: ref.read(chatVMProvider.notifier).clearChat,
+        // onClearChat: ref.read(chatVMProvider.notifier).clearChat,
       ),
     );
   }

@@ -5,19 +5,12 @@ import 'package:flutter/widget_previews.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Conversations extends StatelessWidget {
-  // final String id;
-  // final bool isUser;
-  // final String time;
-  // final String message;
   final MessageObj messageObj;
 
-  const Conversations(
-      {super.key,
-      // required this.id,
-      // required this.time,
-      // required this.isUser,
-      // required this.message
-      required this.messageObj});
+  const Conversations({
+    super.key,
+    required this.messageObj,
+  });
 
   bool get isUser => messageObj.role == 'user';
 

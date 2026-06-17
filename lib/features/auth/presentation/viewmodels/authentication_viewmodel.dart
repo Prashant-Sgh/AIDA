@@ -84,6 +84,51 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     return EmailValidationState.initial;
   }
 
+  // Sign up
+  Future<void> signUp() async {
+
+    state = state.copyWith(isLoading: true);
+    final response = await _firebaseAuthRepo.signUp(
+        email: state.email, password: state.password);
+
+    if (response.authenticated) {
+      final idToken = await getFirebaseIdToken();
+      if (idToken != null) {
+        await Future.delayed(const Duration(seconds: 1));
+        await _backend2faRepo.start2fa(token: idToken);
+        state = state.copyWith(
+          isLoading: false,
+          authenticated: true,
+          firebaseIdToken: idToken,
+          emailValidationState: EmailValidationState.valid,
+          passwordValidationState: PasswordValidationState.valid,
+          error: null,
+        );
+      } else {
+        state = state.copyWith(
+            isLoading: false,
+            authenticated: false,
+            emailValidationState: EmailValidationState.invalid,
+            passwordValidationState: PasswordValidationState.invalid,
+            error: 'No Firebase authentication token found.');
+        logoutAdmin();
+      }
+    } else {
+      // _emailController.clear();
+      // _passwordController.clear();
+      state = state.copyWith(
+        isLoading: false,
+        authenticated: false,
+        error: response.error,
+        // isEmailValid: false,
+        emailValidationState: EmailValidationState.invalid,
+        passwordValidationState: PasswordValidationState.invalid,
+        // email: '',
+        // password: '',
+      );
+    }
+  }
+
   // Login
   Future<void> loginAdmin() async {
     // Perform login logic here
@@ -155,6 +200,10 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
       authenticated: false,
       isOtpVerified: false,
     );
+  }
+
+  Future<void> continueWithGoogle() async {
+    await _firebaseAuthRepo.continueWithGoogle();
   }
 
   // Show OTP Pending Banner

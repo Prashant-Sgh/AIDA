@@ -35,20 +35,20 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
     } else {
       // TODO:
       // Sign-up user
-      // await ref.read(authenticationViewModelProvider.notifier).signUp();
+      await ref.read(authenticationViewModelProvider.notifier).signUp();
     }
   }
 
   Future<void> _onGoogleAuthenticate() async {
     // TODO:
-    // await ref.read(authenticationViewModelProvider.notifier)
-    //     .signInWithGoogle();
+    await ref.read(authenticationViewModelProvider.notifier)
+        .continueWithGoogle();
 
-    // final state = ref.read(authenticationViewModelProvider);
+    final state = ref.read(authenticationViewModelProvider);
 
-    // if (state.firebaseIdToken != null) {
-    //   if (mounted) context.push('/otp');
-    // }
+    if (state.firebaseIdToken != null) {
+      if (mounted) context.push('/otp');
+    }
   }
 
   Future<void> _resetPassword() async {

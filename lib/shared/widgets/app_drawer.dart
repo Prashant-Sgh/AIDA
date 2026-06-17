@@ -2,6 +2,8 @@ import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/core/theme/theme_provider.dart';
 import 'package:aida/core/utils/open_protected_route.dart';
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
+import 'package:aida/features/chat/data/repository/chat_repo.dart';
+import 'package:aida/features/chat/presentation/viewmodel/chat_viewmodel.dart';
 import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
 import 'package:aida/shared/widgets/login_out_button.dart';
 import 'package:aida/shared/widgets/start2fa_button.dart';
@@ -11,11 +13,9 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppDrawer extends ConsumerWidget {
-  final Future<void> Function() onClearChat;
-
   const AppDrawer({
     super.key,
-    required this.onClearChat,
+    // required this.onClearChat,
   });
 
   @override
@@ -39,7 +39,7 @@ class AppDrawer extends ConsumerWidget {
     final authState = ref.watch(authenticationViewModelProvider);
 
     // debugPrint(
-        // 'From AppDrawer - authenticated?: ${authState.authenticated}, isOtpVerified: ${authState.isOtpVerified}, userEmail: ${authState.email} \n  ' );
+    // 'From AppDrawer - authenticated?: ${authState.authenticated}, isOtpVerified: ${authState.isOtpVerified}, userEmail: ${authState.email} \n  ' );
 
     return Drawer(
       backgroundColor: backgroundColor,
@@ -91,6 +91,32 @@ class AppDrawer extends ConsumerWidget {
               ),
 
               _DrawerTile(
+                title: 'Home',
+                icon: Icons.home_outlined,
+                textColor: textColor,
+                onTap: () {
+                  context.go('/');
+                },
+              ),
+
+              _DrawerDivider(
+                lineColor: lineColor,
+              ),
+
+              _DrawerTile(
+                title: 'Chat',
+                icon: Icons.chat_bubble_outline_rounded,
+                textColor: textColor,
+                onTap: () {
+                  context.go('/chat');
+                },
+              ),
+
+              _DrawerDivider(
+                lineColor: lineColor,
+              ),
+
+              _DrawerTile(
                 title: 'Context controll',
                 icon: Icons.shield_outlined,
                 textColor: textColor,
@@ -115,24 +141,12 @@ class AppDrawer extends ConsumerWidget {
               ),
 
               _DrawerTile(
-                title: 'Guide me',
-                icon: Icons.auto_awesome_rounded,
-                textColor: textColor,
-                onTap: () {
-                  context.go('/');
-                },
-              ),
-
-              _DrawerDivider(
-                lineColor: lineColor,
-              ),
-
-              _DrawerTile(
                 title: 'Clear Chat',
                 icon: Icons.delete_outline_rounded,
                 textColor: dangerColor,
                 onTap: () async {
-                  await onClearChat();
+                  // await onClearChat();
+                  ref.read(chatVMProvider.notifier).clearConversation();
                 },
               ),
 

@@ -16,8 +16,51 @@ class FirebaseAuthRepo {
 
   FirebaseAuthRepo(this._firebaseAuthService);
 
-  void working() {
-    debugPrint('working');
+  Future<AuthenticationState> signUp({
+    required String email,
+    required String password,
+  }) async {
+    AuthenticationState authenticationState = AuthenticationState();
+
+    authenticationState =
+        authenticationState.copyWith(isLoading: true, error: null);
+    try {
+      await _firebaseAuthService.signUp(
+        email: email,
+        password: password,
+      );
+      authenticationState = authenticationState.copyWith(
+        isLoading: false,
+        email: email,
+        emailValidationState: EmailValidationState.valid,
+        passwordValidationState: PasswordValidationState.valid,
+        authenticated: true,
+        error: null,
+      );
+      return authenticationState;
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = '';
+
+      switch (e.code) {
+        case 'invalid-credential':
+          errorMessage = 'Something went wrong while signing up.';
+          authenticationState = authenticationState.copyWith(
+              // emailValidationState: EmailValidationState.invalid,
+              // passwordValidationState: PasswordValidationState.invalid,
+              );
+          break;
+
+        default:
+          errorMessage =
+              'Authentication failed: ${e.message ?? "Unknown error"}';
+      }
+
+      return authenticationState.copyWith(
+        isLoading: false,
+        authenticated: false,
+        error: errorMessage,
+      );
+    }
   }
 
   // Login
@@ -47,17 +90,18 @@ class FirebaseAuthRepo {
       String errorMessage = '';
 
       switch (e.code) {
-
         case 'invalid-credential':
-          errorMessage = 'Invalid email or password. If you forgot your password, reset it.';
+          errorMessage =
+              'Invalid email or password. If you forgot your password, reset it.';
           authenticationState = authenticationState.copyWith(
-            // emailValidationState: EmailValidationState.invalid,
-            // passwordValidationState: PasswordValidationState.invalid,
-          );
+              // emailValidationState: EmailValidationState.invalid,
+              // passwordValidationState: PasswordValidationState.invalid,
+              );
           break;
 
         default:
-          errorMessage = 'Authentication failed: ${e.message ?? "Unknown error"}';
+          errorMessage =
+              'Authentication failed: ${e.message ?? "Unknown error"}';
       }
 
       return authenticationState.copyWith(
@@ -76,5 +120,10 @@ class FirebaseAuthRepo {
   // Logout
   Future<void> logout() async {
     await _firebaseAuthService.logout();
+  }
+
+  // Continue with Google
+  Future<void> continueWithGoogle() async {
+    await _firebaseAuthService.continueWithGoogle();
   }
 }
