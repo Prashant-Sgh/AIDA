@@ -12,7 +12,20 @@
           "package_name": "com.example.aida"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "892272057115-hoaqa9c1qvhih0l5c6bqsolp1fqiuqgp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.aida",
+            "certificate_hash": "3551c2a78938f67c17d4bdc196165116451762af"
+          }
+        },
+        {
+          "client_id": "892272057115-efckaoqij34huh1fhtvbeh53an2istoh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCwc7yCVhf9i1SP6NPOalb2ne6IEIpTrlM"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "892272057115-efckaoqij34huh1fhtvbeh53an2istoh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "892272057115-m0rs2kt58gesd69069djl12nhhi64fc4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.aida"
+              }
+            }
+          ]
         }
       }
     }

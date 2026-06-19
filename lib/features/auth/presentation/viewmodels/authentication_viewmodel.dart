@@ -86,7 +86,6 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
 
   // Sign up
   Future<void> signUp() async {
-
     state = state.copyWith(isLoading: true);
     final response = await _firebaseAuthRepo.signUp(
         email: state.email, password: state.password);
@@ -179,8 +178,17 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     final idToken = await _firebaseAuthRepo.getFirebaseIdToken();
     if (idToken != null) {
       state = state.copyWith(firebaseIdToken: idToken);
+      await getEmail();
     }
     return idToken;
+  }
+
+  // Get Email
+  Future<void> getEmail() async {
+    final email = await _firebaseAuthRepo.getEmail(
+        firebaseIdToken: state.firebaseIdToken!);
+
+    state = state.copyWith(email: email);
   }
 
   // Logout
@@ -204,6 +212,19 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
 
   Future<void> continueWithGoogle() async {
     await _firebaseAuthRepo.continueWithGoogle();
+    final idToken = await getFirebaseIdToken();
+    if (idToken != null) {
+      await Future.delayed(const Duration(seconds: 1));
+      await _backend2faRepo.start2fa(token: idToken);
+      state = state.copyWith(
+        isLoading: false,
+        authenticated: true,
+        firebaseIdToken: idToken,
+        emailValidationState: EmailValidationState.valid,
+        passwordValidationState: PasswordValidationState.valid,
+        error: null,
+      );
+    }
   }
 
   // Show OTP Pending Banner

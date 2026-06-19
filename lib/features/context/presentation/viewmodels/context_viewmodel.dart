@@ -39,8 +39,7 @@ class ContextViewModel extends Notifier<ContextState> {
 
   void updateNewContextModel({String? name, String? content}) {
     newContextModel = newContextModel.copyWith(name: name, content: content);
-    debugPrint(
-        'New context model changed to: ${newContextModel.toJson()}');
+    debugPrint('New context model changed to: ${newContextModel.toJson()}');
   }
 
   void clearNewContextModel() =>
@@ -86,7 +85,9 @@ class ContextViewModel extends Notifier<ContextState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      final data = await _repository.getContexts(emailId: userEmail);
+      final email = _authVM.email;
+      final data = await _repository.getContexts(emailId: email);
+      debugPrint('Loading context for email : $email');
       if (data is List<ContextModel>) {
         state = state.copyWith(allContexts: data, isLoading: false);
 
@@ -131,7 +132,8 @@ class ContextViewModel extends Notifier<ContextState> {
     try {
       for (var modifiedContext in updatedModels.changedModels) {
         final contextData = modifiedContext.values.first;
-        await _repository.updateContext(newContextModel: contextData, emailId: userEmail);
+        await _repository.updateContext(
+            newContextModel: contextData, emailId: userEmail);
       }
 
       contextChangeState = contextChangeState.copyWith(
@@ -156,8 +158,8 @@ class ContextViewModel extends Notifier<ContextState> {
   Future<ResponseState> updateContext(
       {required ContextModel updatedContext}) async {
     state = state.copyWith(updating: true, error: null);
-    final response =
-        await _repository.updateContext(newContextModel: updatedContext, emailId: userEmail);
+    final response = await _repository.updateContext(
+        newContextModel: updatedContext, emailId: userEmail);
     state = state.copyWith(
         updating: false,
         error: response == ResponseState.error
@@ -171,7 +173,8 @@ class ContextViewModel extends Notifier<ContextState> {
   // -----------------------------
   Future<ResponseState> deleteById({required String contextId}) async {
     state = state.copyWith(deleting: true, error: null);
-    final response = await _repository.deleteContextWithId(contextId: contextId, emailId: userEmail);
+    final response = await _repository.deleteContextWithId(
+        contextId: contextId, emailId: userEmail);
     state = state.copyWith(
         deleting: false,
         error: response == ResponseState.error

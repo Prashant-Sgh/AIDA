@@ -117,13 +117,18 @@ class FirebaseAuthRepo {
     return await _firebaseAuthService.getFirebaseIdToken();
   }
 
+  // Get user email
+  Future<String> getEmail({required String firebaseIdToken}) async {
+    return await _firebaseAuthService.getEmail(firebaseIdToken: firebaseIdToken);
+  }
+
   // Logout
   Future<void> logout() async {
     await _firebaseAuthService.logout();
   }
 
   // Continue with Google
-  Future<void> continueWithGoogle() async {
-    await _firebaseAuthService.continueWithGoogle();
+  Future<UserCredential> continueWithGoogle() async {
+    return await _firebaseAuthService.continueWithGoogle();
   }
 }
