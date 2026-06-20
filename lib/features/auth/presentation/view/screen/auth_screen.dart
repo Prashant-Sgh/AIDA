@@ -110,6 +110,7 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       resizeToAvoidBottomInset: true,
+      
       body: SafeArea(
         child: Stack(
           children: [
