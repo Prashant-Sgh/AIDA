@@ -1,4 +1,3 @@
-import 'package:aida/core/enums/response_state.dart';
 import 'package:aida/core/services/secure_storage_service.dart';
 import 'package:aida/features/auth/data/repos/backend_2fa_repo.dart';
 import 'package:aida/features/auth/data/repos/firebase_auth_repo.dart';

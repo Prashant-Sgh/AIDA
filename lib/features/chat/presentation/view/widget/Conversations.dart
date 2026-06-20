@@ -1,7 +1,5 @@
-import 'package:aida/features/chat/data/model/Conversation.dart';
 import 'package:aida/features/chat/data/model/message.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widget_previews.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Conversations extends StatelessWidget {

@@ -2,8 +2,6 @@ import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmo
 import 'package:aida/features/otp/presentation/view/custom_banners/custom_otp_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 
 class TempScreen extends ConsumerStatefulWidget {
   const TempScreen({super.key});

@@ -2,7 +2,6 @@ import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/core/theme/theme_provider.dart';
 import 'package:aida/core/utils/open_protected_route.dart';
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
-import 'package:aida/features/chat/data/repository/chat_repo.dart';
 import 'package:aida/features/chat/presentation/viewmodel/chat_viewmodel.dart';
 import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
 import 'package:aida/shared/widgets/login_out_button.dart';

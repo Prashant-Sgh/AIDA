@@ -2,7 +2,6 @@ import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/core/theme/app_colors.dart';
 import 'package:aida/core/theme/theme_provider.dart';
 import 'package:aida/firebase_options.dart';
-import 'package:device_preview/device_preview.dart';
 import 'package:device_preview_screenshot/device_preview_screenshot.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

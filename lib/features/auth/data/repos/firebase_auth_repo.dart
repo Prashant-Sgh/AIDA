@@ -3,7 +3,6 @@ import 'package:aida/features/auth/presentation/view/widgets/email_input.dart';
 import 'package:aida/features/auth/presentation/view/widgets/password_input.dart';
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final firebaseAuthRepoProvider = Provider<FirebaseAuthRepo>((ref) {

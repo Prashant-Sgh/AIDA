@@ -1,5 +1,4 @@
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
-import 'package:aida/features/chat/presentation/viewmodel/chat_viewmodel.dart';
 import 'package:aida/features/context/presentation/view/widgets/add_context_dialog.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_state.dart';
 import 'package:aida/shared/widgets/app_drawer.dart';

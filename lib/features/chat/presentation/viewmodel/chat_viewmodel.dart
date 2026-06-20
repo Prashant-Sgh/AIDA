@@ -4,7 +4,6 @@ import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmo
 import 'package:aida/features/chat/data/model/Conversation.dart';
 import 'package:aida/features/chat/data/model/message.dart';
 import 'package:aida/features/chat/data/repository/chat_repo.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final chatVMProvider = NotifierProvider<ChatViewmodel, ChatState>(

@@ -7,7 +7,6 @@ import 'package:aida/features/context/data_layer/repositories/context_repository
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:aida/features/context/data_layer/services/context_service.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_change_state.dart';
 import 'package:aida/features/context/presentation/viewmodels/context_state.dart';
 import 'package:aida/features/context/presentation/viewmodels/has_data_changed_result.dart';

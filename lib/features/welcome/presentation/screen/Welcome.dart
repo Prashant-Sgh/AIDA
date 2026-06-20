@@ -3,7 +3,6 @@ import 'package:aida/features/welcome/model/AnimationController.dart';
 import 'package:aida/features/welcome/presentation/widgets/IntroductionText.dart';
 import 'package:aida/features/welcome/presentation/widgets/TapAnimation.dart';
 import 'package:aida/features/welcome/presentation/widgets/tap_guide_widget.dart';
-import 'package:aida/shared/widgets/global_status_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
