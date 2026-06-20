@@ -110,7 +110,14 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       resizeToAvoidBottomInset: true,
-      
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            context.go('/chat');
+          },
+          icon: const Icon(Icons.arrow_back_rounded),
+        ),
+      ),
       body: SafeArea(
         child: Stack(
           children: [
