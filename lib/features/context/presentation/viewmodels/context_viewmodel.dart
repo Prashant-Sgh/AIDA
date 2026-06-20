@@ -12,22 +12,27 @@ import 'package:aida/features/context/presentation/viewmodels/context_change_sta
 import 'package:aida/features/context/presentation/viewmodels/context_state.dart';
 import 'package:aida/features/context/presentation/viewmodels/has_data_changed_result.dart';
 
-final contextVMProvider = NotifierProvider<ContextViewModel, ContextState>(
-  ContextViewModel.new,
+final contextVMProvider = StateNotifierProvider<ContextViewModel, ContextState>(
+  (ref) {
+    final repo = ref.read(contextRepositoryProvider);
+    final authVM = ref.read(authenticationViewModelProvider);
+    return ContextViewModel(repo, authVM);
+  },
 );
 
-class ContextViewModel extends Notifier<ContextState> {
-  late final ContextRepository _repository;
-  late final AuthenticationViewModel _authVM;
+class ContextViewModel extends StateNotifier<ContextState> {
+  final ContextRepository _repository;
+  // final AuthenticationViewModel _authVM;
+  final AuthenticationState _authVM;
 
   String get userEmail => _authVM.email;
 
-  @override
-  ContextState build() {
-    _repository = ref.read(contextRepositoryProvider);
-    _authVM = ref.read(authenticationViewModelProvider.notifier);
-    return ContextState(); // initial state
-  }
+  ContextViewModel(
+    ContextRepository repo,
+    AuthenticationState authState,
+  )   : _repository = repo,
+        _authVM = authState,
+        super(ContextState());
 
   ContextChangeState contextChangeState =
       ContextChangeState(hasDataChanged: false, isLoading: false, error: null);
@@ -86,6 +91,7 @@ class ContextViewModel extends Notifier<ContextState> {
 
     try {
       final email = _authVM.email;
+      // _authVM.email;
       final data = await _repository.getContexts(emailId: email);
       debugPrint('Loading context for email : $email');
       if (data is List<ContextModel>) {

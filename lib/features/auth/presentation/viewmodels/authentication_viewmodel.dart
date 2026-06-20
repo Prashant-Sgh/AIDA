@@ -188,6 +188,8 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     final email = await _firebaseAuthRepo.getEmail(
         firebaseIdToken: state.firebaseIdToken!);
 
+    debugPrint('Email: $email');
+
     state = state.copyWith(email: email);
   }
 
