@@ -40,8 +40,9 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
   }
 
   Future<void> _onGoogleAuthenticate() async {
-    // TODO:
-    await ref.read(authenticationViewModelProvider.notifier)
+    debugPrint('onGoogleAuthenticate called');
+    await ref
+        .read(authenticationViewModelProvider.notifier)
         .continueWithGoogle();
 
     final state = ref.read(authenticationViewModelProvider);

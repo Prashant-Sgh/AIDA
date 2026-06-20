@@ -1,18 +1,18 @@
-import 'package:aida/features/auth/data/providers/firebase_auth_provider.dart';
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final firebaseAuthServicesProvider = Provider<FirebaseAuthServices>((ref) {
-  final firebaseAuth = ref.watch(firebaseAuthProvider);
-  return FirebaseAuthServices(firebaseAuth);
+  return FirebaseAuthServices();
 });
 
 class FirebaseAuthServices {
-  final FirebaseAuth _firebaseAuth;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  FirebaseAuthServices(this._firebaseAuth);
+  // FirebaseAuthServices(this._firebaseAuth);
 
   // Sign up using email & password
   Future<UserCredential> signUp({
@@ -45,7 +45,7 @@ class FirebaseAuthServices {
 
   // Get Email from firebase token
   Future<String> getEmail({required String firebaseIdToken}) async {
-    final user =  _firebaseAuth.currentUser;
+    final user = _firebaseAuth.currentUser;
     final email = user?.email ?? '';
     return email;
   }
@@ -60,18 +60,19 @@ class FirebaseAuthServices {
     if (kIsWeb) {
       return await _firebaseAuth.signInWithPopup(GoogleAuthProvider());
     }
+    final GoogleSignIn googleSignIn = GoogleSignIn.instance;
+    await googleSignIn.initialize();
 
-    // Triger ther authenticatin flow
-    final GoogleSignInAccount googleUser =
-        await GoogleSignIn.instance.authenticate();
+    final GoogleSignInAccount googleUser = await googleSignIn.authenticate();
 
-    // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
-    // Create a credential
-    final credential = GithubAuthProvider.credential(googleAuth.idToken ?? '');
+    final credential = GoogleAuthProvider.credential(
+      idToken: googleAuth.idToken,
+    );
 
-    // Once signed in, return the UserCredential
-    return await _firebaseAuth.signInWithCredential(credential);
+    final userCredential = await _firebaseAuth.signInWithCredential(credential);
+
+    return userCredential;
   }
 }

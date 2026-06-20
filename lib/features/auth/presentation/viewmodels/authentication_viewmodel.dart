@@ -214,7 +214,7 @@ class AuthenticationViewModel extends StateNotifier<AuthenticationState> {
     await _firebaseAuthRepo.continueWithGoogle();
     final idToken = await getFirebaseIdToken();
     if (idToken != null) {
-      await Future.delayed(const Duration(seconds: 1));
+      // await Future.delayed(const Duration(seconds: 1));
       await _backend2faRepo.start2fa(token: idToken);
       state = state.copyWith(
         isLoading: false,
