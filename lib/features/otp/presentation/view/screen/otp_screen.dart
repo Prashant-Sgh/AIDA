@@ -251,13 +251,13 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
 
                           const SizedBox(height: 28),
 
-                          /// ACTIONS
+                    /// ACTIONS
 
-                          OtpActionsWidget(
-                            remainingSeconds: _remainingSeconds,
-                            onResend: _resendOtp,
-                            onChangeEmail: _onChangeEmail,
-                          ),
+                    OtpActionsWidget(
+                      remainingSeconds: _remainingSeconds,
+                      onResend: _resendOtp,
+                      onChangeEmail: _onChangeEmail,
+                    ),
                         ],
                       ),
                     ),
@@ -267,15 +267,31 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                   /// VERIFY BUTTON
                   /// ============================================
 
-                  AnimatedPadding(
-                    duration: _animationDuration,
-                    padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-                    ),
-                    child: VerifyOtpButton(
-                      enabled: isOtpFilled,
-                      onPressed: _verifyOtp,
-                    ),
+                  Column(
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          context.push('/chat');
+                        },
+                        child: Text(
+                          "Do it later / Skip",
+                          style: GoogleFonts.quicksand(
+                            color: colorScheme.onSurface.withOpacity(0.7),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      AnimatedPadding(
+                        duration: _animationDuration,
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+                        ),
+                        child: VerifyOtpButton(
+                          enabled: isOtpFilled,
+                          onPressed: _verifyOtp,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

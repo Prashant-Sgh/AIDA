@@ -2,6 +2,7 @@ import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmo
 import 'package:aida/features/otp/presentation/view/custom_banners/custom_otp_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class TempScreen extends ConsumerStatefulWidget {
   const TempScreen({super.key});
@@ -25,6 +26,9 @@ class _TempScreenState extends ConsumerState<TempScreen> {
   @override
   void initState() {
     super.initState();
+    if (mounted) {
+      context.push('/context');
+    }
     // showBannerNow();
   }
 
@@ -33,18 +37,23 @@ class _TempScreenState extends ConsumerState<TempScreen> {
     // final theme = Theme.of(context);
     // final backgroundColor = theme.colorScheme.surface;
 
-
     debugPrint('Building temp screen');
     return Scaffold(
       // backgroundColor: Colors.black,
-      body: Center(
-        child: IconButton(
-          icon: Icon(Icons.refresh_rounded),
-          onPressed: () async {
-            debugPrint('Show banner pressed');
-            await showBannerNow();
-          },
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CustomOtpBanner(
+              bannerType: BannerType.tooManyAttempts, onClose: () {}),
+          const SizedBox(height: 20),
+          CustomOtpBanner(
+              bannerType: BannerType.successfullyVerified, onClose: () {}),
+          const SizedBox(height: 20),
+          CustomOtpBanner(bannerType: BannerType.otpExpired, onClose: () {}),
+          const SizedBox(height: 20),
+          CustomOtpBanner(bannerType: BannerType.wrongOtp, onClose: () {}),
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }
