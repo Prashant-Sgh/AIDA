@@ -71,7 +71,6 @@ class ChatRepo {
           final message = MessageObj.fromJson(d);
           conversations.add(message);
         }
-        // debugPrint('Conversation fetched successfully: ${response.body}');
         return conversations;
       } else {
         debugPrint(
@@ -81,6 +80,51 @@ class ChatRepo {
     } catch (error) {
       debugPrint('Error fetching conversation: $error');
       return null;
+    }
+  }
+
+  Stream<List<MessageObj>> streamConversations({
+    required String userEmail,
+    required String conversationId,
+  }) async* {
+    final client = http.Client();
+    final uri = Uri.https(
+      _baseUrl,
+      '/ai/stream-conversations',
+      {'email': userEmail, "conversation_id": conversationId},
+    );
+
+    try {
+      final request = http.Request('GET', uri);
+      request.headers.addAll(headers);
+      
+      final response = await client.send(request);
+      
+      if (response.statusCode == 200) {
+        await for (final byte in response.stream.cast<List<int>>()) {
+          final decoded = utf8.decode(byte);
+          
+          // SSE data lines start with "data: "
+          final lines = decoded.split('\n');
+          for (var line in lines) {
+            if (line.startsWith('data: ')) {
+              final jsonString = line.substring(6).trim();
+              try {
+                final List<dynamic> data = jsonDecode(jsonString);
+                yield data.map((d) => MessageObj.fromJson(d)).toList();
+              } catch (e) {
+                debugPrint('SSE Decode Error: $e');
+              }
+            }
+          }
+        }
+      } else {
+        debugPrint('SSE Connection Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('SSE Stream Exception: $e');
+    } finally {
+      client.close();
     }
   }
 

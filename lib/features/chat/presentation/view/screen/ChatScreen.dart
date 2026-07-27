@@ -32,7 +32,8 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
     super.initState();
     chatVM = ref.read(chatVMProvider.notifier);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      chatVM.loadConversations();
+      // Only using streamConversations now - loads real-time
+      chatVM.startConversationStream();
     });
   }
 
@@ -198,6 +199,15 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
       ),
       drawer: AppDrawer(
         // onClearChat: chatVM.clearChat,
+      ),
+      // Temporary debug button to reload conversations
+      floatingActionButton: FloatingActionButton.small(
+        onPressed: () {
+          debugPrint("[ChatScreen] Reload button pressed");
+          chatVM.restartConversationStream();
+        },
+        tooltip: "Reload Conversations (Debug)",
+        child: const Icon(Icons.refresh),
       ),
     );
   }

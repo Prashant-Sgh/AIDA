@@ -4,6 +4,7 @@ import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmo
 import 'package:aida/features/chat/data/model/Conversation.dart';
 import 'package:aida/features/chat/data/model/message.dart';
 import 'package:aida/features/chat/data/repository/chat_repo.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final chatVMProvider = NotifierProvider<ChatViewmodel, ChatState>(
@@ -13,6 +14,7 @@ final chatVMProvider = NotifierProvider<ChatViewmodel, ChatState>(
 class ChatViewmodel extends Notifier<ChatState> {
   late ChatRepo _chatRepo;
   late AuthenticationViewModel _authVM;
+  StreamSubscription? _streamSubscription;
 
   @override
   ChatState build() {
@@ -27,35 +29,54 @@ class ChatViewmodel extends Notifier<ChatState> {
   Stream<Conversation> get conversationStream =>
       _conversationStreamController.stream;
 
-  Future<void> loadConversations() async {
-    final conversations = await _chatRepo.loadConversation(
-        userEmail: "test@aida.com",
-        conversationId: "SMW-Conversation_Testing_01");
+  // Commented out - using streamConversations instead
+  // Future<void> loadConversations() async {
+  //   final conversations = await _chatRepo.loadConversation(
+  //       userEmail: _authVM.email,
+  //       conversationId: "Default_Conversation_Id");
+  //
+  //   if (conversations != null) {
+  //     state = state.copyWith(
+  //         conversation: Conversation(messages: conversations), isEmpty: false);
+  //   }
+  //
+  //   _conversationStreamController.add(state.conversation);
+  // }
 
-    if (conversations != null) {
-      //   debugPrint("This user conversations are: $conversations");
+  void startConversationStream() {
+    final email = _authVM.email;
+    final conversationId = "Default_Conversation_Id";
+    
+    debugPrint("[ChatVM] startConversationStream called with email: $email, conversationId: $conversationId");
+    
+    // Cancel any existing subscription first
+    _streamSubscription?.cancel();
+    
+    // Create new subscription and store it
+    _streamSubscription = _chatRepo.streamConversations(
+      userEmail: email,
+      conversationId: conversationId,
+    ).listen((messages) {
+      debugPrint("[ChatVM] Received ${messages.length} messages from SSE stream");
       state = state.copyWith(
-          conversation: Conversation(messages: conversations), isEmpty: false);
-    }
+        conversation: Conversation(messages: messages),
+        isEmpty: messages.isEmpty,
+      );
+      _conversationStreamController.add(state.conversation);
+    }, onError: (error) {
+      debugPrint("[ChatVM] SSE Stream Error: $error");
+      state = state.copyWith(isError: true);
+    });
+  }
 
-    bool hasError = state.isError;
-
-    if (hasError) {
-      //   final conversationWithError = [...conversations, Conversation(messages: [MessageObj(text: "Error", isUser: false)])];
-      final conversationWithError = [
-        ...state.conversation.messages,
-        MessageObj(
-          role: "assistant",
-          content: "Error",
-          createdAt: DateTime.now(),
-        )
-      ];
-
-      state = state.copyWith(
-          conversation: Conversation(messages: conversationWithError));
-    }
-
-    _conversationStreamController.add(state.conversation);
+  void restartConversationStream() {
+    debugPrint("[ChatVM] restartConversationStream called - cancelling existing stream and starting new one");
+    
+    // Cancel existing subscription if any
+    _streamSubscription?.cancel();
+    
+    // Start new stream with fresh parameters
+    startConversationStream();
   }
 
   Future<void> sendMessage(String text) async {
@@ -109,7 +130,8 @@ class ChatViewmodel extends Notifier<ChatState> {
 
     await _chatRepo.clearConversation(
         email: email, conversationId: conversationId);
-    await loadConversations();
+    // Restart the stream to get fresh data
+    restartConversationStream();
   }
 }
 
