@@ -1,0 +1,102 @@
+import 'package:aida/core/theme/CustomColors.dart';
+import 'package:aida/core/theme/app_colors.dart';
+import 'package:aida/core/theme/theme_provider.dart';
+import 'package:aida/firebase_options.dart';
+import 'package:device_preview_screenshot/device_preview_screenshot.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/router/app_router.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(
+    DevicePreview(
+      enabled: true,
+      tools: [
+        ...DevicePreview.defaultTools,
+        DevicePreviewScreenshot(
+
+        ),
+      ],
+      builder: (context) => ProviderScope(
+        child: MainApp(),
+      ),
+    ),
+    // ProviderScope(
+    //   child: MainApp(),
+    // ),
+  );
+}
+
+class MainApp extends ConsumerWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+
+    return MaterialApp.router(
+      useInheritedMediaQuery: true,
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
+      debugShowCheckedModeBanner: false,
+      routerConfig: appRouter,
+      theme: ThemeData(
+        colorScheme: ColorScheme.light(
+          primary: AppColors.primary,
+          secondary: AppColors.secondary,
+          surface: AppColors.background,
+          onSurface: AppColors.text,
+        ),
+        extensions: [
+          CustomColors(
+              lineColor: AppColors.line,
+              dropDownLineColor: AppColors.dropDownLine,
+              lightCardColor: AppColors.lightCard,
+              contextScrBackground: AppColors.contextScrBackgroundLight,
+              contextScrCard: AppColors.contextScrCardLight,
+              contextScrCardStroke: AppColors.contextScrCardStrokeLight,
+              contextScrExpandedCard: AppColors.contextScrExpandedCardLight,
+              contextScrExpandedCardTxtField:
+                  AppColors.contextScrExpandedCardTxtFieldLight,
+              contextScrButtonClearTxt:
+                  AppColors.contextScrButtonClearTxtLight),
+        ],
+        scaffoldBackgroundColor: AppColors.background,
+        textTheme: GoogleFonts.quicksandTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.dark(
+          primary: AppColors.primaryDark,
+          secondary: AppColors.secondaryDark,
+          surface: AppColors.backgroundDark,
+          onSurface: AppColors.textDark,
+        ),
+        extensions: [
+          CustomColors(
+              lineColor: AppColors.lineDark,
+              dropDownLineColor: AppColors.dropDownLineDark,
+              lightCardColor: AppColors.lightCardDark,
+              contextScrBackground: AppColors.contextScrBackground,
+              contextScrCard: AppColors.contextScrCard,
+              contextScrCardStroke: AppColors.contextScrCardStroke,
+              contextScrExpandedCard: AppColors.contextScrExpandedCard,
+              contextScrExpandedCardTxtField:
+                  AppColors.contextScrExpandedCardTxtField,
+              contextScrButtonClearTxt: AppColors.contextScrButtonClearTxt),
+        ],
+        scaffoldBackgroundColor: AppColors.backgroundDark,
+        textTheme: GoogleFonts.quicksandTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
+      themeMode: themeMode,
+    );
+  }
+}

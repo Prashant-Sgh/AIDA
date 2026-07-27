@@ -1,0 +1,315 @@
+import 'dart:async';
+import 'dart:ui';
+
+import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
+import 'package:aida/features/otp/presentation/view/widgets/otp_action_widget.dart';
+import 'package:aida/features/otp/presentation/view/widgets/otp_row_widget.dart';
+import 'package:aida/features/otp/presentation/view/widgets/otp_status_message.dart';
+import 'package:aida/features/otp/presentation/view/widgets/verify_otp_button.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+const double _horizontalPadding = 24;
+const Duration _animationDuration = Duration(milliseconds: 180);
+
+class OtpVerificationScreen extends ConsumerStatefulWidget {
+  const OtpVerificationScreen({super.key});
+
+  @override
+  ConsumerState<OtpVerificationScreen> createState() =>
+      _OtpVerificationScreenState();
+}
+
+class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
+  late final List<TextEditingController> _controllers;
+  late final List<FocusNode> _focusNodes;
+
+  int _remainingSeconds = 60;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controllers = List.generate(
+      4,
+      (_) => TextEditingController(),
+    );
+
+    _focusNodes = List.generate(
+      4,
+      (_) => FocusNode(),
+    );
+
+    _startTimer();
+
+    ref.listenManual<AuthenticationState>(authenticationViewModelProvider,
+        (previous, next) {
+      if (next.isOtpVerified) {
+        context.go('/context');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
+
+    for (final focusNode in _focusNodes) {
+      focusNode.dispose();
+    }
+
+    super.dispose();
+  }
+
+  // Timer
+  void _startTimer() {
+    _remainingSeconds = 60;
+
+    _timer?.cancel();
+
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (timer) {
+        if (_remainingSeconds == 0) {
+          timer.cancel();
+        } else {
+          setState(() {
+            _remainingSeconds--;
+          });
+        }
+      },
+    );
+  }
+
+  // OTP value
+  bool get isOtpFilled {
+    return _controllers.every(
+      (controller) => controller.text.isNotEmpty,
+    );
+  }
+
+  String get otp {
+    return _controllers.map((controller) => controller.text).join();
+  }
+
+  // Verify
+  Future<void> _verifyOtp() async {
+    FocusScope.of(context).unfocus();
+    await ref
+        .read(authenticationViewModelProvider.notifier)
+        .verifyOtp(otp: otp);
+
+    final state = ref.read(authenticationViewModelProvider);
+
+    if (state.isOtpVerified) {
+      if (mounted) {
+        context.go('/context');
+      }
+    }
+
+    /// TODO:
+    /// verify otp
+  }
+
+  // Resend
+  Future<void> _resendOtp() async {
+    _startTimer();
+
+    await ref.read(authenticationViewModelProvider.notifier).reSendOtp();
+  }
+
+  Future<void> _onChangeEmail() async {
+    await ref.read(authenticationViewModelProvider.notifier).logoutAdmin();
+    if (mounted) {
+      context.pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final email = ref.watch(authenticationViewModelProvider).email;
+    final state = ref.watch(authenticationViewModelProvider);
+    final loading = state.isLoading;
+    final theme = Theme.of(context);
+
+    final colorScheme = theme.colorScheme;
+
+    // debugPrint("OTP: $otp");
+
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      resizeToAvoidBottomInset: true,
+
+      // Body
+      body: Stack(
+        children: [
+          if (state.error != null)
+            Positioned(
+              bottom: 110,
+              left: 24,
+              right: 24,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 260),
+                child: OtpStatusMessage(
+                  key: ValueKey(state.error),
+                  message: state.error!,
+                  isError: true,
+                ),
+              ),
+            ),
+          if (state.isOtpVerified)
+            Positioned(
+              bottom: 110,
+              left: 24,
+              right: 24,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 260),
+                child: OtpStatusMessage(
+                  message: 'OTP verified successfully',
+                ),
+              ),
+            ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: _horizontalPadding,
+              ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 24),
+
+                          /// BACK BUTTON
+
+                          IconButton(
+                            onPressed: () {
+                              context.pop();
+                            },
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            icon: Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+
+                          const SizedBox(height: 40),
+
+                          /// TITLE
+
+                          Text(
+                            "Verify OTP",
+                            style: GoogleFonts.baloo2(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          /// SUBTITLE
+
+                          Text(
+                            "We sent a 4-digit verification code to",
+                            style: GoogleFonts.quicksand(
+                              fontSize: 16,
+                              color: colorScheme.onSurface.withOpacity(0.7),
+                            ),
+                          ),
+
+                          const SizedBox(height: 6),
+
+                          Text(
+                            email,
+                            style: GoogleFonts.quicksand(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: colorScheme.primary,
+                            ),
+                          ),
+
+                          const SizedBox(height: 48),
+
+                          /// OTP ROW
+
+                          OtpRowWidget(
+                            controllers: _controllers,
+                            focusNodes: _focusNodes,
+                          ),
+
+                          const SizedBox(height: 28),
+
+                    /// ACTIONS
+
+                    OtpActionsWidget(
+                      remainingSeconds: _remainingSeconds,
+                      onResend: _resendOtp,
+                      onChangeEmail: _onChangeEmail,
+                    ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  /// ============================================
+                  /// VERIFY BUTTON
+                  /// ============================================
+
+                  Column(
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          context.push('/chat');
+                        },
+                        child: Text(
+                          "Do it later / Skip",
+                          style: GoogleFonts.quicksand(
+                            color: colorScheme.onSurface.withOpacity(0.7),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      AnimatedPadding(
+                        duration: _animationDuration,
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+                        ),
+                        child: VerifyOtpButton(
+                          enabled: isOtpFilled,
+                          onPressed: _verifyOtp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (loading)
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  color: colorScheme.onSurface.withOpacity(0.1),
+                  alignment: Alignment.center,
+                  child: const CircularProgressIndicator(),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
