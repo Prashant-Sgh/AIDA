@@ -201,14 +201,14 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
         // onClearChat: chatVM.clearChat,
       ),
       // Temporary debug button to reload conversations
-      floatingActionButton: FloatingActionButton.small(
-        onPressed: () {
-          debugPrint("[ChatScreen] Reload button pressed");
-          chatVM.restartConversationStream();
-        },
-        tooltip: "Reload Conversations (Debug)",
-        child: const Icon(Icons.refresh),
-      ),
+      // floatingActionButton: FloatingActionButton.small(
+      //   onPressed: () {
+      //     debugPrint("[ChatScreen] Reload button pressed");
+      //     chatVM.restartConversationStream();
+      //   },
+      //   tooltip: "Reload Conversations (Debug)",
+      //   child: const Icon(Icons.refresh),
+      // ),
     );
   }
 }
