@@ -90,7 +90,7 @@ class AppDrawer extends ConsumerWidget {
               ),
 
               _DrawerTile(
-                title: 'Home',
+                title: "What's AIDA?",
                 icon: Icons.home_outlined,
                 textColor: textColor,
                 onTap: () {
@@ -116,7 +116,7 @@ class AppDrawer extends ConsumerWidget {
               ),
 
               _DrawerTile(
-                title: 'Management Context',
+                title: 'Manage Context',
                 icon: Icons.shield_outlined,
                 textColor: textColor,
                 onTap: () {

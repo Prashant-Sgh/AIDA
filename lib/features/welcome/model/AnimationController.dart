@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 class MascotAnimationController extends ChangeNotifier {
@@ -39,16 +40,16 @@ class MascotAnimationController extends ChangeNotifier {
   final List<Map<String, String>> elements = [
     {
       'image': 'assets/mascots/Hello-Gesture.png',
-      'text': "Tap here, I’ll show you something."
+      'text': "Hi there! I'm Aida, Atul's AI assistant.\n \nI'm here to help you navigate through this app & provide information about Atul's portfolio."
     },
     {
       'image': 'assets/mascots/Calm-Sit.png',
-      'text': "Hey, I’m Aida. I’m here to guide you..."
+      'text': "Give the icon above a try to switch between themes."
     },
     {
       'image': 'assets/mascots/Smilling-Glad.png',
       'text':
-          "This app is a AI chatbot. I’m here to help you with any details you need about Atul’s portfolio. Let’s talk, tap on the message bubble. Yes that one."
+          "Next, I’ll take you to the chat where you can ask me anything about Atul’s work.\n \nOnce authenticated, you can customize my personality & other settings from the Context screen later."
     },
   ];
 
@@ -95,4 +96,22 @@ class MascotAnimationController extends ChangeNotifier {
       animationIn();
     }
   }
+}
+
+String getRandomPokemon() {
+  final pokemonNames = [
+    'Pikachu',
+    'Eevee',
+    'Sylveon',
+    'Jigglypuff',
+    'Bulbasaur',
+    'Squirtle',
+    'Meowth',
+    'Piplup',
+    'Togepi',
+    'Vulpix',
+  ];
+
+  final random = Random();
+  return pokemonNames[random.nextInt(pokemonNames.length)];
 }

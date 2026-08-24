@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+final Color bgYellow = const Color.fromARGB(255, 231, 158, 0);
+
 class HintBubble extends StatelessWidget {
   final String text;
 
@@ -8,6 +10,9 @@ class HintBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final themeMode = Theme.of(context).brightness == Brightness.dark
+    //     ? ThemeMode.dark
+    //     : ThemeMode.light;
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -33,7 +38,8 @@ class HintBubble extends StatelessWidget {
               // margin: const EdgeInsets.only(left: 14),
               padding: const EdgeInsets.fromLTRB(14, 5, 14, 5),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
+                // color: Theme.of(context).colorScheme.secondary,
+                color: bgYellow,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -42,10 +48,12 @@ class HintBubble extends StatelessWidget {
                 softWrap: true,
                 style: GoogleFonts.quicksand(
                   color: Theme.of(context).colorScheme.surface,
+                  // color: Theme.of(context).colorScheme.onSurface,
                   fontSize: 11,
                   fontWeight: FontWeight.w400,
                   height: 1.54,
-                  letterSpacing: 0.39,
+                  // letterSpacing: 0.39,
+                  letterSpacing: 0.45,
                 ),
               ),
             )),
@@ -62,7 +70,8 @@ class _TrianglePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Theme.of(context).colorScheme.secondary
+      // ..color = Theme.of(context).colorScheme.secondary
+      ..color = bgYellow
       ..style = PaintingStyle.fill;
 
     Path path = Path();
