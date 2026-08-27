@@ -17,8 +17,11 @@ class Conversations extends StatelessWidget {
     // final Color textColor = Colors.white;
     final Color textColor = Theme.of(context).colorScheme.onSurface;
     final Color backgroundColor = isUser
-        ? Colors.purpleAccent.withAlpha(50)
-        : Colors.purple.withAlpha(20);
+        // ? Colors.purpleAccent.withAlpha(50)
+        // : Colors.purple.withAlpha(20);
+        ? Color(0xFFc095e4)
+        // : Color(0xFFfcedf2);
+        : Color(0xFFcac7ff);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

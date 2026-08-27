@@ -10,6 +10,7 @@ final chatRepoProvider = Provider<ChatRepo>(
 );
 
 class ChatRepo {
+  List<String> followUpQuestions = [];
   final String _baseUrl = 'aida-backend-three.vercel.app';
   final headers = {
     'Content-Type': 'application/json',
@@ -39,7 +40,11 @@ class ChatRepo {
       final response = await http.post(url, headers: headers, body: body);
       if (response.statusCode == 200) {
         updateResponseState(ResponseState.success);
-        return response.body;
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        final String answer = data['answer'] ?? '';
+        final List<dynamic> suggestions = data['suggestions'] ?? [];
+        followUpQuestions = suggestions.cast<String>();
+        return answer;
       } else {
         updateResponseState(ResponseState.error);
         return "Sorry... something went wrong \nError code: ${response.statusCode}, \nError body: ${jsonDecode(response.body)} \n+ API call failed. \nPlease try again later.";
@@ -168,7 +173,11 @@ class ChatRepo {
       final response = await http.post(url, headers: headers, body: body);
       if (response.statusCode == 200) {
         updateResponseState(ResponseState.success);
-        return response.body;
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        final String answer = data['answer'] ?? '';
+        final List<dynamic> suggestions = data['suggestions'] ?? [];
+        followUpQuestions = suggestions.cast<String>();
+        return answer;
       } else {
         updateResponseState(ResponseState.error);
         return "Sorry... something went wrong \nError code: ${response.statusCode}, \nError body: ${jsonDecode(response.body)} \n+ API call failed. \nPlease try again later.";

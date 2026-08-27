@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class IntroductionText extends StatelessWidget {
   const IntroductionText({super.key});
-  final Color bgYellow = const Color.fromARGB(255, 231, 158, 0);
+  final Color bgPurple = const Color(0xFFcac7ff);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class IntroductionText extends StatelessWidget {
       // mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'What\'s AIDA?',
+          'What is AIDA?',
           style: GoogleFonts.baloo2(
             color: colorScheme.onSurface,
             fontSize: 28,
@@ -46,7 +46,7 @@ class IntroductionText extends StatelessWidget {
                   text: 'AIDA',
                   style: baseStyle.copyWith(
                     fontWeight: FontWeight.bold,
-                    backgroundColor: bgYellow.withOpacity(0.6),
+                    backgroundColor: bgPurple.withOpacity(0.6),
                   ),
                 ),
                 TextSpan(text: ' is a '),
@@ -59,7 +59,7 @@ class IntroductionText extends StatelessWidget {
                   text: 'cross-platform app (Web, iOS and Android)',
                   style: baseStyle.copyWith(
                     fontStyle: FontStyle.italic,
-                    backgroundColor: bgYellow.withOpacity(0.4),
+                    backgroundColor: bgPurple.withOpacity(0.4),
                   ),
                 ),
                 TextSpan(text: ', build using '),
@@ -96,7 +96,7 @@ class IntroductionText extends StatelessWidget {
                   text: 'context',
                   style: baseStyle.copyWith(
                     fontWeight: FontWeight.bold,
-                    backgroundColor: bgYellow.withValues(alpha: 0.25),
+                    backgroundColor: bgPurple.withValues(alpha: 0.25),
                   ),
                 ),
                 TextSpan(text: '. '),

@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:aida/features/chat/data/model/Conversation.dart';
 import 'package:aida/features/chat/data/model/message.dart';
+import 'package:aida/features/chat/data/repository/chat_repo.dart';
 import 'package:aida/features/chat/presentation/view/widget/ChatHint.dart';
 import 'package:aida/features/chat/presentation/view/widget/ChatInputBar.dart';
 import 'package:aida/features/chat/presentation/view/widget/ChatScrAppBar.dart';
 import 'package:aida/features/chat/presentation/view/widget/Conversations.dart';
+import 'package:aida/features/chat/presentation/view/widget/FollowUpSuggestionWidget.dart';
 import 'package:aida/features/chat/presentation/view/widget/processingAnimation.dart';
 import 'package:aida/features/chat/presentation/viewmodel/chat_viewmodel.dart';
 import 'package:aida/shared/widgets/app_drawer.dart';
@@ -37,6 +39,17 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
     });
   }
 
+  /// Scrolls to the bottom of the conversation list
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOutSine,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final chatState = ref.watch(chatVMProvider);
@@ -52,6 +65,19 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
         setState(() => _showScrollToBottomButton = true);
       } else {
         setState(() => _showScrollToBottomButton = false);
+      }
+    });
+
+    // Watch the chat repo to get follow-up questions
+    final chatRepo = ref.watch(chatRepoProvider);
+    final followUpQuestions = chatRepo.followUpQuestions;
+
+    // Auto-scroll to bottom when a new response arrives (state changes from waiting to complete)
+    ref.listen<ChatState>(chatVMProvider, (previous, next) {
+      if (previous?.isWaitingForResponse == true && next.isWaitingForResponse == false) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToBottom();
+        });
       }
     });
 
@@ -187,6 +213,17 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
                             ),
                     );
                   }),
+// Follow-up suggestions widget
+              if (followUpQuestions.isNotEmpty)
+                FollowUpSuggestionWidget(
+                  suggestions: followUpQuestions,
+                  onTapped: (text) {
+                    // Send the message
+                    chatVM.sendMessage(text);
+                    // Clear the suggestions so the widget disappears
+                    chatRepo.followUpQuestions = [];
+                  },
+                ),
               Padding(
                 padding: EdgeInsets.only(bottom: bottomInset + 10),
                 child: ChatInputBar(
