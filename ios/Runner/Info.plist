@@ -47,5 +47,8 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need access to your microphone to record voice messages.</string>
+
 	</dict>
 </plist>
