@@ -30,13 +30,15 @@ class VoiceWaveform extends StatefulWidget {
     super.key,
     required this.amplitude,
     this.color = Colors.blue,
-    this.barWidth = 4.0,
-    this.maxHeight = 28.0,
+    // this.barWidth = 4.0,
+    this.barWidth = 5.5,
+    this.maxHeight = 40.0,
     this.minHeight = 1.0,
-    this.borderRadius = 4.0,
-    this.barGap = 3.0,
-    this.barCount = 30,
-    this.animationDuration = const Duration(milliseconds: 300),
+    this.borderRadius = 6.0,
+    // this.barGap = 3.0,
+    this.barGap = 4.0,
+    this.barCount = 180,
+    this.animationDuration = const Duration(milliseconds: 100),
   });
 
   @override
@@ -123,63 +125,58 @@ class _VoiceWaveformState extends State<VoiceWaveform> {
           double.infinity,
         );
 
-        final visibleBarCount = (safeWidth / itemWidth)
-            .floor()
-            .clamp(1, widget.barCount);
+        final visibleBarCount =
+            (safeWidth / itemWidth).floor().clamp(1, widget.barCount);
 
-        final startIndex =
-            (_amplitudes.length - visibleBarCount).clamp(
+        final startIndex = (_amplitudes.length - visibleBarCount).clamp(
           0,
           _amplitudes.length,
         );
 
-        final visibleAmplitudes =
-            _amplitudes.sublist(startIndex);
+        final visibleAmplitudes = _amplitudes.sublist(startIndex);
 
         return SizedBox(
           width: double.infinity,
           height: widget.maxHeight,
           child: ClipRect(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: List.generate(
-                visibleAmplitudes.length,
-                (index) {
-                  final amplitude = visibleAmplitudes[index];
+            child: Container(
+              // color: Colors.yellowAccent,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: List.generate(
+                  visibleAmplitudes.length,
+                  (index) {
+                    final amplitude = visibleAmplitudes[index];
 
-                  final currentHeight =
-                      widget.minHeight +
-                          (widget.maxHeight -
-                                  widget.minHeight) *
-                              amplitude;
+                    final currentHeight = widget.minHeight +
+                        (widget.maxHeight - widget.minHeight) * amplitude;
 
-                  return SizedBox(
-                    width: widget.barWidth,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        right: index ==
-                                visibleAmplitudes.length - 1
-                            ? 0
-                            : widget.barGap,
-                      ),
-                      child: AnimatedContainer(
-                        duration: widget.animationDuration,
-                        curve: Curves.easeOutCubic,
-                        width: widget.barWidth,
-                        height: currentHeight,
-                        decoration: BoxDecoration(
-                          // color: widget.color,
-                          color: Colors.purpleAccent,
-                          borderRadius:
-                              BorderRadius.circular(
-                            widget.borderRadius,
+                    return SizedBox(
+                      width: widget.barWidth,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          right: index == visibleAmplitudes.length - 1
+                              ? 0
+                              : widget.barGap,
+                        ),
+                        child: AnimatedContainer(
+                          duration: widget.animationDuration,
+                          curve: Curves.easeOutCubic,
+                          width: widget.barWidth,
+                          height: currentHeight,
+                          decoration: BoxDecoration(
+                            color: widget.color,
+                            // color: Colors.purpleAccent,
+                            borderRadius: BorderRadius.circular(
+                              widget.borderRadius,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),

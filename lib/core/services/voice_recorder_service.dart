@@ -4,14 +4,20 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 
 class VoiceRecorderService {
-  final AudioRecorder _audioRecorder = AudioRecorder();
+  // final AudioRecorder _audioRecorder = AudioRecorder();
+  AudioRecorder? _audioRecorder;
   StreamSubscription<Amplitude>? _amplitudeSubscription;
-  
+
   // Controller to broadcast amplitude updates to the UI
-  final StreamController<double> _amplitudeController = StreamController<double>.broadcast();
+  final StreamController<double> _amplitudeController =
+      StreamController<double>.broadcast();
   Stream<double> get amplitudeStream => _amplitudeController.stream;
 
-  Future<bool> isRecording() async => await _audioRecorder.isRecording();
+  // Future<bool> isRecording() async => await _audioRecorder.isRecording();
+  Future<bool> isRecording() async {
+    if (_audioRecorder == null) return false;
+    return await _audioRecorder!.isRecording();
+  }
 
   /// Starts the audio recording process.
   /// Returns true if started successfully, false otherwise.
@@ -21,37 +27,48 @@ class VoiceRecorderService {
       if (!kIsWeb) {
         final status = await Permission.microphone.request();
         if (status != PermissionStatus.granted) {
+          debugPrint("[Debug Print] Permission not granted.");
           return false;
         }
       }
 
       // Check if already recording
-      if (await _audioRecorder.isRecording()) {
+      if (await isRecording()) {
+        debugPrint("[Debug Print] Already recording.");
         return false;
       }
+      ;
+
+      // NEW instance of AudioRecorder for every session
+      // This provides a fresh Stream for onAmplitudeChanged
+      _audioRecorder = AudioRecorder();
 
       // Configuration for the recording
       const config = RecordConfig(); // Default config
 
       // Define path for mobile; for web, this is ignored by the package
-      String path = '';
-      if (!kIsWeb) {
-        path = 'recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
-      }
+      String path = kIsWeb
+          ? ''
+          : 'recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
 
-      await _audioRecorder.start(config, path: path);
+      await _audioRecorder!.start(config, path: path);
+      debugPrint("[Debug Print] Recording started.");
 
       // Start listening to amplitude
-      // Fixed: record package 5.x+ typically requires a duration for onAmplitudeChanged()
-      _amplitudeSubscription = _audioRecorder.onAmplitudeChanged(const Duration(milliseconds: 100)).listen((amplitude) {
-        // record package provides amplitude in decibels (dB). 
+      _amplitudeSubscription = _audioRecorder!
+          .onAmplitudeChanged(const Duration(milliseconds: 100))
+          .listen((amplitude) {
+        // record package provides amplitude in decibels (dB).
         // Normalize -60dB as 0 and 0dB as 1.
         double normalized = (amplitude.current.toDouble() + 60) / 60;
         _amplitudeController.add(normalized.clamp(0.0, 1.0));
+      }, onError: (error) {
+        debugPrint("[Debug Print] Amplitude stream error: $error");
       });
 
       return true;
     } catch (e) {
+      debugPrint("[Debug Print] Error starting recording: $e");
       return false;
     }
   }
@@ -60,16 +77,25 @@ class VoiceRecorderService {
   /// Returns the path to the recorded file.
   Future<String?> stopRecording() async {
     try {
-      final path = await _audioRecorder.stop();
-      
+      if (_audioRecorder == null) return null;
+
+      // 1. Stop the recorder first
+      final path = await _audioRecorder!.stop();
+
+      // 2. Cleanup
       await _amplitudeSubscription?.cancel();
       _amplitudeSubscription = null;
-      
+
+      // IMPORTANT: Dispose and nullify the recorder instance
+      await _audioRecorder!.dispose();
+      _audioRecorder = null;
+
       // Reset amplitude to 0
       _amplitudeController.add(0.0);
-      
+
       return path;
     } catch (e) {
+      debugPrint("[Debug Print] Error stopping recording: $e");
       return null;
     }
   }
@@ -78,6 +104,6 @@ class VoiceRecorderService {
   void dispose() {
     _amplitudeSubscription?.cancel();
     _amplitudeController.close();
-    _audioRecorder.dispose();
+    _audioRecorder?.dispose();
   }
 }

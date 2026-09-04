@@ -14,17 +14,21 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
-    DevicePreview(
-      enabled: true,
-      tools: [
-        ...DevicePreview.defaultTools,
-        DevicePreviewScreenshot(
+    // DevicePreview(
+    //   enabled: true,
+    //   tools: [
+    //     ...DevicePreview.defaultTools,
+    //     DevicePreviewScreenshot(
 
-        ),
-      ],
-      builder: (context) => ProviderScope(
-        child: MainApp(),
-      ),
+    //     ),
+    //   ],
+    //   builder: (context) => ProviderScope(
+    //     child: MainApp(),
+    //   ),
+    // ),
+
+    ProviderScope(
+      child: MainApp(),
     ),
     // ProviderScope(
     //   child: MainApp(),
@@ -40,9 +44,9 @@ class MainApp extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
-      useInheritedMediaQuery: true,
-      locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
+      // useInheritedMediaQuery: true,
+      // locale: DevicePreview.locale(context),
+      // builder: DevicePreview.appBuilder,
       debugShowCheckedModeBanner: false,
       routerConfig: appRouter,
       theme: ThemeData(

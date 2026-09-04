@@ -49,6 +49,7 @@ class _ChatInputBar extends State<ChatInputBar> {
 
   void _startRecording() async {
     bool started = await _recorderService.startRecording();
+    debugPrint('[Debug Print] Recording started: $started');
     if (started) {
       setState(() {
         _recordingState = RecordingState.recording;
