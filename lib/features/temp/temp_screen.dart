@@ -26,9 +26,17 @@ class _TempScreenState extends ConsumerState<TempScreen> {
   @override
   void initState() {
     super.initState();
-    if (mounted) {
-      context.push('/context');
-    }
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (mounted) {
+    //   debugPrint(
+    //       '[OUTPUT] [TempScreen] Mounted and pushing to `context` screen');
+    //   context.push('/chat');
+    // } else {
+    //   debugPrint('[OUTPUT] [TempScreen] Not mounted yet');
+    // }
+    // });
+    debugPrint('[OUTPUT] [TempScreen] initState called');
     // showBannerNow();
   }
 

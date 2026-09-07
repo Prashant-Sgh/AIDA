@@ -32,9 +32,9 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    chatVM = ref.read(chatVMProvider.notifier);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Only using streamConversations now - loads real-time
+      chatVM = ref.read(chatVMProvider.notifier);
       chatVM.startConversationStream();
     });
   }
@@ -74,7 +74,8 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
 
     // Auto-scroll to bottom when a new response arrives (state changes from waiting to complete)
     ref.listen<ChatState>(chatVMProvider, (previous, next) {
-      if (previous?.isWaitingForResponse == true && next.isWaitingForResponse == false) {
+      if (previous?.isWaitingForResponse == true &&
+          next.isWaitingForResponse == false) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _scrollToBottom();
         });
@@ -235,8 +236,8 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
         ),
       ),
       drawer: AppDrawer(
-        // onClearChat: chatVM.clearChat,
-      ),
+          // onClearChat: chatVM.clearChat,
+          ),
       // Temporary debug button to reload conversations
       // floatingActionButton: FloatingActionButton.small(
       //   onPressed: () {

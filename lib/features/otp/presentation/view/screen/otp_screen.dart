@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
+import 'package:aida/features/otp/presentation/view/custom_banners/custom_otp_banner.dart';
 import 'package:aida/features/otp/presentation/view/widgets/otp_action_widget.dart';
 import 'package:aida/features/otp/presentation/view/widgets/otp_row_widget.dart';
 import 'package:aida/features/otp/presentation/view/widgets/otp_status_message.dart';
@@ -25,6 +26,8 @@ class OtpVerificationScreen extends ConsumerStatefulWidget {
 class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   late final List<TextEditingController> _controllers;
   late final List<FocusNode> _focusNodes;
+
+  bool _wrongOtp = false;
 
   int _remainingSeconds = 60;
   Timer? _timer;
@@ -95,6 +98,17 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     );
   }
 
+  Future<void> clearOtpFields() async {
+    for (int i = _controllers.length - 1; i >= 0; i--) {
+      await Future.delayed(const Duration(milliseconds: 140));
+      _controllers[i].clear();
+    }
+
+    await Future.delayed(const Duration(milliseconds: 250));
+
+    _wrongOtp = false;
+  }
+
   String get otp {
     return _controllers.map((controller) => controller.text).join();
   }
@@ -113,10 +127,50 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
         context.go('/context');
       }
     }
+    _wrongOtp = true;
+    await clearOtpFields();
 
     /// TODO:
     /// verify otp
   }
+
+  // Future<void> ShowTheBannerStuff() async {
+  //   FocusScope.of(context).unfocus();
+
+  //   // Loading state ++
+  //   // show warning error screen (red)
+  //   // Show wrong OTP banner ++
+  //   // close banner with delayed. ++
+  //   await ref
+  //       .read(authenticationViewModelProvider.notifier)
+  //       .toggleLoading(value: true);
+  //   await Future.delayed(const Duration(seconds: 1), () {
+  //     ref
+  //         .read(authenticationViewModelProvider.notifier)
+  //         .toggleLoading(value: false);
+  //   });
+  //   await Future.delayed(const Duration(milliseconds: 500), () {
+  //     ref
+  //         .read(authenticationViewModelProvider.notifier)
+  //         .setOtpBannerType(BannerType.successfullyVerified);
+  //   });
+
+  //   _wrongOtp = true;
+
+  //   // if (mounted) context.push("/chat");
+
+  //   // _wrongOtp = true;
+  //   // await clearOtpFields();
+
+  //   // Uncomment this for sucessful OTP verification banner case.
+  //   // final state = ref.read(authenticationViewModelProvider);
+
+  //   // if (state.isOtpVerified) {
+  //   //   if (mounted) {
+  //   //     context.go('/chat');
+  //   //   }
+  //   // }
+  // }
 
   // Resend
   Future<void> _resendOtp() async {
@@ -247,17 +301,18 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                           OtpRowWidget(
                             controllers: _controllers,
                             focusNodes: _focusNodes,
+                            error: _wrongOtp,
                           ),
 
                           const SizedBox(height: 28),
 
-                    /// ACTIONS
+                          /// ACTIONS
 
-                    OtpActionsWidget(
-                      remainingSeconds: _remainingSeconds,
-                      onResend: _resendOtp,
-                      onChangeEmail: _onChangeEmail,
-                    ),
+                          OtpActionsWidget(
+                            remainingSeconds: _remainingSeconds,
+                            onResend: _resendOtp,
+                            onChangeEmail: _onChangeEmail,
+                          ),
                         ],
                       ),
                     ),

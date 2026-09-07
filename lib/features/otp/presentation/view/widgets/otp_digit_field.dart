@@ -12,6 +12,7 @@ class OtpDigitField extends StatefulWidget {
   final FocusNode focusNode;
   final FocusNode? nextFocusNode;
   final FocusNode? previousFocusNode;
+  final bool error;
 
   const OtpDigitField({
     super.key,
@@ -20,6 +21,7 @@ class OtpDigitField extends StatefulWidget {
     required this.focusNode,
     this.nextFocusNode,
     this.previousFocusNode,
+    required this.error,
   });
 
   @override
@@ -52,13 +54,15 @@ class _OtpDigitFieldState extends State<OtpDigitField> {
       height: _otpBoxSize + 4,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: colorScheme.surface,
+        color: widget.error ? Colors.redAccent.withAlpha(20) : colorScheme.surface,
         borderRadius: BorderRadius.circular(_otpBorderRadius),
         border: Border.all(
           color: _isFocused
               ? colorScheme.primary
-              : colorScheme.outline.withOpacity(0.2),
-          width: _isFocused ? 1.8 : 1,
+              : widget.error
+                  ? Colors.redAccent.withAlpha(180)
+                  : colorScheme.outline.withOpacity(0.2),
+          width: widget.error || _isFocused ? 1.8 : 1,
         ),
       ),
       // child: KeyboardListener(

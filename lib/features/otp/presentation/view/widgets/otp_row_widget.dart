@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class OtpRowWidget extends StatelessWidget {
   final List<TextEditingController> controllers;
   final List<FocusNode> focusNodes;
+  final bool error;
 
   const OtpRowWidget({
     super.key,
     required this.controllers,
     required this.focusNodes,
+    required this.error,
   });
 
   @override
@@ -18,6 +20,7 @@ class OtpRowWidget extends StatelessWidget {
       children: List.generate(
         4,
         (index) => OtpDigitField(
+          error: error,
           // controllers: index > 0 ? controllers : null,
           controller: controllers[index],
           focusNode: focusNodes[index],
