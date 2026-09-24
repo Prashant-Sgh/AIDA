@@ -32,11 +32,11 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
       // Only using streamConversations now - loads real-time
       chatVM = ref.read(chatVMProvider.notifier);
       chatVM.startConversationStream();
-    });
+    // });
   }
 
   /// Scrolls to the bottom of the conversation list

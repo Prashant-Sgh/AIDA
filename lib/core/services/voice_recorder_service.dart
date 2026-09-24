@@ -7,6 +7,7 @@ class VoiceRecorderService {
   // final AudioRecorder _audioRecorder = AudioRecorder();
   AudioRecorder? _audioRecorder;
   StreamSubscription<Amplitude>? _amplitudeSubscription;
+  Stream<Uint8List>? _audioStream;
 
   // Controller to broadcast amplitude updates to the UI
   final StreamController<double> _amplitudeController =
@@ -21,7 +22,9 @@ class VoiceRecorderService {
 
   /// Starts the audio recording process.
   /// Returns true if started successfully, false otherwise.
-  Future<bool> startRecording() async {
+  Stream<Uint8List>? get audioStream => _audioStream;
+
+  Future<bool> startRecording({bool streamAudio = false}) async {
     try {
       // Handle permissions for Mobile platforms
       if (!kIsWeb) {
@@ -37,21 +40,25 @@ class VoiceRecorderService {
         debugPrint("[Debug Print] Already recording.");
         return false;
       }
-      ;
 
       // NEW instance of AudioRecorder for every session
       // This provides a fresh Stream for onAmplitudeChanged
       _audioRecorder = AudioRecorder();
 
-      // Configuration for the recording
-      const config = RecordConfig(); // Default config
-
-      // Define path for mobile; for web, this is ignored by the package
-      String path = kIsWeb
-          ? ''
-          : 'recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
-
-      await _audioRecorder!.start(config, path: path);
+      if (streamAudio) {
+        _audioStream = await _audioRecorder!.startStream(
+          const RecordConfig(
+            encoder: AudioEncoder.pcm16bits,
+            sampleRate: 16000,
+            numChannels: 1,
+          ),
+        );
+      } else {
+        final path = kIsWeb
+            ? ''
+            : 'recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
+        await _audioRecorder!.start(const RecordConfig(), path: path);
+      }
       debugPrint("[Debug Print] Recording started.");
 
       // Start listening to amplitude
@@ -89,6 +96,7 @@ class VoiceRecorderService {
       // IMPORTANT: Dispose and nullify the recorder instance
       await _audioRecorder!.dispose();
       _audioRecorder = null;
+      _audioStream = null;
 
       // Reset amplitude to 0
       _amplitudeController.add(0.0);
@@ -105,5 +113,6 @@ class VoiceRecorderService {
     _amplitudeSubscription?.cancel();
     _amplitudeController.close();
     _audioRecorder?.dispose();
+    _audioStream = null;
   }
 }

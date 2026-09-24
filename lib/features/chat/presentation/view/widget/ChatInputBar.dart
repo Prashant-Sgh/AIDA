@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
+import 'package:aida/core/services/stt_websocket_service.dart';
 import 'package:aida/core/services/voice_recorder_service.dart';
 import 'package:aida/features/chat/presentation/view/widget/voice_waveform.dart';
 
@@ -18,12 +18,14 @@ class ChatInputBar extends StatefulWidget {
 class _ChatInputBar extends State<ChatInputBar> {
   final TextEditingController _controller = TextEditingController();
   final VoiceRecorderService _recorderService = VoiceRecorderService();
+  final SttWebSocketService _sttService = SttWebSocketService();
 
   RecordingState _recordingState = RecordingState.idle;
   Timer? _durationTimer;
   int _durationSeconds = 0;
   double _currentAmplitude = 0.0;
   StreamSubscription? _amplitudeSubscription;
+  StreamSubscription<TranscriptResult>? _transcriptSubscription;
 
   final ScrollController _singleChildScrollController = ScrollController();
 
@@ -41,6 +43,7 @@ class _ChatInputBar extends State<ChatInputBar> {
 
     _controller.dispose();
     _recorderService.dispose();
+    _sttService.dispose();
     _durationTimer?.cancel();
     _amplitudeSubscription?.cancel();
 
@@ -48,9 +51,17 @@ class _ChatInputBar extends State<ChatInputBar> {
   }
 
   void _startRecording() async {
-    bool started = await _recorderService.startRecording();
+    bool started = await _recorderService.startRecording(streamAudio: true);
     debugPrint('[Debug Print] Recording started: $started');
     if (started) {
+      try {
+        await _sttService.start(_recorderService.audioStream!);
+      } catch (error) {
+        debugPrint('[ChatInputBar] STT connection failed: $error');
+        await _recorderService.stopRecording();
+        return;
+      }
+
       setState(() {
         _recordingState = RecordingState.recording;
         _durationSeconds = 0;
@@ -68,13 +79,26 @@ class _ChatInputBar extends State<ChatInputBar> {
           _currentAmplitude = amplitude;
         });
       });
+
+      _transcriptSubscription = _sttService.transcriptStream.listen((result) {
+        if (!mounted || result.transcript.isEmpty) return;
+
+        _controller.value = _controller.value.copyWith(
+          text: result.transcript,
+          selection: TextSelection.collapsed(offset: result.transcript.length),
+          composing: TextRange.empty,
+        );
+        setState(() {});
+      });
     }
   }
 
   void _stopRecording() async {
+    await _sttService.stop();
     String? path = await _recorderService.stopRecording();
     _durationTimer?.cancel();
     await _amplitudeSubscription?.cancel();
+    await _transcriptSubscription?.cancel();
 
     setState(() {
       _recordingState = RecordingState.idle;
@@ -87,9 +111,11 @@ class _ChatInputBar extends State<ChatInputBar> {
   }
 
   void _cancelRecording() async {
+    await _sttService.stop();
     await _recorderService.stopRecording();
     _durationTimer?.cancel();
     await _amplitudeSubscription?.cancel();
+    await _transcriptSubscription?.cancel();
 
     setState(() {
       _recordingState = RecordingState.idle;
