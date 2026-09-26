@@ -37,20 +37,25 @@ class _TapHintWidgetState extends ConsumerState<TapGuideWidget>
 
   @override
   Widget build(BuildContext context) {
-
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
+
     final backgroundColor = isDarkMode
-        ? Colors.white.withOpacity(0.12)
-        : Colors.black.withOpacity(0.08);
+        // ? Colors.white.withOpacity(0.12)
+        ? Color.fromARGB(255, 176, 174, 255).withAlpha(0)
+        // : Colors.black.withOpacity(0.08);
+        : Color.fromARGB(255, 176, 174, 255).withAlpha(0);
 
     final borderColor = isDarkMode
-        ? Colors.white.withOpacity(0.22)
-        : Colors.black.withOpacity(0.12);
+        // ? Colors.white.withOpacity(0.22)
+        ? Color.fromARGB(255, 176, 174, 255).withAlpha(0)
+        // : Colors.black.withOpacity(0.12);
+        : Color.fromARGB(255, 176, 174, 255).withAlpha(0);
 
     final textColor = isDarkMode
-        ? Colors.white.withOpacity(0.9)
-        : Colors.black.withOpacity(0.75);
+        // ? Colors.white.withOpacity(0.9)
+        ? const Color.fromARGB(255, 151, 145, 255)
+        // : Colors.black.withOpacity(0.75);
+        : const Color.fromARGB(255, 151, 145, 255);
 
     return GestureDetector(
       onTap: widget.onTap,
@@ -78,6 +83,7 @@ class _TapHintWidgetState extends ConsumerState<TapGuideWidget>
                   Icon(
                     Icons.touch_app_rounded,
                     color: textColor,
+                    // color: const Color(0xFFcac7ff),
                     size: 28,
                   ),
                   const SizedBox(height: 6),

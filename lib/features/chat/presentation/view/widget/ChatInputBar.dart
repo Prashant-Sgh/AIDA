@@ -133,10 +133,19 @@ class _ChatInputBar extends State<ChatInputBar> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final iconColor = theme.colorScheme.onSurface.withOpacity(0.7);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    // final iconColor = theme.colorScheme.onSurface.withOpacity(0.7);
+    final iconColor = isDarkMode
+        ? Colors.white
+        // : const Color.fromARGB(255, 149, 143, 255);
+        : Colors.black;
+
     // final singleChildScrollController = ScrollController();
     // final textFieldScrollController = ScrollController();
-    final backgroundColor = theme.colorScheme.onSurface.withAlpha(15);
+    // final backgroundColor = theme.colorScheme.onSurface.withAlpha(15);
+    final backgroundColor = isDarkMode
+        ? Color.fromARGB(255, 10, 9, 34)
+        : Color.fromARGB(255, 240, 240, 255);
     final isEnabled = _controller.text.isNotEmpty;
 
     return Padding(
@@ -150,7 +159,7 @@ class _ChatInputBar extends State<ChatInputBar> {
           decoration: BoxDecoration(
             color: backgroundColor,
             border: Border.all(
-              color: theme.colorScheme.onSurface.withAlpha(50),
+              color: theme.colorScheme.onSurface.withAlpha(20),
               width: 0.5,
             ),
             borderRadius: BorderRadius.circular(20),
