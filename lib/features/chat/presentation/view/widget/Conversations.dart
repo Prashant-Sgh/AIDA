@@ -15,13 +15,27 @@ class Conversations extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final Color textColor = Colors.white;
-    final Color textColor = Theme.of(context).colorScheme.onSurface;
+    // final Color textColor = Theme.of(context).colorScheme.onSurface;
+
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final Color textColor = Color(0xFFfafaff);
+    final Color timeTextColor =
+        isDarkMode ? Color(0xFFe4d9ff) : Color(0xFF000000);
     final Color backgroundColor = isUser
-        // ? Colors.purpleAccent.withAlpha(50)
-        // : Colors.purple.withAlpha(20);
-        ? Color(0xFFc095e4)
-        // : Color(0xFFfcedf2);
-        : Color(0xFFcac7ff);
+        // ? Color(0xFFc095e4)
+        // : Color(0xFFcac7ff);
+
+        // ? Color(0xFF3c6e71)
+        // : Color(0xFF284b63);
+
+        // Choice - 1
+        // ? Color(0xFF124559)
+        // : Color(0xFF598392);
+
+        // Choice - 2
+        ? Color(0xFF1e2749)
+        : Color(0xFF273469);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -43,15 +57,25 @@ class Conversations extends StatelessWidget {
                     ),
                     width: 0.5),
                 borderRadius: BorderRadius.only(
-                  topLeft: (isUser) ? Radius.circular(10.0) : Radius.zero,
-                  topRight: (isUser) ? Radius.zero : Radius.circular(10.0),
-                  bottomLeft: Radius.circular(10.0),
-                  bottomRight: Radius.circular(10.0),
+                  topLeft: (isUser) ? Radius.circular(20.0) : Radius.zero,
+                  topRight: (isUser) ? Radius.zero : Radius.circular(30.0),
+                  bottomLeft:
+                      (isUser) ? Radius.circular(15.0) : Radius.circular(20.0),
+                  bottomRight:
+                      (isUser) ? Radius.circular(20.0) : Radius.circular(30.0),
                 ),
               ),
               child: Text(
                 messageObj.content,
-                style: TextStyle(color: textColor, fontSize: 13.0),
+                style: GoogleFonts.quicksand(
+                  color: textColor,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w200,
+                  letterSpacing: 0.4,
+
+                  
+                  height: 1.5,
+                ),
               ),
             ),
 
@@ -61,10 +85,12 @@ class Conversations extends StatelessWidget {
               child: Text(
                 // '01:00 am',
                 messageObj.createdAt.toString(),
-                style: GoogleFonts.quicksand(
-                    color: textColor,
+                style: GoogleFonts.jetBrainsMono(
+                    color: timeTextColor,
                     fontSize: 8.0,
-                    fontWeight: FontWeight.w100),
+                    fontWeight: FontWeight.w300,
+                    wordSpacing: 10.0,
+                    letterSpacing: 0.4),
               ),
             ),
           ],

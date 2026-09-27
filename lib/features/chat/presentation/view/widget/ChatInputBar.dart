@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import 'package:aida/core/services/stt_websocket_service.dart';
@@ -6,6 +7,8 @@ import 'package:aida/core/services/voice_recorder_service.dart';
 import 'package:aida/features/chat/presentation/view/widget/voice_waveform.dart';
 
 enum RecordingState { idle, recording }
+
+enum Colours { foreground, background, enabledBtn, disabledBtn }
 
 class ChatInputBar extends StatefulWidget {
   final Future<void> Function(String) sendMessage;
@@ -16,6 +19,7 @@ class ChatInputBar extends StatefulWidget {
 }
 
 class _ChatInputBar extends State<ChatInputBar> {
+  final FocusNode _focusNode = FocusNode();
   final TextEditingController _controller = TextEditingController();
   final VoiceRecorderService _recorderService = VoiceRecorderService();
   final SttWebSocketService _sttService = SttWebSocketService();
@@ -41,6 +45,7 @@ class _ChatInputBar extends State<ChatInputBar> {
     _singleChildScrollController.dispose();
     _textFieldScrollController.dispose();
 
+    _focusNode.dispose();
     _controller.dispose();
     _recorderService.dispose();
     _sttService.dispose();
@@ -136,16 +141,24 @@ class _ChatInputBar extends State<ChatInputBar> {
     final isDarkMode = theme.brightness == Brightness.dark;
     // final iconColor = theme.colorScheme.onSurface.withOpacity(0.7);
     final iconColor = isDarkMode
-        ? Colors.white
+        ? Color(0xFFe4d9ff)
         // : const Color.fromARGB(255, 149, 143, 255);
-        : Colors.black;
+        : Color(0xFF1e2749);
+
+    final Map<Colours, dynamic> sendIconColor = {
+      Colours.background: {
+        Colours.disabledBtn: isDarkMode ? Color(0xFFA59EB9) : Color(0xFF47537C),
+        Colours.enabledBtn: isDarkMode ? Color(0xFFe4d9ff) : Color(0xFF1e2749),
+      },
+      Colours.foreground: isDarkMode ? Color(0xFF1e2749) : Color(0xFFe4d9ff),
+    };
 
     // final singleChildScrollController = ScrollController();
     // final textFieldScrollController = ScrollController();
     // final backgroundColor = theme.colorScheme.onSurface.withAlpha(15);
-    final backgroundColor = isDarkMode
-        ? Color.fromARGB(255, 10, 9, 34)
-        : Color.fromARGB(255, 240, 240, 255);
+    final backgroundColor = isDarkMode ? Color(0xFF1e2749) : Color(0xFFe4d9ff);
+
+    final borderColor = isDarkMode ? Color(0xFF273469) : Color.fromARGB(123, 141, 134, 201);
     final isEnabled = _controller.text.isNotEmpty;
 
     return Padding(
@@ -159,8 +172,8 @@ class _ChatInputBar extends State<ChatInputBar> {
           decoration: BoxDecoration(
             color: backgroundColor,
             border: Border.all(
-              color: theme.colorScheme.onSurface.withAlpha(20),
-              width: 0.5,
+              color: borderColor,
+              width: 1,
             ),
             borderRadius: BorderRadius.circular(20),
           ),
@@ -178,30 +191,74 @@ class _ChatInputBar extends State<ChatInputBar> {
                       minHeight: 20,
                       maxHeight: 100,
                     ),
-                    child: TextField(
-                      // onChanged: (value) => setState(() {
-                      //   _controller.text = value;
-                      // }),
-                      onChanged: (_) {
-                        setState(() {});
+                    child: Focus(
+                      focusNode: _focusNode,
+                      onKeyEvent: (node, event) {
+                        if (event is KeyDownEvent &&
+                            event.logicalKey == LogicalKeyboardKey.enter) {
+                          final isShiftPressed =
+                              HardwareKeyboard.instance.isShiftPressed;
+
+                          if (isShiftPressed) {
+                            // this mean - Enter + Shift is pressed, so we want to insert a new line
+
+                            final text = _controller.text;
+                            final selection = _controller.selection;
+
+                            final newText = text.replaceRange(
+                              selection.start,
+                              selection.end,
+                              '\n\n',
+                            );
+
+                            _controller.value = TextEditingValue(
+                              text: newText,
+                              selection: TextSelection.collapsed(
+                                offset: selection.start + 2,
+                              ),
+                            );
+
+                            return KeyEventResult.handled;
+                          }
+
+                          // For - Enter is pressed, so we want to send the message
+                          if (isEnabled) {
+                            widget.sendMessage(_controller.text);
+                            _controller.clear();
+                          }
+
+                          return KeyEventResult.handled;
+                        }
+
+                        return KeyEventResult.ignored;
                       },
-                      controller: _controller,
-                      maxLines: null,
-                      autofocus: false,
-                      keyboardType: TextInputType.text,
-                      cursorColor: theme.colorScheme.onSurface,
-                      scrollController: _textFieldScrollController,
-                      style: GoogleFonts.quicksand(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          color: theme.colorScheme.onSurface),
-                      decoration: InputDecoration(
-                        hintText: 'What would you like to know?',
-                        hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      child: TextField(
+                        // onChanged: (value) => setState(() {
+                        //   _controller.text = value;
+                        // }),
+                        onChanged: (_) {
+                          setState(() {});
+                        },
+                        controller: _controller,
+                        textCapitalization: TextCapitalization.sentences,
+                        maxLines: null,
+                        autofocus: true,
+                        // keyboardType: TextInputType.text,
+                        keyboardType: TextInputType.multiline,
+                        cursorColor: theme.colorScheme.onSurface,
+                        scrollController: _textFieldScrollController,
+                        style: GoogleFonts.quicksand(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                            color: iconColor),
+                        decoration: InputDecoration(
+                          hintText: 'What would you like to know?',
+                          hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                            color: sendIconColor[Colours.background][Colours.disabledBtn],
+                          ),
+                          border: InputBorder.none,
+                          isDense: true,
                         ),
-                        border: InputBorder.none,
-                        isDense: true,
                       ),
                     ),
                   ),
@@ -264,13 +321,15 @@ class _ChatInputBar extends State<ChatInputBar> {
                       width: 32,
                       decoration: BoxDecoration(
                         color: isEnabled
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.onSurface.withAlpha(100),
+                            // ? theme.colorScheme.primary
+                            // : theme.colorScheme.onSurface.withAlpha(100),
+                            ? sendIconColor[Colours.background][Colours.enabledBtn]
+                            : sendIconColor[Colours.background][Colours.disabledBtn],
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
                         icon: Icon(Icons.arrow_upward_rounded,
-                            size: 14, color: theme.colorScheme.surface),
+                            size: 14, color: sendIconColor[Colours.foreground]),
                         onPressed: isEnabled
                             ? () {
                                 widget.sendMessage(_controller.text);

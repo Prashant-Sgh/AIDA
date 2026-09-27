@@ -38,7 +38,10 @@ class FollowUpSuggestionWidget extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                 decoration: BoxDecoration(
-                  color: bgYellow,
+                  // Choice - 1
+                  // color: Color(0xFFaec3b0),
+                  // Choice - 2
+                  color: Color(0xFFe4d9ff),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(10.0),
                     topRight: Radius.circular(10.0),
@@ -48,19 +51,19 @@ class FollowUpSuggestionWidget extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: isDarkMode? const Color.fromARGB(255, 238, 255, 0).withOpacity(0.3): Colors.blueGrey.withOpacity(0.3),
+                      color: isDarkMode? Color(0xFF30343f): Color(0xFF8997D1),
                       blurRadius: 4,
-                      offset: const Offset(0, 2),
+                      offset: const Offset(2, 2),
                     ),
                   ],
                 ),
                 child: Text(
                   text,
-                  style: GoogleFonts.quicksand(
+                  style: GoogleFonts.inter(
                     // color: theme.colorScheme.onPrimary,
                     color: Colors.black,
                     fontSize: 12.0,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w300,
                   ),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,

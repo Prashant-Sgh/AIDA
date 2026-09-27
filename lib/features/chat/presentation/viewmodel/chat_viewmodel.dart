@@ -34,7 +34,9 @@ class ChatViewmodel extends Notifier<ChatState> {
   // Helper to check if user is authenticated (authenticated = true and email is not empty)
   bool get _isAuthenticated {
     final authState = ref.read(authenticationViewModelProvider);
-    return authState.authenticated && authState.email != null && authState.email!.isNotEmpty;
+    return authState.authenticated &&
+        authState.email != null &&
+        authState.email!.isNotEmpty;
   }
 
   // Helper to get the appropriate identifier (email for auth, sessionId for guest)
@@ -72,19 +74,23 @@ class ChatViewmodel extends Notifier<ChatState> {
     final identifier = _userIdentifier;
     final isAuth = _isAuthenticated;
     final conversationId = _conversationId;
-    
-    debugPrint("[ChatVM] startConversationStream called - Auth: $isAuth, Identifier: $identifier, ConversationId: $conversationId");
-    
+
+    debugPrint(
+        "[ChatVM] startConversationStream called - Auth: $isAuth, Identifier: $identifier, ConversationId: $conversationId");
+
     // Cancel any existing subscription first
     _streamSubscription?.cancel();
-    
+
     // Create new subscription based on auth state
     if (isAuth) {
-      _streamSubscription = _chatRepo.streamConversations(
+      _streamSubscription = _chatRepo
+          .streamConversations(
         userEmail: identifier,
         conversationId: conversationId,
-      ).listen((messages) {
-        debugPrint("[ChatVM] Received ${messages.length} messages from SSE stream (auth)");
+      )
+          .listen((messages) {
+        debugPrint(
+            "[ChatVM] Received ${messages.length} messages from SSE stream (auth)");
         state = state.copyWith(
           conversation: Conversation(messages: messages),
           isEmpty: messages.isEmpty,
@@ -95,10 +101,13 @@ class ChatViewmodel extends Notifier<ChatState> {
         state = state.copyWith(isError: true);
       });
     } else {
-      _streamSubscription = _chatRepo.streamConversationsGuest(
+      _streamSubscription = _chatRepo
+          .streamConversationsGuest(
         sessionId: identifier,
-      ).listen((messages) {
-        debugPrint("[ChatVM] Received ${messages.length} messages from SSE stream (guest)");
+      )
+          .listen((messages) {
+        debugPrint(
+            "[ChatVM] Received ${messages.length} messages from SSE stream (guest)");
         state = state.copyWith(
           conversation: Conversation(messages: messages),
           isEmpty: messages.isEmpty,
@@ -112,11 +121,12 @@ class ChatViewmodel extends Notifier<ChatState> {
   }
 
   void restartConversationStream() {
-    debugPrint("[ChatVM] restartConversationStream called - cancelling existing stream and starting new one");
-    
+    debugPrint(
+        "[ChatVM] restartConversationStream called - cancelling existing stream and starting new one");
+
     // Cancel existing subscription if any
     _streamSubscription?.cancel();
-    
+
     // Start new stream with fresh parameters
     startConversationStream();
   }
@@ -124,29 +134,18 @@ class ChatViewmodel extends Notifier<ChatState> {
   Future<void> sendMessage(String text) async {
     // debugPrint("\nSending message:- $text");
 
-    final updatedConversation = [
-      ...state.conversation.messages,
-      MessageObj(
-        role: "user",
-        content: text,
-        createdAt: DateTime.now(),
-      ),
-    ];
-
-    state = state.copyWith(
-      conversation: Conversation(messages: updatedConversation),
-    );
+    addToConversation(message: text);
 
     _conversationStreamController.add(state.conversation);
 
     state = state.copyWith(isWaitingForResponse: true);
-    
+
     final isAuth = _isAuthenticated;
     final identifier = _userIdentifier;
     final conversationId = _conversationId;
-    
+
     String sentResponse;
-    
+
     if (isAuth) {
       sentResponse = await _chatRepo.sendMessage(
         email: identifier,
@@ -191,11 +190,28 @@ class ChatViewmodel extends Notifier<ChatState> {
       restartConversationStream();
     } else {
       // Guest clear conversation not yet implemented
-      debugPrint('[ChatVM] clearConversation: Guest mode - not implemented yet');
+      debugPrint(
+          '[ChatVM] clearConversation: Guest mode - not implemented yet');
       // We could clear local state only
-      state = state.copyWith(conversation: Conversation(messages: []), isEmpty: true);
+      state = state.copyWith(
+          conversation: Conversation(messages: []), isEmpty: true);
       _conversationStreamController.add(state.conversation);
     }
+  }
+
+  void addToConversation({required String message}) {
+    final newMessage = MessageObj(
+      role: "user",
+      content: message,
+      createdAt: DateTime.now(),
+    );
+
+    final updatedMessages = [...state.conversation.messages, newMessage];
+
+    state = state.copyWith(
+      conversation: Conversation(messages: updatedMessages),
+      isEmpty: false,
+    );
   }
 }
 

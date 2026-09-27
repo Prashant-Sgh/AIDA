@@ -86,7 +86,10 @@ class _ChatScreen extends ConsumerState<ChatScreen> {
       extendBodyBehindAppBar: true,
       resizeToAvoidBottomInset: false,
       appBar: ChatScrAppBar(),
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      // Choice - 1
+      // backgroundColor: Theme.of(context).brightness == Brightness.dark ? Color(0xFF01161e) : Color(0xFFeff6e0),
+      // Choice - 2
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? Color(0xFF30343f) : Color(0xFFfafaff),
       body: SafeArea(
         child: WillPopScope(
           onWillPop: () async {

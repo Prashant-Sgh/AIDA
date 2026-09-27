@@ -118,16 +118,16 @@ class ChatRepo {
                 final List<dynamic> data = jsonDecode(jsonString);
                 yield data.map((d) => MessageObj.fromJson(d)).toList();
               } catch (e) {
-                debugPrint('SSE Decode Error: $e');
+                debugPrint('[ChatRepo] SSE Decode Error: $e');
               }
             }
           }
         }
       } else {
-        debugPrint('SSE Connection Error: ${response.statusCode}');
+        debugPrint('[ChatRepo] SSE Connection Error: ${response.statusCode}');
       }
     } catch (e) {
-      debugPrint('SSE Stream Exception: $e');
+      debugPrint('[ChatRepo] SSE Stream Exception: $e');
     } finally {
       client.close();
     }
@@ -229,6 +229,8 @@ class ChatRepo {
       _baseUrl,
       '/ai/guest/stream-conversations',
       {'session_id': sessionId},
+    //       '/ai/stream-conversations',
+    //   {'email': "roshansingh190804@gmail.com", "conversation_id": "Default_Conversation_Id"},
     );
 
     try {
@@ -250,16 +252,17 @@ class ChatRepo {
                 final List<dynamic> data = jsonDecode(jsonString);
                 yield data.map((d) => MessageObj.fromJson(d)).toList();
               } catch (e) {
-                debugPrint('SSE Decode Error: $e');
+                debugPrint('\x1B[31m[ChatRepo] SSE Decode Error: $e \x1B[0m');
+                debugPrint('\x1B[31m[ChatRepo] SSE Raw Data: $decoded \x1B[0m');
               }
             }
           }
         }
       } else {
-        debugPrint('SSE Connection Error: ${response.statusCode}');
+        debugPrint('[ChatRepo] SSE Connection Error: ${response.statusCode}');
       }
     } catch (e) {
-      debugPrint('SSE Stream Exception: $e');
+      debugPrint('[ChatRepo] SSE Stream Exception: $e');
     } finally {
       client.close();
     }
@@ -270,7 +273,7 @@ class ChatRepo {
     required String sessionId,
   }) async {
     // TODO: Implement when backend supports guest conversation clearing
-    debugPrint('clearConversationGuest not yet implemented for sessionId: $sessionId');
+    debugPrint('[ChatRepo] clearConversationGuest not yet implemented for sessionId: $sessionId');
     throw UnimplementedError('Guest conversation clearing not yet implemented');
   }
 }
