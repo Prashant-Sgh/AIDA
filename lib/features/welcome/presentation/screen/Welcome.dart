@@ -74,7 +74,7 @@ class _WelcomeState extends ConsumerState<Welcome>
               left: 0,
               right: 0,
               bottom: 0,
-              child: Expanded(child: TapAnimation()),
+              child: TapAnimation(),
             ),
         
             // Tap_ gesture guide
