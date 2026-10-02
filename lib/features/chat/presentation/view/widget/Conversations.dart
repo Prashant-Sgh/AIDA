@@ -1,3 +1,4 @@
+import 'package:aida/core/utils/format_message.dart';
 import 'package:aida/features/chat/data/model/message.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -46,9 +47,13 @@ class Conversations extends StatelessWidget {
               isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Container(
-              constraints: BoxConstraints(maxWidth: 300),
+              // constraints: BoxConstraints(maxWidth: 300),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.sizeOf(context).width *
+                    (MediaQuery.sizeOf(context).width > 600 ? 0.6 : 0.8),
+              ),
               padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 7.0),
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 7.0),
               decoration: BoxDecoration(
                 color: backgroundColor,
                 border: Border.all(
@@ -65,16 +70,20 @@ class Conversations extends StatelessWidget {
                       (isUser) ? Radius.circular(20.0) : Radius.circular(30.0),
                 ),
               ),
-              child: Text(
-                messageObj.content,
-                style: GoogleFonts.quicksand(
-                  color: textColor,
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w200,
-                  letterSpacing: 0.4,
-
-                  
-                  height: 1.5,
+              // child: Text(
+              //   messageObj.content,
+              //   style: GoogleFonts.quicksand(
+              //     color: textColor,
+              //     fontSize: 12.5,
+              //     fontWeight: FontWeight.w200,
+              //     letterSpacing: 0.4,
+              //     height: 1.5,
+              //   ),
+              // ),
+              child: RichText(
+                text: formatMessage(
+                  message: messageObj.content,
+                  textColor: textColor,
                 ),
               ),
             ),

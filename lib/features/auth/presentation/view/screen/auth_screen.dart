@@ -30,12 +30,16 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen> {
 
       if (state.firebaseIdToken != null) {
         if (mounted) context.push('/otp');
-        // if (mounted) context.go('/context');
       }
     } else {
       // TODO:
       // Sign-up user
       await ref.read(authenticationViewModelProvider.notifier).signUp();
+      final state = ref.read(authenticationViewModelProvider);
+
+      if (state.firebaseIdToken != null) {
+        if (mounted) context.push('/otp');
+      }
     }
   }
 

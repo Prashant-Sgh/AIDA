@@ -1,5 +1,6 @@
 import 'package:aida/core/theme/CustomColors.dart';
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
+import 'package:aida/shared/functionalities/showConfirmationDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -30,9 +31,17 @@ class LoginOutButton extends ConsumerWidget {
         if (isLoginButton) {
           context.push('/authentication');
         } else {
-          await ref
-              .read(authenticationViewModelProvider.notifier)
-              .logoutAdmin();
+          showConfirmationDialog(
+            context: context,
+            title: 'Log out',
+            content: 'Are you sure you want to log out?',
+            confirmText: 'Log out',
+            onPressed: () {
+              ref
+                  .read(authenticationViewModelProvider.notifier)
+                  .logoutAdmin();
+            },
+          );
         }
       },
       child: AnimatedContainer(
@@ -42,7 +51,7 @@ class LoginOutButton extends ConsumerWidget {
           vertical: 12,
         ),
         decoration: BoxDecoration(
-          color: textColor,
+          color: isLoginButton ? textColor : Colors.redAccent,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -58,7 +67,7 @@ class LoginOutButton extends ConsumerWidget {
             Icon(
               isLoginButton ? Icons.login_rounded : Icons.logout_rounded,
               size: 16,
-              color: backgroundColor,
+              color: isLoginButton ? backgroundColor : textColor,
             ),
             const SizedBox(width: 8),
             Text(
@@ -66,7 +75,7 @@ class LoginOutButton extends ConsumerWidget {
               style: GoogleFonts.quicksand(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: backgroundColor,
+                color: isLoginButton ? backgroundColor : textColor,
                 letterSpacing: 0.2,
               ),
             ),

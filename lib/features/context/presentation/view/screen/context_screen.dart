@@ -107,8 +107,8 @@ class _ContextScreenState extends ConsumerState<ContextScreen> {
 
       /// DRAWER
       drawer: AppDrawer(
-        // onClearChat: ref.read(chatVMProvider.notifier).clearChat,
-      ),
+          // onClearChat: ref.read(chatVMProvider.notifier).clearChat,
+          ),
     );
   }
 }
@@ -215,20 +215,20 @@ Widget _buildBodyContent({
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              height: 82,
-              width: 82,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.red.withOpacity(0.08),
-                border: Border.all(
-                  color: Colors.red.withOpacity(0.18),
+            SizedBox(
+              height: 162,
+              width: 162,
+              // child: Icon(
+              //   Icons.error_outline_rounded,
+              //   size: 36,
+              //   color: Colors.redAccent.withOpacity(0.9),
+              // ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Image.asset(
+                  'assets/mascots/otp/wrong_otp.png',
+                  fit: BoxFit.fitWidth,
                 ),
-              ),
-              child: Icon(
-                Icons.error_outline_rounded,
-                size: 36,
-                color: Colors.redAccent.withOpacity(0.9),
               ),
             ),
             const SizedBox(height: 24),

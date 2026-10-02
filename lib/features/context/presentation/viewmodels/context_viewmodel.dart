@@ -69,9 +69,13 @@ class ContextViewModel extends StateNotifier<ContextState> {
   // -----------------------------
   // CRUD - Create Methods
   // -----------------------------
-  Future<ResponseState> createContext(
-      {required ContextModel newContext}) async {
+  Future<ResponseState> createContext({
+    required ContextModel newContext,
+  }) async {
     state = state.copyWith(creating: true, error: null);
+    debugPrint('\x1B[32m[Context VM] User email: $userEmail\x1B[0m');
+    debugPrint('\x1B[36m[Context VM] Creating context: ${newContext.toJson()}\x1B[0m');
+
     ResponseState responseState =
         await _repository.create(newContextModel: newContext, email: userEmail);
     state = state.copyWith(

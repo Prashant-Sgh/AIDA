@@ -4,6 +4,7 @@ import 'package:aida/core/utils/open_protected_route.dart';
 import 'package:aida/features/auth/presentation/viewmodels/authentication_viewmodel.dart';
 import 'package:aida/features/chat/presentation/viewmodel/chat_viewmodel.dart';
 import 'package:aida/features/welcome/presentation/widgets/BaseLine.dart';
+import 'package:aida/shared/functionalities/showConfirmationDialog.dart';
 import 'package:aida/shared/widgets/login_out_button.dart';
 import 'package:aida/shared/widgets/start2fa_button.dart';
 import 'package:flutter/material.dart';
@@ -144,8 +145,15 @@ class AppDrawer extends ConsumerWidget {
                 icon: Icons.delete_outline_rounded,
                 textColor: dangerColor,
                 onTap: () async {
-                  // await onClearChat();
-                  ref.read(chatVMProvider.notifier).clearConversation();
+                  showConfirmationDialog(
+                    context: context,
+                    title: 'Clear conversation',
+                    content: 'Are you sure you want to clear the conversation?',
+                    confirmText: 'Clear',
+                    onPressed: () {
+                      ref.read(chatVMProvider.notifier).clearConversation();
+                    },
+                  );
                 },
               ),
 
